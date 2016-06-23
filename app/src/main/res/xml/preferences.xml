@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="pref_sync"
+        android:title="@string/pref_sync"
+        android:summary="@string/pref_sync_summ"
+        android:defaultValue="true" />
+    <ListPreference
+        android:dependency="pref_sync"
+        android:key="serverURL"
+        android:title="server Address"
+        android:dialogTitle="@string/pref_serverURL"
+        android:entries="@array/pref_serverURL_entries"
+        android:entryValues="@array/pref_serverURL_values"
+        android:defaultValue="@string/pref_serverURL_default" />
+    <Preference android:title="Lista spot"
+        android:key="spotList"
+        android:summary="lista degli spot visualizzati"
+        android:defaultValue="0,1,2,3" />
+    <Preference android:title="ordine spot"
+        android:key="spotOrder"
+        android:summary="Ordine spot visualizzati"
+        android:defaultValue="0,1,2,3" />
+
+
+</PreferenceScreen>

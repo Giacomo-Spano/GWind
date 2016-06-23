@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <PreferenceScreen xmlns:holo="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <CheckBoxPreference
+        android:key="notification_windincrease"
+        android:title="@string/notification_windincrease"
+        android:summary="@string/notification_windincrease_summ"
+        android:defaultValue="true" />
+    <CheckBoxPreference
+        android:key="notification_changedirection"
+        android:title="@string/notification_changedirection"
+        android:summary="@string/notification_changedirection_summ"
+        android:defaultValue="true" />
+
+</PreferenceScreen>

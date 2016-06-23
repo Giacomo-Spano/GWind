@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tv_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Titolo"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="id"
+        android:id="@+id/textViewID"
+        android:layout_alignParentLeft="true" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="false" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Spot"
+            android:id="@+id/textView12"
+            android:layout_alignParentLeft="true" />
+
+        <Spinner
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinnerSpot"
+            android:layout_gravity="center_horizontal"
+            android:layout_alignParentRight="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="false">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Dal"
+                android:id="@+id/textView"
+            android:layout_alignParentLeft="true" />
+
+        <EditText
+            android:id="@+id/startdateEditText"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="date"
+            android:text="01/01/1970"
+            android:layout_alignParentRight="true"
+            android:gravity="right">
+
+        </EditText>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Al"
+            android:id="@+id/textView3"
+            android:layout_alignParentLeft="true" />
+
+        <EditText
+            android:id="@+id/enddateEditText"
+            android:layout_width="199dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="date" android:text="01/01/1970"
+            android:layout_alignParentRight="true"
+            android:gravity="right" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Dalle"
+            android:id="@+id/textView4"
+            android:layout_alignParentLeft="true" />
+
+        <EditText
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:inputType="time"
+                android:ems="10"
+                android:id="@+id/startTimeEditText"
+            android:layout_alignParentRight="true"
+            android:gravity="right"
+            android:text="08:00" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Alle"
+                android:id="@+id/textView2"
+            android:layout_alignParentLeft="true" />
+
+        <EditText
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:inputType="time"
+                android:ems="10"
+                android:id="@+id/endTimeEditText"
+            android:layout_alignParentRight="true"
+            android:gravity="right"
+            android:text="09:00" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <CheckBox
+            android:id="@+id/mondayCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="L" />
+
+        <CheckBox
+            android:id="@+id/tuesdayCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="M" />
+
+        <CheckBox
+            android:id="@+id/wednesdayCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="M" />
+
+        <CheckBox
+            android:id="@+id/thursdayCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="G" />
+
+        <CheckBox
+            android:id="@+id/fridayCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="V" />
+
+        <CheckBox
+            android:id="@+id/saturdayCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="S" />
+
+        <CheckBox
+            android:id="@+id/sundayCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="D" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Velocità min (km/h)"
+            android:id="@+id/textViewSpeed"
+            android:layout_alignParentLeft="true" />
+
+        <EditText
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned"
+            android:ems="10"
+            android:id="@+id/editTextSpeed"
+            android:layout_alignParentRight="true"
+            android:gravity="right"
+            android:text="20" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="right">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Velocità media min (km/h)"
+            android:id="@+id/textViewAvSpeed"
+            android:layout_alignParentLeft="true" />
+
+        <EditText
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned"
+            android:ems="10"
+            android:id="@+id/editTextAvSpeed"
+            android:layout_alignParentRight="true"
+            android:gravity="right"
+            android:text="18" />
+
+    </RelativeLayout>
+
+</LinearLayout>

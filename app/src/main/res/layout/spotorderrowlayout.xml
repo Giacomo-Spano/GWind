@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginLeft="4px"
+                android:layout_marginRight="10px"
+                android:layout_marginTop="4px"
+                android:src="@drawable/spot" >
+            </ImageView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Medium Text"
+                android:id="@+id/spotIdTextView"
+                android:layout_gravity="bottom" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Spotname"
+                android:id="@+id/spotNameTextView"
+                android:layout_gravity="bottom" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true">
+
+            <ImageButton
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:id="@+id/imageButtonDown"
+                android:src="@drawable/downbutton" />
+
+            <ImageButton
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:id="@+id/imageButtonUp"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/upbutton" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

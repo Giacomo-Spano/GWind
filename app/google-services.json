@@ -1,0 +1,126 @@
+{
+  "project_info": {
+    "project_number": "931700652688",
+    "project_id": "windalarm-24f03"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:931700652688:android:5a6fc49defa5caff",
+        "android_client_info": {
+          "package_name": "com.windalarm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "931700652688-pciplnqb4p3l0p4e0lbp56knr6k7rpb0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.windalarm",
+            "certificate_hash": "338E15F2E8546F2C97608393CE94007701D302B0"
+          }
+        },
+        {
+          "client_id": "931700652688-5kp1p440m43casud9ajouspqgr0aa8j9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7zONNzAVXFfCyS_hStAPmOcs_Ii-l6iE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:931700652688:android:73fa346eaf221e72",
+        "android_client_info": {
+          "package_name": "com.windalarm.clientapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "931700652688-v8q9in40s00ml2gkrchdeg1kko9tji8d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.windalarm.clientapp",
+            "certificate_hash": "C72D527A76F96F2D2A77C28BBD70132AD034F371"
+          }
+        },
+        {
+          "client_id": "931700652688-5kp1p440m43casud9ajouspqgr0aa8j9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7zONNzAVXFfCyS_hStAPmOcs_Ii-l6iE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:931700652688:android:a943e618d0d55efe",
+        "android_client_info": {
+          "package_name": "wind.newwindalarm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "931700652688-a6olptrhi13t1ss1mepffu39t7ue183v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "wind.newwindalarm",
+            "certificate_hash": "C72D527A76F96F2D2A77C28BBD70132AD034F371"
+          }
+        },
+        {
+          "client_id": "931700652688-5kp1p440m43casud9ajouspqgr0aa8j9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7zONNzAVXFfCyS_hStAPmOcs_Ii-l6iE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

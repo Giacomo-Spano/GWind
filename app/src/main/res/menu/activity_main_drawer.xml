@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_panel"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Stazioni meteo" />
+        <item
+            android:id="@+id/nav_program"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Sveglie" />
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_profile"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="Profilo" />
+            <item
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="Impostazioni" />
+        </menu>
+    </item>
+
+</menu>
