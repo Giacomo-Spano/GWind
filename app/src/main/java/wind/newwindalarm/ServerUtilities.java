@@ -81,7 +81,7 @@ public final class ServerUtilities {
         //String serverUrl = SERVER_URL + "/unregister";
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        String syncConnPref = sharedPref.getString(SettingsFragment.KEY_PREF_SERVERURL, "");
+        String syncConnPref = sharedPref.getString(QuickstartPreferences.KEY_PREF_SERVERURL, "");
         String serverUrl = syncConnPref + "/windregister";
 
 

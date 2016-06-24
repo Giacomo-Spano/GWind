@@ -5,6 +5,8 @@ import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -74,6 +76,11 @@ public class ProgramListFragment extends Fragment implements
 
         // Updating the action bar title
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(/*items[position]*/"Sveglie");
+
+
+
+
+
 
         return programListView;
     }

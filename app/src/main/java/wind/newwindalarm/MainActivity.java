@@ -99,13 +99,17 @@ public class MainActivity extends AppCompatActivity implements
 
     public static AlarmPreferences preferences = new AlarmPreferences();
 
-    /** Get singleton instance of activity **/
+    /**
+     * Get singleton instance of activity
+     **/
     public static MainActivity getInstance() {
         return instance;
     }
 
-    /** Returns context of this activity **/
-    public static Context getContext(){
+    /**
+     * Returns context of this activity
+     **/
+    public static Context getContext() {
         return instance.getApplicationContext();
     }
 
@@ -166,6 +170,7 @@ public class MainActivity extends AppCompatActivity implements
                         .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
                 if (sentToken) {
                     mInformationTextView.setText(getString(R.string.gcm_send_message));
+                    mInformationTextView.setVisibility(ProgressBar.GONE);
                 } else {
                     mInformationTextView.setText(getString(R.string.token_error_message));
                 }
@@ -181,8 +186,6 @@ public class MainActivity extends AppCompatActivity implements
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
         }
-
-
 
 
         // [START configure_signin]
@@ -246,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements
         showFragment(R.id.nav_profile);
         int spotId = 0;
         Bundle extras = getIntent().getExtras();
-        if(extras != null) // se SpotID è valorizzato questa activity è chiamata dalla playalarm activity e deve visualizzare subito la spotdetailactivity
+        if (extras != null) // se SpotID è valorizzato questa activity è chiamata dalla playalarm activity e deve visualizzare subito la spotdetailactivity
         {
             if (extras.getBoolean(GO_DIRECTLY_TO_SPOT_DETAILS) == true) {
                 spotId = extras.getInt("spotId");
@@ -262,9 +265,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-
-
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -278,13 +278,14 @@ public class MainActivity extends AppCompatActivity implements
         super.onPause();
     }
 
-    private void registerReceiver(){
-        if(!isReceiverRegistered) {
+    private void registerReceiver() {
+        if (!isReceiverRegistered) {
             LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                     new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
             isReceiverRegistered = true;
         }
     }
+
     /**
      * Check the device to make sure it has the Google Play Services APK. If
      * it doesn't, display a dialog that allows users to download the APK from
@@ -389,7 +390,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -424,8 +424,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-
-
     /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -434,7 +432,7 @@ public class MainActivity extends AppCompatActivity implements
     }*/
     String getServerURL() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String syncConnPref = sharedPref.getString(SettingsFragment.KEY_PREF_SERVERURL, this.getResources().getString(R.string.pref_serverURL_default));
+        String syncConnPref = sharedPref.getString(QuickstartPreferences.KEY_PREF_SERVERURL, this.getResources().getString(R.string.pref_serverURL_default));
         return syncConnPref;
     }
 
@@ -555,7 +553,6 @@ public class MainActivity extends AppCompatActivity implements
                     //hideProgressIndicator();
 
 
-
                     handleSignInResult(result);
 
 
@@ -609,7 +606,7 @@ public class MainActivity extends AppCompatActivity implements
             userName.setText(name);
             email.setText(acct.getEmail());
             personId = acct.getId();
-            new LoadImagefromUrl( ).execute(userImage, acct.getPhotoUrl().toString());
+            new LoadImagefromUrl().execute(userImage, acct.getPhotoUrl().toString());
             //GoogleSignInAccount acct = result.getSignInAccount();
             String authCode = acct.getServerAuthCode();
             //mAuthCodeTextView.setText("Auth Code: " + authCode);
@@ -620,7 +617,7 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             signedIn = false;
             // TODO Signed out, show unauthenticated UI.
-           // updateUI(false);
+            // updateUI(false);
             showNoUser();
 
         }
@@ -653,20 +650,20 @@ public class MainActivity extends AppCompatActivity implements
         revokeAccess();
     }
 
-    private class LoadImagefromUrl extends AsyncTask< Object, Void, Bitmap > {
+    private class LoadImagefromUrl extends AsyncTask<Object, Void, Bitmap> {
         ImageView ivPreview = null;
 
         @Override
-        protected Bitmap doInBackground(Object... params ) {
+        protected Bitmap doInBackground(Object... params) {
             this.ivPreview = (ImageView) params[0];
             String url = (String) params[1];
             System.out.println(url);
-            return loadBitmap( url );
+            return loadBitmap(url);
         }
 
         @Override
-        protected void onPostExecute( Bitmap result ) {
-            super.onPostExecute( result );
+        protected void onPostExecute(Bitmap result) {
+            super.onPostExecute(result);
 
 
             int currentBitmapWidth = result.getWidth();
@@ -676,7 +673,7 @@ public class MainActivity extends AppCompatActivity implements
             int ivHeight = ivPreview.getHeight();
             int newWidth = ivWidth;
 
-            int newHeight = (int) Math.floor((double) currentBitmapHeight *( (double) newWidth / (double) currentBitmapWidth));
+            int newHeight = (int) Math.floor((double) currentBitmapHeight * ((double) newWidth / (double) currentBitmapWidth));
 
             Bitmap newbitMap = Bitmap.createScaledBitmap(result, newWidth, newHeight, true);
 
@@ -687,17 +684,17 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    public Bitmap loadBitmap( String url ) {
+    public Bitmap loadBitmap(String url) {
         URL newurl = null;
         Bitmap bitmap = null;
         try {
-            newurl = new URL( url );
-            bitmap = BitmapFactory.decodeStream( newurl.openConnection( ).getInputStream( ) );
-        } catch ( MalformedURLException e ) {
-            e.printStackTrace( );
-        } catch ( IOException e ) {
+            newurl = new URL(url);
+            bitmap = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
 
-            e.printStackTrace( );
+            e.printStackTrace();
         }
         return bitmap;
     }

@@ -17,7 +17,7 @@ import java.util.List;
 
 public class SettingsFragment extends PreferenceFragment {
 
-    public static final String KEY_PREF_SERVERURL = "serverURL";
+
     public static final String KEY_PREF_SPOTLIST = "spotList";
     public static final String KEY_PREF_SPOTORDER = "spotOrder";
 
@@ -39,7 +39,7 @@ public class SettingsFragment extends PreferenceFragment {
         addPreferencesFromResource(R.xml.preferences);
 
         //String key = getResources().getString(R.string.pref_serverURL);
-        Preference pref = findPreference(KEY_PREF_SERVERURL);
+        Preference pref = findPreference(QuickstartPreferences.KEY_PREF_SERVERURL);
         String str = ((ListPreference) pref).getValue();
         pref.setSummary(str/*mSettings.getServerURL()*/);
         pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

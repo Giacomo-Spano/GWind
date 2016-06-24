@@ -47,7 +47,7 @@ public class requestprogramtask extends
         List<WindAlarmProgram> list = new ArrayList<WindAlarmProgram>();
         WindAlarmProgram wp = null;
         try {
-            mServerURL = (String) params[0];
+            mServerURL = AlarmPreferences.getServerUrl(activity);
 
 
             String regId = MainActivity.preferences.getRegId(activity);

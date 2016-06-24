@@ -52,13 +52,7 @@ public class postprogramtask extends AsyncTask<Object, Boolean, Boolean> {
         this.activity = activity;
         dialog = new ProgressDialog(activity);
         delegate = asyncResponse;//Assigning call back interfacethrough constructor
-        mServerURL = getServerURL();
-    }
-    String getServerURL() {
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(activity);
-        String syncConnPref = sharedPref.getString(SettingsFragment.KEY_PREF_SERVERURL, "");
-        return syncConnPref;
+        mServerURL = AlarmPreferences.getServerUrl(activity);//getServerURL();
     }
 
     @Override
@@ -72,11 +66,6 @@ public class postprogramtask extends AsyncTask<Object, Boolean, Boolean> {
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
 
         String regId = AlarmPreferences.getRegId(activity.getApplicationContext());
-        /*SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext());
-        String regId = sharedPreferences
-                .getString(QuickstartPreferences.REGISTRATION_ID, "");*/
-
 
         if (postType == POST_ALARM || postType == POST_DELETEALARM) {
             alarm = (WindAlarmProgram) params[0];

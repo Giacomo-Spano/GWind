@@ -81,8 +81,9 @@ public class RegistrationIntentService extends IntentService {
 
             boolean sentToken = sharedPreferences.getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
 
-            String str = MainActivity.getContext().getResources().getString(R.string.pref_serverURL_default);
-            String serverURL = sharedPreferences.getString(SettingsFragment.KEY_PREF_SERVERURL, str);
+            //String str = MainActivity.getContext().getResources().getString(R.string.pref_serverURL_default);
+            //String serverURL = sharedPreferences.getString(QuickstartPreferences.KEY_PREF_SERVERURL, str);
+            String serverURL = AlarmPreferences.getServerUrl(MainActivity.getContext());
 
             if (!sentToken)
                 sendRegistrationToServer(token, serverURL);

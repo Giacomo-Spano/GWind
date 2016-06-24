@@ -55,7 +55,8 @@ public class requestMeteoDataTask extends
         requestLastdata = (boolean) params[1];
         requestHistory = (boolean) params[2];
         mSpot = (String) params[3];
-        mServerURL = (String) params[4];
+        //mServerURL = (String) params[4];
+        mServerURL = AlarmPreferences.getServerUrl(activity);
 
         try {
             //String regId = MainActivity.preferences.getRegId();
