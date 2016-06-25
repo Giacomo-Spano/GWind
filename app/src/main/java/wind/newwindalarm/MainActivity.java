@@ -17,7 +17,6 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -53,11 +52,9 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
@@ -77,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
     private GoogleApiClient mGoogleApiClient;
+    GoogleSignInAccount acct;
 
     public static final String GO_DIRECTLY_TO_SPOT_DETAILS = "GoDirectlyToSpotDetails";
 
@@ -91,24 +89,19 @@ public class MainActivity extends AppCompatActivity implements
     ProfileFragment profileFragment;
 
     // google properties
-    TextView userName;
-    TextView email;
-    ImageView userImage;
-    String personId;
+    TextView mUserNameTextView;
+    TextView memailTextView;
+    ImageView mUserImageImageView;
+
+    private UserProfile mProfile = null;
     static boolean signedIn = false;
 
     public static AlarmPreferences preferences = new AlarmPreferences();
 
-    /**
-     * Get singleton instance of activity
-     **/
     public static MainActivity getInstance() {
         return instance;
     }
 
-    /**
-     * Returns context of this activity
-     **/
     public static Context getContext() {
         return instance.getApplicationContext();
     }
@@ -141,9 +134,9 @@ public class MainActivity extends AppCompatActivity implements
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View header = navigationView.getHeaderView(0);
-        userName = (TextView) header.findViewById(R.id.UserNameTextView);
-        email = (TextView) header.findViewById(R.id.UserEmailTextView);
-        userImage = (ImageView) header.findViewById(R.id.imageView);
+        mUserNameTextView = (TextView) header.findViewById(R.id.UserNameTextView);
+        memailTextView = (TextView) header.findViewById(R.id.UserEmailTextView);
+        mUserImageImageView = (ImageView) header.findViewById(R.id.imageView);
 
 
         mSettings = new Settings(this);
@@ -346,8 +339,9 @@ public class MainActivity extends AppCompatActivity implements
                 programListFragment.createProgram();
                 ;
                 return true;
-            /*case R.id.action_remove:
-                return true;*/
+            case R.id.action_unregister:
+                ServerUtilities.unregister(AlarmPreferences.getRegId(this), AlarmPreferences.getServerUrl(this));
+                return true;
             /*case R.id.action_clear:
                 deleteFile(messageFragment.messageFileName);
                 //new File(messageFragment.messageFileName).delete();
@@ -389,7 +383,6 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }
 
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -415,21 +408,14 @@ public class MainActivity extends AppCompatActivity implements
             ft.replace(R.id.content_frame, programListFragment);
         else if (mPosition == R.id.nav_settings)
             ft.replace(R.id.content_frame, settingsFragment);
-        else if (mPosition == R.id.nav_profile)
+        else if (mPosition == R.id.nav_profile) {
             ft.replace(R.id.content_frame, profileFragment);
-
+            profileFragment.setProfile(mProfile);
+        }
         ft.addToBackStack(null);
         ft.commit();
-
     }
 
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }*/
     String getServerURL() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String syncConnPref = sharedPref.getString(QuickstartPreferences.KEY_PREF_SERVERURL, this.getResources().getString(R.string.pref_serverURL_default));
@@ -437,7 +423,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void getSpotListFromServer() {
-
 
         requestMeteoDataTask task = (requestMeteoDataTask) new requestMeteoDataTask(this, new AsyncRequestMeteoDataResponse() {
 
@@ -454,7 +439,6 @@ public class MainActivity extends AppCompatActivity implements
             public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
 
                 spotList = new ArrayList<Spot>();
-
 
                 if (error)
                     return;
@@ -518,19 +502,18 @@ public class MainActivity extends AppCompatActivity implements
 
     private void signIn() {
 
-        //Auth.GoogleSignInApi.
-
-
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     private void signOut() {
+
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
                         // ...
+                        mProfile = null;
                         showNoUser();
                     }
                 });
@@ -552,9 +535,7 @@ public class MainActivity extends AppCompatActivity implements
                     //updateButtonsAndStatusFromSignInResult(result);
                     //hideProgressIndicator();
 
-
                     handleSignInResult(result);
-
 
                     if (signedIn) {
                         showFragment(R.id.nav_panel);
@@ -598,36 +579,42 @@ public class MainActivity extends AppCompatActivity implements
         if (result.isSuccess()) {
 
             signedIn = true;
+
             // Signed in successfully, show authenticated UI.
-            GoogleSignInAccount acct = result.getSignInAccount();
-            //mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
-            //updateUI(true);
-            String name = acct.getDisplayName();
-            userName.setText(name);
-            email.setText(acct.getEmail());
-            personId = acct.getId();
-            new LoadImagefromUrl().execute(userImage, acct.getPhotoUrl().toString());
+            /*GoogleSignInAccount*/ acct = result.getSignInAccount();
+
+            new LoadImagefromUrl().execute(/*mUserImageImageView, acct.getPhotoUrl().toString(),mProfile.userImage*/);
             //GoogleSignInAccount acct = result.getSignInAccount();
             String authCode = acct.getServerAuthCode();
             //mAuthCodeTextView.setText("Auth Code: " + authCode);
             // TODO(user): send code to server and exchange for access/refresh/ID tokens.
 
             //ServerUtilities.sendAuthCode(authCode,getServerURL());
+            if (profileFragment != null) {
+                profileFragment.setProfile(mProfile);
+            }
 
         } else {
             signedIn = false;
-            // TODO Signed out, show unauthenticated UI.
-            // updateUI(false);
+            mProfile = null;
             showNoUser();
+            if (profileFragment != null) {
+                profileFragment.setProfile(mProfile);
+            }
 
-        }
+
+         }
     }
 
     private void showNoUser() {
-        userName.setText("no user");
-        email.setText("no email");
-        personId = null;
-        userImage.setImageResource(R.drawable.wind);
+        mUserNameTextView.setText("no user");
+        memailTextView.setText("no email");
+        mUserImageImageView.setImageResource(R.drawable.wind);
+
+        if (profileFragment != null) {
+            profileFragment.setProfile(null);
+
+        }
     }
 
     @Override
@@ -638,6 +625,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onSignInClick() {
         signIn();
+
     }
 
     @Override
@@ -651,40 +639,45 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private class LoadImagefromUrl extends AsyncTask<Object, Void, Bitmap> {
-        ImageView ivPreview = null;
 
         @Override
         protected Bitmap doInBackground(Object... params) {
-            this.ivPreview = (ImageView) params[0];
-            String url = (String) params[1];
-            System.out.println(url);
-            return loadBitmap(url);
+
+            String url = acct.getPhotoUrl().toString();
+            return loadBitmapFromUrl(url);
         }
 
         @Override
-        protected void onPostExecute(Bitmap result) {
-            super.onPostExecute(result);
+        protected void onPostExecute(Bitmap resultBitmap) {
+            super.onPostExecute(resultBitmap);
 
+            mProfile = new UserProfile();
+            mProfile.userName = acct.getDisplayName();
+            mProfile.email = acct.getEmail();
+            mProfile.personId = acct.getId();
+            mUserNameTextView.setText(mProfile.userName);
+            memailTextView.setText(mProfile.email);
 
-            int currentBitmapWidth = result.getWidth();
-            int currentBitmapHeight = result.getHeight();
-
-            int ivWidth = ivPreview.getWidth();
-            int ivHeight = ivPreview.getHeight();
+            int currentBitmapWidth = resultBitmap.getWidth();
+            int currentBitmapHeight = resultBitmap.getHeight();
+            int ivWidth = mUserImageImageView.getWidth();
+            int ivHeight = mUserImageImageView.getHeight();
             int newWidth = ivWidth;
-
             int newHeight = (int) Math.floor((double) currentBitmapHeight * ((double) newWidth / (double) currentBitmapWidth));
+            Bitmap newbitMap = Bitmap.createScaledBitmap(resultBitmap, newWidth, newHeight, true);
 
-            Bitmap newbitMap = Bitmap.createScaledBitmap(result, newWidth, newHeight, true);
+            //mProfile.userImage = Bitmap.createBitmap(newbitMap);
+            mProfile.userImage = newbitMap.copy(newbitMap.getConfig(),false);
 
-            ivPreview.setImageBitmap(getCircleBitmap(newbitMap));
 
+            mUserImageImageView.setImageBitmap(getCircleBitmap(newbitMap));
 
-            //ivPreview.setImageBitmap( result );
-        }
+            if (profileFragment != null)
+                profileFragment.setProfile(mProfile);
+       }
     }
 
-    public Bitmap loadBitmap(String url) {
+    public Bitmap loadBitmapFromUrl(String url) {
         URL newurl = null;
         Bitmap bitmap = null;
         try {

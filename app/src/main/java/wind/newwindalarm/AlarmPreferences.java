@@ -24,19 +24,23 @@ public class AlarmPreferences {
         String regId = sharedPreferences.getString(QuickstartPreferences.REGISTRATION_ID, "");
         return regId;
     }
-    public void setRegId(Context context, String regId)
+    public static void setRegId(Context context, String regId)
     {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(QuickstartPreferences.REGISTRATION_ID, regId);  // Saving string
         editor.commit(); // commit changes*/
     }
-    public void deleteRegId(Context context)
+    public static void deleteRegId(Context context)
     {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove(QuickstartPreferences.REGISTRATION_ID); // will delete key key_name4
-        editor.commit(); // commit changes*/
+        editor.remove(QuickstartPreferences.REGISTRATION_ID);
+        editor.commit();
+
+        editor.remove(QuickstartPreferences.SENT_TOKEN_TO_SERVER);
+        editor.commit();
+
     }
 
 }

@@ -63,11 +63,12 @@ public final class ServerUtilities {
 
         try {
             post(serverUrl, params);
-            MainActivity.preferences.setRegId(MainActivity.getContext(),regId);
+            AlarmPreferences.setRegId(MainActivity.getContext(),regId);
             return true;
         } catch (IOException e) {
 
             Log.e(TAG, "Failed to register on attempt ", e);
+
         }
 
         return false;
@@ -76,38 +77,19 @@ public final class ServerUtilities {
     /**
      * Unregister this account/device pair within the server.
      */
-    static void unregister(final Context context, final String regId) {
+    static void unregister(final String regId, String serverUrl) {
         Log.i(TAG, "unregistering device (regId = " + regId + ")");
-        //String serverUrl = SERVER_URL + "/unregister";
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        String syncConnPref = sharedPref.getString(QuickstartPreferences.KEY_PREF_SERVERURL, "");
-        String serverUrl = syncConnPref + "/windregister";
-
+        serverUrl += "//unregister";
 
         Map<String, String> params = new HashMap<String, String>();
         params.put("regId", regId);
         params.put("unregister", "true");
 
-        try {
-            post(serverUrl, params);
-            //GCMRegistrar.setRegisteredOnServer(context, false);
-            String message = context.getString(R.string.server_unregistered);
-            String notificationType = "RecoverableError";
-            CommonUtilities.displayMessage(context, "titolo", message, notificationType);
+        //post(serverUrl, params);
+        AlarmPreferences.setRegId(MainActivity.getContext(),regId);
+        AlarmPreferences.deleteRegId(MainActivity.getContext());
 
-            MainActivity.preferences.deleteRegId(MainActivity.getContext());
-
-        } catch (IOException e) {
-            // At this point the device is unregistered from GCM, but still
-            // registered in the server.
-            // We could try to unregister again, but it is not necessary:
-            // if the server tries to send a message to the device, it will get
-            // a "NotRegistered" error message and should unregister the device.
-            String message = context.getString(R.string.server_unregister_error,
-                    e.getMessage());
-            CommonUtilities.displayMessage(context, "titolo", message);
-        }
     }
 
     static boolean sendAuthCode(final String authCode, String serverUrl) {
