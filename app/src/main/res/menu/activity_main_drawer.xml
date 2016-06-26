@@ -3,13 +3,17 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_panel"
+            android:id="@+id/nav_favorites"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Stazioni meteo" />
+            android:title="Preferiti" />
         <item
             android:id="@+id/nav_program"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Sveglie" />
+        <item
+            android:id="@+id/nav_meteostation"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Stazioni meteo" />
     </group>
 
     <item android:title="Communicate">

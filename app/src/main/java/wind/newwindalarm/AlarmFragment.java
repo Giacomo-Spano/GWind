@@ -18,6 +18,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.LineChart;
+
 import wind.newwindalarm.cardui.MeteoCardItem;
 import wind.newwindalarm.cardui.MeteoCardListener;
 
@@ -26,18 +28,20 @@ import java.util.List;
 public class AlarmFragment extends Fragment implements
         OnItemSelectedListener, MeteoCardListener {
 
-    //static boolean ringActive = false;
-    private TextView fullscreenTextView;
+    //private TextView fullscreenTextView;
     private LinearLayout mContainer;
     private Ringtone ringtone;
     public MeteoCardItem mCarditem;
+    LineChart mLineChart;
 
     OnAlarmListener mCallback;
 
     // Container Activity must implement this interface
     public interface OnAlarmListener {
         public void onStopAlarmClick();
+
         public void onSnoozeAlarmClick(int snoozeMinutes);
+
         public void onStartPlayAlarm();
     }
 
@@ -55,7 +59,6 @@ public class AlarmFragment extends Fragment implements
         }
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -64,7 +67,6 @@ public class AlarmFragment extends Fragment implements
         v = inflater.inflate(R.layout.fragment_alarm, container, false);
 
         mContainer = (LinearLayout) v.findViewById(R.id.container);
-        fullscreenTextView = (TextView) v.findViewById(R.id.textView17);
 
         final Button stopButton = (Button) v.findViewById(R.id.stopAlarmButton);
         stopButton.setOnClickListener(new View.OnClickListener() {
@@ -80,30 +82,14 @@ public class AlarmFragment extends Fragment implements
             }
         });
 
-        Bundle data=getArguments();
 
-        int spotID = data.getInt("spotid");
-        TextView tv = (TextView) v.findViewById(R.id.spotName);
-        tv.setText(MainActivity.getSpotName(spotID));
-
-        int alarmID = data.getInt("alarmid");
-        tv = (TextView) v.findViewById(R.id.alarmIdTextView);
-        tv.setText(MainActivity.getSpotName(alarmID));
-
-        String startDate = data.getString("startDate");
-        String startTime = data.getString("startTime");
-        String lastRingTime = data.getString("lastRingTime");
-        String endDate = data.getString("endDate");
-        String endTime = data.getString("endTime");
-        Double curspotId = data.getDouble("curspotId");
+        mLineChart = (LineChart) v.findViewById(R.id.chart);
 
         return v;
     }
 
     public void playAlarm(int spot) {
 
-        /// va in crash!!!!
-        ///getMeteoData(spot);
 
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         if (alarmUri == null) {
@@ -111,16 +97,20 @@ public class AlarmFragment extends Fragment implements
         }
         ringtone = RingtoneManager.getRingtone(this.getActivity(), alarmUri);
         ringtone.play();
-        fullscreenTextView.setText("Allarme attivo");
 
         if (mCallback != null)
-            mCallback.onStartPlayAlarm();    }
+            mCallback.onStartPlayAlarm();
+
+        getMeteoData(spot);
+
+        HistoryChart hc = new HistoryChart(getActivity(),mLineChart);
+        new requestMeteoDataTask(getActivity(), hc).execute(requestMeteoDataTask.REQUEST_HISTORYMETEODATA, "" + spot);
+    }
 
     public void stopRingtone() {
         ringtone.stop();
-        fullscreenTextView.setText("Allarme disattivato");
+        //fullscreenTextView.setText("Allarme disattivato");
     }
-
 
     public void stopAlarm() {
         stopRingtone();
@@ -134,28 +124,25 @@ public class AlarmFragment extends Fragment implements
         mCallback.onSnoozeAlarmClick(15);
     }
 
-
     @Override
     public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
                                long arg3) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> arg0) {
         // TODO Auto-generated method stub
-
     }
 
-    public void getMeteoData(final int spot) {
+    public void getMeteoData(final int spotID) {
 
         final AlarmFragment fragment = this;
 
-        requestMeteoDataTask task = (requestMeteoDataTask) new requestMeteoDataTask(this.getActivity(), new AsyncRequestMeteoDataResponse() {
+        new requestMeteoDataTask(this.getActivity(), new AsyncRequestMeteoDataResponse() {
 
             @Override
-            public void processFinish(List<Object> list, /*long spotID,  */boolean error, String errorMessage) {
+            public void processFinish(List<Object> list, boolean error, String errorMessage) {
 
                 if (error) {
 
@@ -179,30 +166,23 @@ public class AlarmFragment extends Fragment implements
 
                 } else {
 
-
-                    //final MeteoCardItem mCarditem;
                     mCarditem = new MeteoCardItem(fragment, fragment.getActivity(), mContainer);
-
-                    //MeteoCard meteocarditem = (MeteoCard) mContainer.findViewById(R.id.meteocarditem);
-                    //meteocarditem
 
                     MeteoStationData md = null;
                     for (int i = 0; i < list.size(); i++) {
                         md = (MeteoStationData) list.get(i);
-                        if (md.spotID == spot)
+                        if (md.spotID == spotID)
                             break;
                     }
-                    mCarditem.spotID = spot;
-
+                    mCarditem.spotID = spotID;
                     mCarditem.update(md);
                     mContainer.addView(mCarditem.card);
                     mContainer.invalidate();
-
                 }
             }
 
             @Override
-            public void processFinishHistory(List<Object> list, /*long spotID, */boolean error, String errorMessage) {
+            public void processFinishHistory(List<Object> list, boolean error, String errorMessage) {
 
             }
 
@@ -210,31 +190,17 @@ public class AlarmFragment extends Fragment implements
             public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
 
             }
-        }).execute(false, true, false, spot);
+        }).execute(requestMeteoDataTask.REQUEST_LASTMETEODATA, "" + spotID);
     }
 
     @Override
     public void meteocardselected(long index) {
 
-        //Fragment spotDetail = new SpotDetailFragment();
-
-        /*Bundle data = new Bundle();
-        data.putLong("spotID", mCarditem.spotID);
-        spotDetail.setArguments(data);*/
 
         Intent intent = new Intent(getActivity(), MainActivity.class);
         intent.putExtra(MainActivity.GO_DIRECTLY_TO_SPOT_DETAILS, mCarditem.spotID); //Optional parameters
         intent.putExtra("spotID", mCarditem.spotID); //Optional parameters
         startActivity(intent);
 
-        //FragmentTransaction transaction = getActivity().getFragmentManager().beginTransaction();
-
-        // Replace whatever is in the fragment_container view with this fragment,
-        // and add the transaction to the back stack
-        //transaction.replace(R.id.content_frame, spotDetail);
-        //transaction.addToBackStack(null);
-
-        // Commit the transaction
-        //transaction.commit();
     }
 }

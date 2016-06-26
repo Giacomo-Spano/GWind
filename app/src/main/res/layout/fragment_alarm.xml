@@ -10,75 +10,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Large Text"
-            android:id="@+id/textView17"
-            android:layout_gravity="center_horizontal" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Medium Text"
-            android:id="@+id/textView26"
-            android:layout_gravity="center_horizontal" />
+            <Button
+                android:layout_width="185dp"
+                android:layout_height="99dp"
+                android:text="Stop Alarm"
+                android:id="@+id/stopAlarmButton"
+                android:layout_gravity="center_horizontal" />
 
-        <Button
-            android:layout_width="185dp"
-            android:layout_height="99dp"
-            android:text="Stop Alarm"
-            android:id="@+id/stopAlarmButton"
-            android:layout_gravity="center_horizontal" />
+            <Button
+                android:layout_width="185dp"
+                android:layout_height="99dp"
+                android:text="Snooze"
+                android:id="@+id/snoozeAlarmButton"
+                android:layout_gravity="center_horizontal" />
+        </LinearLayout>
 
-        <Button
-            android:layout_width="185dp"
-            android:layout_height="99dp"
-            android:text="Snooze"
-            android:id="@+id/snoozeAlarmButton"
-            android:layout_gravity="center_horizontal" />
+        <include
+            android:id="@+id/maincard"
+            layout="@layout/card_meteo"/>
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Alarm ID"
-        android:id="@+id/alarmIdTextView"
-        android:layout_gravity="center_horizontal" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="ringDate"
-        android:id="@+id/ringDate"
-        android:layout_gravity="center_horizontal" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="SpotName"
-        android:id="@+id/spotName"
-        android:layout_gravity="center_horizontal" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="windSpeed"
-        android:id="@+id/windSpeed"
-        android:layout_gravity="center_horizontal" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="windAvSpeed"
-        android:id="@+id/windAvSpeed"
-        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>

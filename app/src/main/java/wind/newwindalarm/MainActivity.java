@@ -16,7 +16,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -87,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements
     ProgramListFragment programListFragment;
     SettingsFragment settingsFragment;
     ProfileFragment profileFragment;
+    SpotMeteoListFragment spotMeteoListFragment;
 
     // google properties
     TextView mUserNameTextView;
@@ -137,7 +137,6 @@ public class MainActivity extends AppCompatActivity implements
         mUserNameTextView = (TextView) header.findViewById(R.id.UserNameTextView);
         memailTextView = (TextView) header.findViewById(R.id.UserEmailTextView);
         mUserImageImageView = (ImageView) header.findViewById(R.id.imageView);
-
 
         mSettings = new Settings(this);
         mSettings.setListener(new Settings.SettingsListener() {
@@ -238,6 +237,7 @@ public class MainActivity extends AppCompatActivity implements
         settingsFragment = new SettingsFragment();
         settingsFragment.setSettings(mSettings);
         profileFragment = new ProfileFragment();
+        spotMeteoListFragment = new SpotMeteoListFragment();
 
         showFragment(R.id.nav_profile);
         int spotId = 0;
@@ -255,6 +255,8 @@ public class MainActivity extends AppCompatActivity implements
         silentSignIn(spotId);
 
         getSpotListFromServer();
+
+
     }
 
 
@@ -402,10 +404,12 @@ public class MainActivity extends AppCompatActivity implements
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
 
-        if (mPosition == R.id.nav_panel)
+        if (mPosition == R.id.nav_favorites)
             ft.replace(R.id.content_frame, panelFragment);
         else if (mPosition == R.id.nav_program)
             ft.replace(R.id.content_frame, programListFragment);
+        else if (mPosition == R.id.nav_meteostation)
+            ft.replace(R.id.content_frame, spotMeteoListFragment);
         else if (mPosition == R.id.nav_settings)
             ft.replace(R.id.content_frame, settingsFragment);
         else if (mPosition == R.id.nav_profile) {
@@ -424,7 +428,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private void getSpotListFromServer() {
 
-        requestMeteoDataTask task = (requestMeteoDataTask) new requestMeteoDataTask(this, new AsyncRequestMeteoDataResponse() {
+        new requestMeteoDataTask(this, new AsyncRequestMeteoDataResponse() {
 
             @Override
             public void processFinish(List<Object> list, boolean error, String errorMessage) {
@@ -467,9 +471,11 @@ public class MainActivity extends AppCompatActivity implements
                 settingsFragment.setServerSpotList(spotList);
                 programListFragment.setServerSpotList(spotList);
 
+                spotMeteoListFragment.setSpotList(spotList);
+
 
             }
-        }).execute(true, false, false, MeteoStationData.Spot_All, getServerURL());
+        }).execute(requestMeteoDataTask.REQUEST_SPOTLIST);
     }
 
     public static String getSpotName(long id) {
@@ -538,7 +544,7 @@ public class MainActivity extends AppCompatActivity implements
                     handleSignInResult(result);
 
                     if (signedIn) {
-                        showFragment(R.id.nav_panel);
+                        showFragment(R.id.nav_favorites);
                         if (spotId != 0)
                             panelFragment.showSpotDetail(spotId);
                     } else {

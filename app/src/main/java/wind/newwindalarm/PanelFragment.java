@@ -196,8 +196,7 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener,Me
         if (spotOrder == null || spotOrder.size() == 0)
             return;
 
-        String serverurl = ((MainActivity)getActivity()).getServerURL();
-        requestMeteoDataTask task = (requestMeteoDataTask) new requestMeteoDataTask(getActivity(), new requestDataResponse(getFragmentManager())).execute(false,true,false,spotList,serverurl);
+        new requestMeteoDataTask(getActivity(), new requestDataResponse(getFragmentManager())).execute(requestMeteoDataTask.REQUEST_LASTMETEODATA,spotList);
     }
 
 	public void onNothingSelected(AdapterView<?> parent) {

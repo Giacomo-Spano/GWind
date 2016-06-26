@@ -9,7 +9,7 @@ import org.json.JSONObject;
  */
 public class MeteoStationData extends Object {
 
-    static public String Spot_All = "all";
+    //static public String Spot_All = "all";
 
     public Double speed = 0.0;
     public Double averagespeed = 0.0;

@@ -29,17 +29,20 @@ import java.util.List;
 public class requestMeteoDataTask extends
         AsyncTask<Object, Long, List<Object/*MeteoStationData*/>> {
 
-    private boolean requestSpotList;
-    private boolean requestLastdata;
-    private boolean requestHistory;
-    //private long spot;
+
+    public static int REQUEST_LASTMETEODATA = 1;
+    public static final int REQUEST_HISTORYMETEODATA = 2;
+    public static final int REQUEST_SPOTLIST = 3;
+
+    static public String Spot_All = "all";
+
     public AsyncRequestMeteoDataResponse delegate = null;//Call back interface
     private ProgressDialog dialog;
     private Activity activity;
     private boolean error = false;
     private String errorMessage = "";
     private String mSpot;
-    private String mServerURL;
+    int requestType;
 
     public requestMeteoDataTask(Activity activity, AsyncRequestMeteoDataResponse asyncResponse) {
         this.activity = activity;
@@ -51,39 +54,37 @@ public class requestMeteoDataTask extends
 
         URL url;
         List<Object> list = new ArrayList<Object>();
-        requestSpotList = (boolean) params[0];
-        requestLastdata = (boolean) params[1];
-        requestHistory = (boolean) params[2];
-        mSpot = (String) params[3];
-        //mServerURL = (String) params[4];
-        mServerURL = AlarmPreferences.getServerUrl(activity);
+        requestType = (int) params[0];
 
         try {
-            //String regId = MainActivity.preferences.getRegId();
-
             String path = "/meteo?";
 
+            if (requestType == REQUEST_LASTMETEODATA) {
+                mSpot = (String) params[1]; //lista di spot separata da virgola
 
-            if (requestSpotList) {
-                path += "requestspotlist=true";
-            } else {
-                path += "requestspotlist=false";
-            }
-            if (requestHistory) {
-                path += "&history=true";
-            } else {
+                path += "lastdata=true";
                 path += "&history=false";
-            }
-            if (requestLastdata) {
-                path += "&lastdata=true";
-            } else {
-                path += "&lastdata=false";
+                path += "&requestspotlist=false";
+                path += "&spot="+mSpot;
+
+            } else if (requestType == REQUEST_HISTORYMETEODATA) {
+                mSpot = (String) params[1]; //lista di spot separata da virgola
+
+                path += "lastdata=false";
+                path += "&history=true";
+                path += "&requestspotlist=false";
+                path += "&spot="+mSpot;
+
+            } else if (requestType == REQUEST_SPOTLIST) {
+                path += "lastdata=false";
+                path += "&history=false";
+                path += "&requestspotlist=true";
+                path += "&spot="+Spot_All;
+
             }
 
-            //if (mSpot.equals(MeteoStationData.Spot_All)) {
-            path += "&spot="+mSpot;
-            //}
-            url = new URL(mServerURL + path);
+            String serverUrl = AlarmPreferences.getServerUrl(activity);
+            url = new URL(serverUrl + path);
 
             Log.d("url=", url.toString());
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -100,7 +101,7 @@ public class requestMeteoDataTask extends
                 String json = convertStreamToString(in);
 
 
-                if (requestSpotList) {
+                if (requestType == REQUEST_SPOTLIST) {
                     JSONObject jObject = new JSONObject(json);
                     JSONArray jArray = jObject.getJSONArray("spotlist");
                     for (int i = 0; i < jArray.length(); i++) {
@@ -108,7 +109,7 @@ public class requestMeteoDataTask extends
                         Spot spt = new Spot(jObject2);
                         list.add(spt);
                     }
-                } else {
+                } else if (requestType == REQUEST_LASTMETEODATA || requestType == REQUEST_HISTORYMETEODATA) {
                     JSONObject jObject = new JSONObject(json);
                     JSONArray jArray = jObject.getJSONArray("meteodata");
                     for (int i = 0; i < jArray.length(); i++) {
@@ -117,11 +118,8 @@ public class requestMeteoDataTask extends
                         list.add(md);
                     }
                 }
-
                 if (conn != null)
                     conn.disconnect();
-
-
             } catch (JSONException e) {
                 error = true;
                 e.printStackTrace();
@@ -145,9 +143,6 @@ public class requestMeteoDataTask extends
 
     protected void onPreExecute() {
 
-        //android.os.Debug.waitForDebugger();
-
-        //String[] planets = getMaiy().getResources().getStringArray(R.string.dialog_readingmeteo);
         this.dialog.setMessage("Lettura dati..."/*getString(R.string.dialog_readingmeteo)*/);
         this.dialog.show();
     }
@@ -162,11 +157,11 @@ public class requestMeteoDataTask extends
             dialog.dismiss();
         }
 
-        if (requestSpotList)
+        if (requestType == REQUEST_SPOTLIST)
             delegate.processFinishSpotList(list, false, errorMessage);
-        else if (requestHistory)
+        else if (requestType == REQUEST_HISTORYMETEODATA)
             delegate.processFinishHistory(list, error, errorMessage);
-        else
+        else if (requestType == REQUEST_LASTMETEODATA)
             delegate.processFinish(list, error, errorMessage);
     }
     private String convertStreamToString(InputStream is) {

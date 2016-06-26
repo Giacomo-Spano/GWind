@@ -40,12 +40,12 @@ public class SpotDetailFragment extends Fragment {
 
     private int position;
 
-    private LinearLayout mcontainer;
+    //private LinearLayout mcontainer;
     private LineChart mLineChart;
     //private TextView mTitleTextView;
-    private LineData data;
+    //private LineData data;
     private long spotID;
-    private String mImageURL = "";
+    //private String mImageURL = "";
     private ImageView mWebcamImageView;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -97,9 +97,9 @@ public class SpotDetailFragment extends Fragment {
         mWebcamImageView = (ImageView) v.findViewById(R.id.imageView7);
 
         // Updating the action bar title
-        String  txt = MainActivity.getSpotName(spotID);// + */""+spotID;
+        String txt = MainActivity.getSpotName(spotID);// + */""+spotID;
         if (txt != null) {
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(txt);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(txt);
             // in this example, a LineChart is initialized from xml
             mLineChart = (LineChart) v.findViewById(R.id.chart);
 
@@ -120,13 +120,15 @@ public class SpotDetailFragment extends Fragment {
 
     public void getHistoryData(final long spot) {
 
-        String serverurl = ((MainActivity)getActivity()).getServerURL();
+        HistoryChart hc = new HistoryChart(getActivity(),mLineChart);
 
-        requestMeteoDataTask task = (requestMeteoDataTask) new requestMeteoDataTask(getActivity(), new AsyncRequestMeteoDataResponse() {
+        new requestMeteoDataTask(getActivity(), hc).execute(requestMeteoDataTask.REQUEST_HISTORYMETEODATA, "" + spot);
+
+        /*new requestMeteoDataTask(getActivity(), new AsyncRequestMeteoDataResponse() {
 
             @Override
             public void processFinish(List<Object> list, boolean error, String errorMessage) {
-    }
+            }
 
             @Override
             public void processFinishHistory(List<Object> list, boolean error, String errorMessage) {
@@ -141,8 +143,6 @@ public class SpotDetailFragment extends Fragment {
                     alertDialogBuilder
                             .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    // if this button is clicked, just close
-                                    // the dialog box and do nothing
                                     dialog.cancel();
                                 }
                             });
@@ -167,14 +167,13 @@ public class SpotDetailFragment extends Fragment {
                         try {
                             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
                             Date date = null;
-                            date = sdf.parse(md.date/* + " " + md.time*/);
+                            date = sdf.parse(md.date);
 
                             Calendar calendar = Calendar.getInstance();
                             calendar.setTimeInMillis(date.getTime());
                             Time time = new Time();
-                            //time.set( int second, int minute, int hourOfDay, int monthDay, int month, int year);
 
-                            if (!md.date.equals(lastTime)){
+                            if (!md.date.equals(lastTime)) {
                                 Entry speedEntry = new Entry(Float.valueOf(String.valueOf(md.speed)), index); // 0 == quarter 1
                                 Entry avspeedEntry = new Entry(Float.valueOf(String.valueOf(md.averagespeed)), index); // 0 == quarter 1
                                 valsComp1.add(speedEntry);
@@ -186,7 +185,6 @@ public class SpotDetailFragment extends Fragment {
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
-
 
 
                     }
@@ -219,15 +217,13 @@ public class SpotDetailFragment extends Fragment {
             public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
 
             }
-        }).execute(false, false, true, ""+spot, serverurl);
+        }).execute(requestMeteoDataTask.REQUEST_HISTORYMETEODATA, "" + spot);*/
     }
 
 
     public void getLastData(long spot) {
 
-        String serverurl = ((MainActivity)getActivity()).getServerURL();
-
-        requestMeteoDataTask task = (requestMeteoDataTask) new requestMeteoDataTask(getActivity(), new AsyncRequestMeteoDataResponse() {
+        new requestMeteoDataTask(getActivity(), new AsyncRequestMeteoDataResponse() {
 
             @Override
             public void processFinish(List<Object> list, boolean error, String errorMessage) {
@@ -283,7 +279,7 @@ public class SpotDetailFragment extends Fragment {
             public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
 
             }
-        }).execute(false, true, false, ""+spot, serverurl);
+        }).execute(requestMeteoDataTask.REQUEST_LASTMETEODATA, "" + spot);
     }
 
 
@@ -312,14 +308,14 @@ public class SpotDetailFragment extends Fragment {
             if (result == null)
                 return;
             //bmImage.setImageBitmap(result);
-            int bmWidth=result.getWidth();
-            int bmHeight=result.getHeight();
-            int ivWidth=bmImage.getWidth();
-            int ivHeight=bmImage.getHeight();
-            int new_width=ivWidth;
+            int bmWidth = result.getWidth();
+            int bmHeight = result.getHeight();
+            int ivWidth = bmImage.getWidth();
+            int ivHeight = bmImage.getHeight();
+            int new_width = ivWidth;
 
-            int new_height = (int) Math.floor((double) bmHeight *( (double) new_width / (double) bmWidth));
-            Bitmap newbitMap = Bitmap.createScaledBitmap(result,new_width,new_height, true);
+            int new_height = (int) Math.floor((double) bmHeight * ((double) new_width / (double) bmWidth));
+            Bitmap newbitMap = Bitmap.createScaledBitmap(result, new_width, new_height, true);
             bmImage.setImageBitmap(newbitMap);
 
 
