@@ -1,9 +1,11 @@
 package wind.newwindalarm;
 
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -16,8 +18,10 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -50,10 +54,14 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
@@ -64,6 +72,48 @@ public class MainActivity extends AppCompatActivity implements
     private static MainActivity instance;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        SendLoagcatMail();
+    }
+
+    public void SendLoagcatMail(){
+
+
+        DateFormat df = new SimpleDateFormat("ddMMyyyyHHmm");
+        String date = df.format(Calendar.getInstance().getTime());
+
+        // save logcat in file
+        File outputFile = new File(Environment.getExternalStorageDirectory(),
+                "logcat" /*-+ date*/ + ".txt");
+        try {
+            Runtime.getRuntime().exec(
+                    "logcat -f " + outputFile.getAbsolutePath());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        //send file using email
+        /*Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        // Set type to "email"
+        emailIntent.setType("vnd.android.cursor.dir/email");
+        String to[] = {"giaggi70@gmail.com"};
+        emailIntent .putExtra(Intent.EXTRA_EMAIL, to);
+        // the attachment
+        emailIntent .putExtra(Intent.EXTRA_STREAM, outputFile.getAbsolutePath());
+        // the mail subject
+
+
+
+        String str = outputFile.getAbsolutePath();
+
+        emailIntent .putExtra(Intent.EXTRA_SUBJECT, "Subject " + str);
+        startActivity(Intent.createChooser(emailIntent , "Send email..."));*/
+    }
 
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private ProgressBar mRegistrationProgressBar;
@@ -93,6 +143,10 @@ public class MainActivity extends AppCompatActivity implements
     TextView memailTextView;
     ImageView mUserImageImageView;
 
+
+    FloatingActionButton addFab;
+    FloatingActionButton refreshFab;
+
     private UserProfile mProfile = null;
     static boolean signedIn = false;
 
@@ -109,152 +163,166 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //if (savedInstanceState != null) {
 
-        instance = this;
+          //  return;
+        //}
 
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+            instance = this;
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+            setContentView(R.layout.activity_main);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+            addFab = (FloatingActionButton) findViewById(R.id.addFab);
+            addFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        View header = navigationView.getHeaderView(0);
-        mUserNameTextView = (TextView) header.findViewById(R.id.UserNameTextView);
-        memailTextView = (TextView) header.findViewById(R.id.UserEmailTextView);
-        mUserImageImageView = (ImageView) header.findViewById(R.id.imageView);
-
-        mSettings = new Settings(this);
-        mSettings.setListener(new Settings.SettingsListener() {
-            @Override
-            public void onChangeOrder(List<Long> order) {
-                panelFragment.setSpotOrder(order);
-            }
-
-            @Override
-            public void onChangeList(List<Long> list) {
-
-            }
-        });
-
-        mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
-                SharedPreferences sharedPreferences =
-                        PreferenceManager.getDefaultSharedPreferences(context);
-                boolean sentToken = sharedPreferences
-                        .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
-                if (sentToken) {
-                    mInformationTextView.setText(getString(R.string.gcm_send_message));
-                    mInformationTextView.setVisibility(ProgressBar.GONE);
-                } else {
-                    mInformationTextView.setText(getString(R.string.token_error_message));
+                    programListFragment.createProgram();
                 }
+            });
+
+            refreshFab = (FloatingActionButton) findViewById(R.id.refreshFab);
+            refreshFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    panelFragment.getMeteoData();
+                }
+            });
+
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            drawer.setDrawerListener(toggle);
+            toggle.syncState();
+
+            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            navigationView.setNavigationItemSelectedListener(this);
+            View header = navigationView.getHeaderView(0);
+            mUserNameTextView = (TextView) header.findViewById(R.id.UserNameTextView);
+            memailTextView = (TextView) header.findViewById(R.id.UserEmailTextView);
+            mUserImageImageView = (ImageView) header.findViewById(R.id.imageView);
+
+            mSettings = new Settings(this);
+            mSettings.setListener(new Settings.SettingsListener() {
+                @Override
+                public void onChangeOrder(List<Long> order) {
+                    panelFragment.setSpotOrder(order);
+                }
+
+                @Override
+                public void onChangeList(List<Long> list) {
+
+                }
+            });
+
+            mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
+            mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
+                    SharedPreferences sharedPreferences =
+                            PreferenceManager.getDefaultSharedPreferences(context);
+                    boolean sentToken = sharedPreferences
+                            .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
+                    if (sentToken) {
+                        mInformationTextView.setText(getString(R.string.gcm_send_message));
+                        mInformationTextView.setVisibility(ProgressBar.GONE);
+                    } else {
+                        mInformationTextView.setText(getString(R.string.token_error_message));
+                    }
+                }
+            };
+            mInformationTextView = (TextView) findViewById(R.id.informationTextView);
+
+            // Registering BroadcastReceiver
+            registerReceiver();
+
+            if (checkPlayServices()) {
+                // Start IntentService to register this application with GCM.
+                Intent intent = new Intent(this, RegistrationIntentService.class);
+                startService(intent);
             }
-        };
-        mInformationTextView = (TextView) findViewById(R.id.informationTextView);
-
-        // Registering BroadcastReceiver
-        registerReceiver();
-
-        if (checkPlayServices()) {
-            // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
-        }
 
 
-        // [START configure_signin]
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+            // [START configure_signin]
+            // Configure sign-in to request the user's ID, email address, and basic
+            // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         /*GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();*/
 
-        // Configure sign-in to request offline access to the user's ID, basic
-        // profile, and Google Drive. The first time you request a code you will
-        // be able to exchange it for an access token and refresh token, which
-        // you should store. In subsequent calls, the code will only result in
-        // an access token. By asking for profile access (through
-        // DEFAULT_SIGN_IN) you will also get an ID Token as a result of the
-        // code exchange.
-        String serverClientId = "931700652688-vlqjc9s8klmjeti70p52ssnj4orgsdel.apps.googleusercontent.com";//getString(R.string.server_client_id);
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestScopes(new Scope(Scopes.DRIVE_APPFOLDER))
-                .requestServerAuthCode(serverClientId, false)
-                .build();
+            // Configure sign-in to request offline access to the user's ID, basic
+            // profile, and Google Drive. The first time you request a code you will
+            // be able to exchange it for an access token and refresh token, which
+            // you should store. In subsequent calls, the code will only result in
+            // an access token. By asking for profile access (through
+            // DEFAULT_SIGN_IN) you will also get an ID Token as a result of the
+            // code exchange.
+            String serverClientId = "931700652688-vlqjc9s8klmjeti70p52ssnj4orgsdel.apps.googleusercontent.com";//getString(R.string.server_client_id);
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestScopes(new Scope(Scopes.DRIVE_APPFOLDER))
+                    .requestServerAuthCode(serverClientId, false)
+                    .build();
 
-        // [END configure_signin]
+            // [END configure_signin]
 
-        // [START build_client]
-        // Build a GoogleApiClient with access to the Google Sign-In API and the
-        // options specified by gso.
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-        // [END build_client]
+            // [START build_client]
+            // Build a GoogleApiClient with access to the Google Sign-In API and the
+            // options specified by gso.
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                    .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                    .build();
+            // [END build_client]
 
-        // [START customize_button]
-        // Customize sign-in button. The sign-in button can be displayed in
-        // multiple sizes and color schemes. It can also be contextually
-        // rendered based on the requested scopes. For example. a red button may
-        // be displayed when Google+ scopes are requested, but a white button
-        // may be displayed when only basic profile is requested. Try adding the
-        // Scopes.PLUS_LOGIN scope to the GoogleSignInOptions to see the
-        // difference.
-        //SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
-        //signInButton.setSize(SignInButton.SIZE_STANDARD);
-        //signInButton.setScopes(gso.getScopeArray());
-        // [END customize_button]
+            // [START customize_button]
+            // Customize sign-in button. The sign-in button can be displayed in
+            // multiple sizes and color schemes. It can also be contextually
+            // rendered based on the requested scopes. For example. a red button may
+            // be displayed when Google+ scopes are requested, but a white button
+            // may be displayed when only basic profile is requested. Try adding the
+            // Scopes.PLUS_LOGIN scope to the GoogleSignInOptions to see the
+            // difference.
+            //SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+            //signInButton.setSize(SignInButton.SIZE_STANDARD);
+            //signInButton.setScopes(gso.getScopeArray());
+            // [END customize_button]
 
-        //findViewById(R.id.sign_in_button).setOnClickListener(this);
-        //findViewById(R.id.sign_out_button).setOnClickListener(this);
-        //findViewById(R.id.disconnect_button).setOnClickListener(this);
+            //findViewById(R.id.sign_in_button).setOnClickListener(this);
+            //findViewById(R.id.sign_out_button).setOnClickListener(this);
+            //findViewById(R.id.disconnect_button).setOnClickListener(this);
 
-        //notificationFragment = new NotificationFragment();
-        //notificationFragment.setContext(this);
-        panelFragment = new PanelFragment();
-        programFragment = new ProgramFragment();
-        programListFragment = new ProgramListFragment();
-        //messageFragment = new MessageFragment();
-        settingsFragment = new SettingsFragment();
-        settingsFragment.setSettings(mSettings);
-        profileFragment = new ProfileFragment();
-        spotMeteoListFragment = new SpotMeteoListFragment();
+            //notificationFragment = new NotificationFragment();
+            //notificationFragment.setContext(this);
+            panelFragment = new PanelFragment();
+            programFragment = new ProgramFragment();
+            programListFragment = new ProgramListFragment();
+            //messageFragment = new MessageFragment();
+            settingsFragment = new SettingsFragment();
+            settingsFragment.setSettings(mSettings);
+            profileFragment = new ProfileFragment();
+            spotMeteoListFragment = new SpotMeteoListFragment();
 
-        showFragment(R.id.nav_profile);
-        int spotId = 0;
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) // se SpotID è valorizzato questa activity è chiamata dalla playalarm activity e deve visualizzare subito la spotdetailactivity
-        {
-            if (extras.getBoolean(GO_DIRECTLY_TO_SPOT_DETAILS) == true) {
-                spotId = extras.getInt("spotId");
-                //int alarmId = extras.getInt("alarmId");
-                //panelFragment.showSpotDetail(spotId);
+            showFragment(R.id.nav_profile);
+            int spotId = 0;
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) // se SpotID è valorizzato questa activity è chiamata dalla playalarm activity e deve visualizzare subito la spotdetailactivity
+            {
+                if (extras.getBoolean(GO_DIRECTLY_TO_SPOT_DETAILS) == true) {
+                    spotId = extras.getInt("spotId");
+                    //int alarmId = extras.getInt("alarmId");
+                    //panelFragment.showSpotDetail(spotId);
+                }
             }
-        }
 
 
-        silentSignIn(spotId);
+            silentSignIn(spotId);
 
-        getSpotListFromServer();
+            getSpotListFromServer();
+
+        //}
 
 
     }
@@ -400,19 +468,24 @@ public class MainActivity extends AppCompatActivity implements
 
     private void showFragment(int mPosition) {
 
-        Bundle data = new Bundle();
+        //Bundle data = new Bundle();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
 
-        if (mPosition == R.id.nav_favorites)
+        refreshFab.setVisibility(View.GONE);
+        addFab.setVisibility(View.GONE);
+
+        if (mPosition == R.id.nav_favorites) {
             ft.replace(R.id.content_frame, panelFragment);
-        else if (mPosition == R.id.nav_program)
+            refreshFab.setVisibility(View.VISIBLE);
+        } else if (mPosition == R.id.nav_program) {
             ft.replace(R.id.content_frame, programListFragment);
-        else if (mPosition == R.id.nav_meteostation)
+            addFab.setVisibility(View.VISIBLE);
+        } else if (mPosition == R.id.nav_meteostation) {
             ft.replace(R.id.content_frame, spotMeteoListFragment);
-        else if (mPosition == R.id.nav_settings)
+        } else if (mPosition == R.id.nav_settings) {
             ft.replace(R.id.content_frame, settingsFragment);
-        else if (mPosition == R.id.nav_profile) {
+        } else if (mPosition == R.id.nav_profile) {
             ft.replace(R.id.content_frame, profileFragment);
             profileFragment.setProfile(mProfile);
         }
@@ -444,8 +517,10 @@ public class MainActivity extends AppCompatActivity implements
 
                 spotList = new ArrayList<Spot>();
 
-                if (error)
+                if (error) {
+                    showError(errorMessage);
                     return;
+                }
 
                 List<Long> sl = mSettings.readSpotList();
 
@@ -466,16 +541,39 @@ public class MainActivity extends AppCompatActivity implements
                     newlist = new ArrayList<Long>();
                 }
                 panelFragment.setSpotOrder(newlist);
-                //panelFragment.getMeteoData();
-
                 settingsFragment.setServerSpotList(spotList);
                 programListFragment.setServerSpotList(spotList);
-
                 spotMeteoListFragment.setSpotList(spotList);
-
-
             }
         }).execute(requestMeteoDataTask.REQUEST_SPOTLIST);
+    }
+
+    public void showError(String errorMessage) {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        alertDialogBuilder.setTitle("Errore");
+        alertDialogBuilder
+                .setMessage(errorMessage)
+                .
+
+                        setCancelable(false);
+
+        alertDialogBuilder
+                .setNegativeButton("Ok", new DialogInterface.OnClickListener()
+
+                        {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // if this button is clicked, just close
+                                // the dialog box and do nothing
+                                dialog.cancel();
+                            }
+                        }
+
+                );
+        AlertDialog alertDialog;
+        alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     public static String getSpotName(long id) {
@@ -587,7 +685,8 @@ public class MainActivity extends AppCompatActivity implements
             signedIn = true;
 
             // Signed in successfully, show authenticated UI.
-            /*GoogleSignInAccount*/ acct = result.getSignInAccount();
+            /*GoogleSignInAccount*/
+            acct = result.getSignInAccount();
 
             new LoadImagefromUrl().execute(/*mUserImageImageView, acct.getPhotoUrl().toString(),mProfile.userImage*/);
             //GoogleSignInAccount acct = result.getSignInAccount();
@@ -596,9 +695,9 @@ public class MainActivity extends AppCompatActivity implements
             // TODO(user): send code to server and exchange for access/refresh/ID tokens.
 
             //ServerUtilities.sendAuthCode(authCode,getServerURL());
-            if (profileFragment != null) {
+            /*if (profileFragment != null) {
                 profileFragment.setProfile(mProfile);
-            }
+            }*/
 
         } else {
             signedIn = false;
@@ -609,7 +708,7 @@ public class MainActivity extends AppCompatActivity implements
             }
 
 
-         }
+        }
     }
 
     private void showNoUser() {
@@ -672,15 +771,17 @@ public class MainActivity extends AppCompatActivity implements
             int newHeight = (int) Math.floor((double) currentBitmapHeight * ((double) newWidth / (double) currentBitmapWidth));
             Bitmap newbitMap = Bitmap.createScaledBitmap(resultBitmap, newWidth, newHeight, true);
 
-            //mProfile.userImage = Bitmap.createBitmap(newbitMap);
-            mProfile.userImage = newbitMap.copy(newbitMap.getConfig(),false);
+            //mProfile.userImage = newbitMap.copy(newbitMap.getConfig(), false);
 
 
             mUserImageImageView.setImageBitmap(getCircleBitmap(newbitMap));
 
+            mProfile.userImage = ((BitmapDrawable) mUserImageImageView.getDrawable()).getBitmap();
+
+
             if (profileFragment != null)
                 profileFragment.setProfile(mProfile);
-       }
+        }
     }
 
     public Bitmap loadBitmapFromUrl(String url) {

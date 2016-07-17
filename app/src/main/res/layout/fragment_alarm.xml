@@ -1,45 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/maincontainer"
     android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Spot name"
+        android:id="@+id/spotTextView"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="cur speed"
+        android:id="@+id/curspeedTextView"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:text="cur av speed"
+    android:id="@+id/curavspeedTextView"
+    android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="cur date"
+        android:id="@+id/curdateTextView"
+        android:layout_gravity="center_horizontal" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight=".50"
+            android:layout_height="100dp"
+            android:text="Stop Alarm"
+            android:textColor="@color/textButton"
+            android:id="@+id/stopAlarmButton"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/button_bg_rounded_corners"
+            android:padding="15dp"
+            android:layout_alignParentRight="true" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight=".50"
+            android:layout_height="100dp"
+            android:textColor="@color/textButton"
+            android:text="Snooze"
+            android:id="@+id/snoozeAlarmButton"
+            android:layout_gravity="center_horizontal|right"
+            android:background="@drawable/button_bg_rounded_corners"
+            android:padding="15dp"
+            android:layout_alignParentLeft="true" />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="00sec"
+        android:id="@+id/timerTextView"
+        android:layout_gravity="center_horizontal"
+        />
+<!--
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
 
     <LinearLayout
         android:orientation="vertical"
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:layout_width="185dp"
-                android:layout_height="99dp"
-                android:text="Stop Alarm"
-                android:id="@+id/stopAlarmButton"
-                android:layout_gravity="center_horizontal" />
-
-            <Button
-                android:layout_width="185dp"
-                android:layout_height="99dp"
-                android:text="Snooze"
-                android:id="@+id/snoozeAlarmButton"
-                android:layout_gravity="center_horizontal" />
-        </LinearLayout>
-
-        <include
-            android:id="@+id/maincard"
-            layout="@layout/card_meteo"/>
 
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/chart"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="250dp" />
 
     </LinearLayout>
 
+    </ScrollView>
+-->
 
 </LinearLayout>
+
+
+    <!--<include
+        android:id="@+id/maincard"
+        layout="@layout/card_meteo"/>-->

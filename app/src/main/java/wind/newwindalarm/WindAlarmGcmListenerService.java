@@ -119,10 +119,16 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
         //b.putInt("alarm", spot); //Your id
         String spotId = alarmData.getString("spotID");
         String alarmId = alarmData.getString("alarmId");
+        String curDate = alarmData.getString("curDate");
+        String curspeed = alarmData.getString("curspeed");
+        String curavspeed = alarmData.getString("curavspeed");
 
         Bundle b = new Bundle();
         b.putString("spotid", spotId);
         b.putString("alarmid", alarmId);
+        b.putString("curspeed",curspeed);
+        b.putString("curavspeed",curavspeed);
+        b.putString("curdate",curDate);
         resultIntent.putExtras(b); //Put your id to your next Intent
 
         // The stack builder object will contain an artificial back stack for the

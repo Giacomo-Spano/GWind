@@ -1,10 +1,12 @@
 package wind.newwindalarm;
 
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ButtonBarLayout;
@@ -46,6 +48,20 @@ public class ProfileFragment extends Fragment {
                     + " must implement OnAlarmListener");
         }
     }
+
+    @SuppressWarnings("deprecation")
+    @Override public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (Build.VERSION.SDK_INT < 23) {
+            try {
+                mCallback = (OnSignInClickListener) activity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(activity.toString()
+                        + " must implement OnAlarmListener");
+            }
+        }
+    }
+
 
 
     public void onCreate(Bundle savedInstanceState) {
@@ -93,6 +109,7 @@ public class ProfileFragment extends Fragment {
         mEMailTextView = (TextView) v.findViewById(R.id.EmailTextView);
         tv.setText(AlarmPreferences.getRegId(this.getActivity()));
         mUserImageView = (ImageView) v.findViewById(R.id.userImageView);
+        //mUserImageView.setImageBitmap(mProfile.userImage);
         //tv.setText(AlarmPreferences.getRegId(this.getActivity()));
 
         initialized = true;
@@ -113,15 +130,11 @@ public class ProfileFragment extends Fragment {
         if (mProfile != null) {
             mUserNameTextView.setText(mProfile.userName);
             mEMailTextView.setText(mProfile.email);
-            Bitmap bitmap = mProfile.userImage;//((BitmapDrawable) profile.userImage.getDrawable()).getBitmap();
-
-            //mUserImageView.setImageBitmap(MainActivity.getCircleBitmap(bitmap));
-
-            //mUserImageView.setImageBitmap(bitmap);
+            mUserImageView.setImageBitmap(mProfile.userImage);
         } else {
             mUserNameTextView.setText("No user");
             mEMailTextView.setText("");
-            //mUserImageView.setImageResource(R.drawable.wind);
+            mUserImageView.setImageResource(R.drawable.wind);
         }
     }
 

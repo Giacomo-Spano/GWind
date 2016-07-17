@@ -34,10 +34,48 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
         super.onActivityCreated(savedInstanceState);
 
         if (mSpotList == null)
-            return;;
-        List<Spot> sl = mSpotList;
-        SpotListArrayAdapter adapter = new SpotListArrayAdapter(getActivity(), sl, this);
-        setListAdapter(adapter);
+            return;
+
+
+        getSpotListFromServer(this);
+        /*List<Spot> sl = mSpotList;
+        SpotMeteoListArrayAdapter adapter = new SpotMeteoListArrayAdapter(getActivity(), sl, this);
+        setListAdapter(adapter);*/
+    }
+
+    private void getSpotListFromServer(final SpotMeteoListListener listener) {
+
+        new requestMeteoDataTask(getActivity(), new AsyncRequestMeteoDataResponse() {
+
+            @Override
+            public void processFinish(List<Object> list, boolean error, String errorMessage) {
+            }
+
+            @Override
+            public void processFinishHistory(List<Object> list, boolean error, String errorMessage) {
+
+            }
+
+            @Override
+            public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
+
+                ArrayList<Spot> spotList = new ArrayList<Spot>();
+
+                if (error) {
+                    ((MainActivity)getActivity()).showError(errorMessage);
+                    return;
+                }
+
+                List<Spot> sl = new ArrayList<Spot>();
+                for (int i = 0; i < list.size(); i++) {
+                    Spot spot = (Spot) list.get(i);
+                    sl.add(spot);
+                }
+                SpotMeteoListArrayAdapter adapter = new SpotMeteoListArrayAdapter(getActivity(), sl, listener);
+                setListAdapter(adapter);
+                //spotMeteoListFragment.setSpotList(spotList);
+            }
+        }).execute(requestMeteoDataTask.REQUEST_SPOTLIST);
     }
 
     @Override
@@ -51,7 +89,7 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
 
     @Override
     public void onClickCheckBox(int position, boolean selected) {
-        SpotListArrayAdapter adapter = (SpotListArrayAdapter) getListAdapter();
+        SpotMeteoListArrayAdapter adapter = (SpotMeteoListArrayAdapter) getListAdapter();
         adapter.getItem(position).enabled = selected;
         sendList();
     }
@@ -59,7 +97,7 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
     public void sendList() {
 
         List<Long> list = new ArrayList<Long>();
-        SpotListArrayAdapter adapter = (SpotListArrayAdapter) getListAdapter();
+        SpotMeteoListArrayAdapter adapter = (SpotMeteoListArrayAdapter) getListAdapter();
         for (int i = 0; i < adapter.getCount(); i++) {
 
             if (adapter.getItem(i).enabled)

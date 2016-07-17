@@ -2,10 +2,16 @@ package wind.newwindalarm;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import wind.newwindalarm.util.SystemUiHider;
@@ -22,6 +28,51 @@ public class PlayAlarmActivity extends AppCompatActivity implements AlarmFragmen
     AlarmFragment mAlarmFragment;
     int spotId;
     int alarmId;
+    double curspeed;
+    double curavspeed;
+    String curDate;
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        SendLoagcatMail();
+    }
+
+    public void SendLoagcatMail(){
+
+
+        DateFormat df = new SimpleDateFormat("ddMMyyyyHHmm");
+        String date = df.format(Calendar.getInstance().getTime());
+
+        // save logcat in file
+        File outputFile = new File(Environment.getExternalStorageDirectory(),
+                "logcat" /*-+ date*/ + ".txt");
+        try {
+            Runtime.getRuntime().exec(
+                    "logcat -f " + outputFile.getAbsolutePath());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        //send file using email
+        /*Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        // Set type to "email"
+        emailIntent.setType("vnd.android.cursor.dir/email");
+        String to[] = {"giaggi70@gmail.com"};
+        emailIntent .putExtra(Intent.EXTRA_EMAIL, to);
+        // the attachment
+        emailIntent .putExtra(Intent.EXTRA_STREAM, outputFile.getAbsolutePath());
+        // the mail subject
+
+
+
+        String str = outputFile.getAbsolutePath();
+
+        emailIntent .putExtra(Intent.EXTRA_SUBJECT, "Subject " + str);
+        startActivity(Intent.createChooser(emailIntent , "Send email..."));*/
+    }
 
     @Override
     public void onPause() {
@@ -43,7 +94,7 @@ public class PlayAlarmActivity extends AppCompatActivity implements AlarmFragmen
                         WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         setContentView(R.layout.activity_play_alarm);
 
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
 
         // Create a new Fragment to be placed in the activity layout
         mAlarmFragment = new AlarmFragment();
@@ -53,10 +104,16 @@ public class PlayAlarmActivity extends AppCompatActivity implements AlarmFragmen
         Bundle bundle = getIntent().getExtras();
         spotId = Integer.valueOf(bundle.getString("spotid"));
         alarmId = Integer.valueOf(bundle.getString("alarmid"));
+        curspeed = Double.valueOf(bundle.getString("curspeed"));
+        curavspeed = Double.valueOf(bundle.getString("curavspeed"));
+        curDate = bundle.getString("curdate");
 
         Bundle b = new Bundle();
         b.putInt("spotid", spotId);
         b.putInt("alarmid", alarmId);
+        b.putDouble("curavspeed", curavspeed);
+        b.putDouble("curspeed", curspeed);
+        b.putString("curdate", curDate);
         mAlarmFragment.setArguments(b);
 
     }
@@ -90,15 +147,20 @@ public class PlayAlarmActivity extends AppCompatActivity implements AlarmFragmen
         mAlarmFragment.stopAlarm();
 
         showSpotDetail(0);
+
+
     }
 
     private void showSpotDetail(int snoozeMinutes) {
+
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(MainActivity.GO_DIRECTLY_TO_SPOT_DETAILS, true); //Optional parameters
         intent.putExtra("spotId", spotId); //Optional parameters
         intent.putExtra("alarmId", alarmId);
         intent.putExtra("snoozeMinutes", snoozeMinutes);
         startActivity(intent);
+
+        finish();
     }
 
 

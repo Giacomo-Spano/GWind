@@ -307,19 +307,19 @@ public class SpotDetailFragment extends Fragment {
 
             if (result == null)
                 return;
-            //bmImage.setImageBitmap(result);
             int bmWidth = result.getWidth();
             int bmHeight = result.getHeight();
-            int ivWidth = bmImage.getWidth();
-            int ivHeight = bmImage.getHeight();
+
+            View parent = (View)mWebcamImageView.getParent();
+            int ivWidth = parent.getWidth();
+            //int ivWidth = bmImage.getWidth();
             int new_width = ivWidth;
 
-            int new_height = (int) Math.floor((double) bmHeight * ((double) new_width / (double) bmWidth));
-            Bitmap newbitMap = Bitmap.createScaledBitmap(result, new_width, new_height, true);
-            bmImage.setImageBitmap(newbitMap);
-
-
-            //bmImage.setImageBitmap(result);
+            if (ivWidth > 0 ) {
+                int new_height = (int) Math.floor((double) bmHeight * ((double) new_width / (double) bmWidth));
+                Bitmap newbitMap = Bitmap.createScaledBitmap(result, new_width, new_height, true);
+                bmImage.setImageBitmap(newbitMap);
+            }
         }
     }
 }

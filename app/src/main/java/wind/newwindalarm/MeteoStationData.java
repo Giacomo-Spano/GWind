@@ -37,10 +37,8 @@ public class MeteoStationData extends Object {
             direction = jObject.getString("direction");
         if (!jObject.isNull("directionangle"))
             directionangle = jObject.getDouble("directionangle");
-        if (!jObject.isNull("date"))
-            date = jObject.getString("date");
-        /*if (!jObject.isNull("time"))
-            time = jObject.getString("time");*/
+        if (!jObject.isNull("datetime"))
+            date = jObject.getString("datetime");
         if (!jObject.isNull("temperature"))
             temperature = jObject.getDouble("temperature");
         if (!jObject.isNull("pressure"))

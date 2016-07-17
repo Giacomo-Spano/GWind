@@ -7,45 +7,83 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:orientation="horizontal"
+        <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="99"
+            android:id="@+id/spotIdTextView"
+            android:layout_gravity="bottom"
+            android:layout_centerVertical="true" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Spotname"
+            android:id="@+id/spotNameTextView"
+            android:layout_gravity="bottom"
+            android:layout_toRightOf="@+id/spotIdTextView"
+            android:layout_centerVertical="true" />
 
-            <ImageView
-                android:id="@+id/icon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginLeft="4px"
-                android:layout_marginRight="10px"
-                android:layout_marginTop="4px"
-                android:src="@drawable/spot" >
-            </ImageView>
+        <include
+            android:id="@+id/windcontrol"
+            layout="@layout/windcontrol_main"
+            android:layout_width="@dimen/icon_bigwidht"
+            android:layout_height="@dimen/icon_bigheight"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center_horizontal" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Medium Text"
-                android:id="@+id/spotIdTextView"
-                android:layout_gravity="bottom" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Spotname"
-                android:id="@+id/spotNameTextView"
-                android:layout_gravity="bottom" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/dateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textmisure_color"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="DD/MM/YYYY HH:mm:ss"
+            android:layout_alignParentBottom="false"
+            android:layout_below="@+id/spotNameTextView"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true" />
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/windcontrol"
             android:layout_alignParentRight="true">
+            <TextView
+                android:id="@+id/speedTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textmisure_color"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="23.5"
+                android:layout_alignParentBottom="false"
+                android:layout_below="@+id/windcontrol"
+                android:layout_alignParentRight="true" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="km/h "
+                android:id="@+id/textView10"
+                android:textColor="@color/textmisure_color"
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentTop="false"
+                android:layout_toRightOf="@+id/speedTextView"
+                android:layout_below="@+id/windcontrol" />
+
+            <TextView
+                android:id="@+id/directiontextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textmisure_color"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="WNW"
+                android:layout_gravity="top" />
         </LinearLayout>
 
     </RelativeLayout>

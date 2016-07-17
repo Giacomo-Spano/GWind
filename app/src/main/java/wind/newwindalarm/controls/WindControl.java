@@ -182,8 +182,11 @@ public class WindControl extends LinearLayout {
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTextSize(40);
         Rect bounds = new Rect();
-        String textToDraw = mDirectionSymbol;//+" "+mAngle;
-        textPaint.getTextBounds(textToDraw, 0, textToDraw.length(), bounds);
+
+        if (mDirectionSymbol != null) {
+            String textToDraw = mDirectionSymbol;//+" "+mAngle;
+            textPaint.getTextBounds(textToDraw, 0, textToDraw.length(), bounds);
+        }
         //canvas.drawText(textToDraw, cxText, cyText + (bounds.bottom-bounds.top)/2, textPaint);
 
 

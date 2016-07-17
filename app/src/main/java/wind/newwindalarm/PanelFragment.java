@@ -7,6 +7,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -76,6 +77,14 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener,Me
 
         View v;
         v = inflater.inflate(R.layout.fragment_controlpanel, container, false);
+
+        /*FloatingActionButton addFab = (FloatingActionButton) v.findViewById(R.id.addFab);
+        addFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });*/
 
         mcontainer = (LinearLayout) v.findViewById(R.id.meteolist);
         mErrorLayout = (LinearLayout) v.findViewById(R.id.errorLayout);

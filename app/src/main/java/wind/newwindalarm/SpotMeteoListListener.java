@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import wind.newwindalarm.controls.WindControl;
+
 /**
  * Created by giacomo on 19/07/2015.
  */
@@ -18,11 +20,11 @@ public interface SpotMeteoListListener {
 
     public void onClickCheckBox(int position, boolean selected);
 
-    class SpotListArrayAdapter extends ArrayAdapter<Spot> {
+    class SpotMeteoListArrayAdapter extends ArrayAdapter<Spot> {
         private final Context context;
         SpotMeteoListListener mListener;
 
-        public SpotListArrayAdapter(Context context, List<Spot> list, SpotMeteoListListener listener) {
+        public SpotMeteoListArrayAdapter(Context context, List<Spot> list, SpotMeteoListListener listener) {
 
             super(context, R.layout.spotmeteolistrowlayout, list);
             mListener = listener;
@@ -38,6 +40,16 @@ public interface SpotMeteoListListener {
             textView.setText(getItem(position).name);
             TextView idView = (TextView) rowView.findViewById(R.id.spotIdTextView);
             idView.setText("" + getItem(position).id);
+
+            TextView speedView = (TextView) rowView.findViewById(R.id.speedTextView);
+            speedView.setText("" + getItem(position).speed);
+
+            WindControl windView = (WindControl) rowView.findViewById(R.id.windcontrol);
+            windView.setDirection(getItem(position).directionAngle, getItem(position).direction);
+            windView.setPower(getItem(position).speed);
+
+            TextView dateView = (TextView) rowView.findViewById(R.id.dateTextView);
+            dateView.setText("" + getItem(position).date);
 
             return rowView;
         }

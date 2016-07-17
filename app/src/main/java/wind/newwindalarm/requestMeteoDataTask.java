@@ -30,9 +30,11 @@ public class requestMeteoDataTask extends
         AsyncTask<Object, Long, List<Object/*MeteoStationData*/>> {
 
 
-    public static int REQUEST_LASTMETEODATA = 1;
+
+    public static final int REQUEST_LASTMETEODATA = 1;
     public static final int REQUEST_HISTORYMETEODATA = 2;
     public static final int REQUEST_SPOTLIST = 3;
+    public static final int REQUEST_SPOTLIST_FULLINFO = 4;
 
     static public String Spot_All = "all";
 
@@ -65,6 +67,7 @@ public class requestMeteoDataTask extends
                 path += "lastdata=true";
                 path += "&history=false";
                 path += "&requestspotlist=false";
+                path += "&fullinfo=false";
                 path += "&spot="+mSpot;
 
             } else if (requestType == REQUEST_HISTORYMETEODATA) {
@@ -73,12 +76,21 @@ public class requestMeteoDataTask extends
                 path += "lastdata=false";
                 path += "&history=true";
                 path += "&requestspotlist=false";
+                path += "&fullinfo=false";
                 path += "&spot="+mSpot;
 
             } else if (requestType == REQUEST_SPOTLIST) {
                 path += "lastdata=false";
                 path += "&history=false";
                 path += "&requestspotlist=true";
+                path += "&fullinfo=false";
+                path += "&spot="+Spot_All;
+
+            } else if (requestType == REQUEST_SPOTLIST_FULLINFO) {
+                path += "lastdata=false";
+                path += "&history=false";
+                path += "&requestspotlist=true";
+                path += "&fullinfo=true";
                 path += "&spot="+Spot_All;
 
             }
@@ -88,6 +100,7 @@ public class requestMeteoDataTask extends
 
             Log.d("url=", url.toString());
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(5000); //set timeout to 5 seconds
             conn.setAllowUserInteraction(false);
             conn.setInstanceFollowRedirects(true);
             conn.setRequestMethod("GET");
@@ -101,7 +114,7 @@ public class requestMeteoDataTask extends
                 String json = convertStreamToString(in);
 
 
-                if (requestType == REQUEST_SPOTLIST) {
+                if (requestType == REQUEST_SPOTLIST || requestType == REQUEST_SPOTLIST_FULLINFO) {
                     JSONObject jObject = new JSONObject(json);
                     JSONArray jArray = jObject.getJSONArray("spotlist");
                     for (int i = 0; i < jArray.length(); i++) {
@@ -126,6 +139,10 @@ public class requestMeteoDataTask extends
                 errorMessage = e.toString();
             }
         } catch (MalformedURLException e) {
+            error = true;
+            e.printStackTrace();
+            errorMessage = e.toString();
+        } catch (java.net.SocketTimeoutException e) {
             error = true;
             e.printStackTrace();
             errorMessage = e.toString();
@@ -158,7 +175,7 @@ public class requestMeteoDataTask extends
         }
 
         if (requestType == REQUEST_SPOTLIST)
-            delegate.processFinishSpotList(list, false, errorMessage);
+            delegate.processFinishSpotList(list, error, errorMessage);
         else if (requestType == REQUEST_HISTORYMETEODATA)
             delegate.processFinishHistory(list, error, errorMessage);
         else if (requestType == REQUEST_LASTMETEODATA)
