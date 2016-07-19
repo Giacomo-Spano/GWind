@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements
         ProfileFragment.OnSignInClickListener {
 
     private static MainActivity instance;
-
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     @Override
@@ -80,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements
         SendLoagcatMail();
     }
 
-    public void SendLoagcatMail(){
+    public void SendLoagcatMail() {
 
 
         DateFormat df = new SimpleDateFormat("ddMMyyyyHHmm");
@@ -143,12 +142,12 @@ public class MainActivity extends AppCompatActivity implements
     TextView memailTextView;
     ImageView mUserImageImageView;
 
-
     FloatingActionButton addFab;
     FloatingActionButton refreshFab;
 
     private UserProfile mProfile = null;
     static boolean signedIn = false;
+    static int nextFragment = -1;
 
     public static AlarmPreferences preferences = new AlarmPreferences();
 
@@ -165,164 +164,161 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         //if (savedInstanceState != null) {
 
-          //  return;
+        //  return;
         //}
 
-            instance = this;
+        instance = this;
 
-            setContentView(R.layout.activity_main);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-            addFab = (FloatingActionButton) findViewById(R.id.addFab);
-            addFab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+        addFab = (FloatingActionButton) findViewById(R.id.addFab);
+        addFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-                    programListFragment.createProgram();
-                }
-            });
+                programListFragment.createProgram();
+            }
+        });
 
-            refreshFab = (FloatingActionButton) findViewById(R.id.refreshFab);
-            refreshFab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    panelFragment.getMeteoData();
-                }
-            });
+        refreshFab = (FloatingActionButton) findViewById(R.id.refreshFab);
+        refreshFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                panelFragment.getMeteoData();
+            }
+        });
 
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-            drawer.setDrawerListener(toggle);
-            toggle.syncState();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
 
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-            navigationView.setNavigationItemSelectedListener(this);
-            View header = navigationView.getHeaderView(0);
-            mUserNameTextView = (TextView) header.findViewById(R.id.UserNameTextView);
-            memailTextView = (TextView) header.findViewById(R.id.UserEmailTextView);
-            mUserImageImageView = (ImageView) header.findViewById(R.id.imageView);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View header = navigationView.getHeaderView(0);
+        mUserNameTextView = (TextView) header.findViewById(R.id.UserNameTextView);
+        memailTextView = (TextView) header.findViewById(R.id.UserEmailTextView);
+        mUserImageImageView = (ImageView) header.findViewById(R.id.imageView);
 
-            mSettings = new Settings(this);
-            mSettings.setListener(new Settings.SettingsListener() {
-                @Override
-                public void onChangeOrder(List<Long> order) {
-                    panelFragment.setSpotOrder(order);
-                }
-
-                @Override
-                public void onChangeList(List<Long> list) {
-
-                }
-            });
-
-            mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
-            mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
-                    SharedPreferences sharedPreferences =
-                            PreferenceManager.getDefaultSharedPreferences(context);
-                    boolean sentToken = sharedPreferences
-                            .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
-                    if (sentToken) {
-                        mInformationTextView.setText(getString(R.string.gcm_send_message));
-                        mInformationTextView.setVisibility(ProgressBar.GONE);
-                    } else {
-                        mInformationTextView.setText(getString(R.string.token_error_message));
-                    }
-                }
-            };
-            mInformationTextView = (TextView) findViewById(R.id.informationTextView);
-
-            // Registering BroadcastReceiver
-            registerReceiver();
-
-            if (checkPlayServices()) {
-                // Start IntentService to register this application with GCM.
-                Intent intent = new Intent(this, RegistrationIntentService.class);
-                startService(intent);
+        mSettings = new Settings(this);
+        mSettings.setListener(new Settings.SettingsListener() {
+            @Override
+            public void onChangeOrder(List<Long> order) {
+                panelFragment.setSpotOrder(order);
             }
 
+            @Override
+            public void onChangeList(List<Long> list) {
 
-            // [START configure_signin]
-            // Configure sign-in to request the user's ID, email address, and basic
-            // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+            }
+        });
+
+        mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
+                SharedPreferences sharedPreferences =
+                        PreferenceManager.getDefaultSharedPreferences(context);
+                boolean sentToken = sharedPreferences
+                        .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
+                if (sentToken) {
+                    mInformationTextView.setText(getString(R.string.gcm_send_message));
+                    mInformationTextView.setVisibility(ProgressBar.GONE);
+                } else {
+                    mInformationTextView.setText(getString(R.string.token_error_message));
+                }
+            }
+        };
+        mInformationTextView = (TextView) findViewById(R.id.informationTextView);
+
+        // Registering BroadcastReceiver
+        registerReceiver();
+
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        }
+
+
+        // [START configure_signin]
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         /*GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();*/
 
-            // Configure sign-in to request offline access to the user's ID, basic
-            // profile, and Google Drive. The first time you request a code you will
-            // be able to exchange it for an access token and refresh token, which
-            // you should store. In subsequent calls, the code will only result in
-            // an access token. By asking for profile access (through
-            // DEFAULT_SIGN_IN) you will also get an ID Token as a result of the
-            // code exchange.
-            String serverClientId = "931700652688-vlqjc9s8klmjeti70p52ssnj4orgsdel.apps.googleusercontent.com";//getString(R.string.server_client_id);
-            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestScopes(new Scope(Scopes.DRIVE_APPFOLDER))
-                    .requestServerAuthCode(serverClientId, false)
-                    .build();
+        // Configure sign-in to request offline access to the user's ID, basic
+        // profile, and Google Drive. The first time you request a code you will
+        // be able to exchange it for an access token and refresh token, which
+        // you should store. In subsequent calls, the code will only result in
+        // an access token. By asking for profile access (through
+        // DEFAULT_SIGN_IN) you will also get an ID Token as a result of the
+        // code exchange.
+        String serverClientId = "931700652688-vlqjc9s8klmjeti70p52ssnj4orgsdel.apps.googleusercontent.com";//getString(R.string.server_client_id);
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestScopes(new Scope(Scopes.DRIVE_APPFOLDER))
+                .requestServerAuthCode(serverClientId, false)
+                .build();
 
-            // [END configure_signin]
+        // [END configure_signin]
 
-            // [START build_client]
-            // Build a GoogleApiClient with access to the Google Sign-In API and the
-            // options specified by gso.
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                    .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                    .build();
-            // [END build_client]
+        // [START build_client]
+        // Build a GoogleApiClient with access to the Google Sign-In API and the
+        // options specified by gso.
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+        // [END build_client]
 
-            // [START customize_button]
-            // Customize sign-in button. The sign-in button can be displayed in
-            // multiple sizes and color schemes. It can also be contextually
-            // rendered based on the requested scopes. For example. a red button may
-            // be displayed when Google+ scopes are requested, but a white button
-            // may be displayed when only basic profile is requested. Try adding the
-            // Scopes.PLUS_LOGIN scope to the GoogleSignInOptions to see the
-            // difference.
-            //SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
-            //signInButton.setSize(SignInButton.SIZE_STANDARD);
-            //signInButton.setScopes(gso.getScopeArray());
-            // [END customize_button]
+        // [START customize_button]
+        // Customize sign-in button. The sign-in button can be displayed in
+        // multiple sizes and color schemes. It can also be contextually
+        // rendered based on the requested scopes. For example. a red button may
+        // be displayed when Google+ scopes are requested, but a white button
+        // may be displayed when only basic profile is requested. Try adding the
+        // Scopes.PLUS_LOGIN scope to the GoogleSignInOptions to see the
+        // difference.
+        //SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        //signInButton.setSize(SignInButton.SIZE_STANDARD);
+        //signInButton.setScopes(gso.getScopeArray());
+        // [END customize_button]
 
-            //findViewById(R.id.sign_in_button).setOnClickListener(this);
-            //findViewById(R.id.sign_out_button).setOnClickListener(this);
-            //findViewById(R.id.disconnect_button).setOnClickListener(this);
+        //findViewById(R.id.sign_in_button).setOnClickListener(this);
+        //findViewById(R.id.sign_out_button).setOnClickListener(this);
+        //findViewById(R.id.disconnect_button).setOnClickListener(this);
 
-            //notificationFragment = new NotificationFragment();
-            //notificationFragment.setContext(this);
-            panelFragment = new PanelFragment();
-            programFragment = new ProgramFragment();
-            programListFragment = new ProgramListFragment();
-            //messageFragment = new MessageFragment();
-            settingsFragment = new SettingsFragment();
-            settingsFragment.setSettings(mSettings);
-            profileFragment = new ProfileFragment();
-            spotMeteoListFragment = new SpotMeteoListFragment();
+        //notificationFragment = new NotificationFragment();
+        //notificationFragment.setContext(this);
+        panelFragment = new PanelFragment();
+        programFragment = new ProgramFragment();
+        programListFragment = new ProgramListFragment();
+        //messageFragment = new MessageFragment();
+        settingsFragment = new SettingsFragment();
+        settingsFragment.setSettings(mSettings);
+        profileFragment = new ProfileFragment();
+        spotMeteoListFragment = new SpotMeteoListFragment();
 
-            showFragment(R.id.nav_profile);
-            int spotId = 0;
-            Bundle extras = getIntent().getExtras();
-            if (extras != null) // se SpotID è valorizzato questa activity è chiamata dalla playalarm activity e deve visualizzare subito la spotdetailactivity
-            {
-                if (extras.getBoolean(GO_DIRECTLY_TO_SPOT_DETAILS) == true) {
-                    spotId = extras.getInt("spotId");
-                    //int alarmId = extras.getInt("alarmId");
-                    //panelFragment.showSpotDetail(spotId);
-                }
+        showFragment(R.id.nav_profile);
+        int spotId = 0;
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) // se SpotID è valorizzato questa activity è chiamata dalla playalarm activity e deve visualizzare subito la spotdetailactivity
+        {
+            if (extras.getBoolean(GO_DIRECTLY_TO_SPOT_DETAILS) == true) {
+                spotId = extras.getInt("spotId");
+                //int alarmId = extras.getInt("alarmId");
+                //panelFragment.showSpotDetail(spotId);
             }
+        }
 
-
-            silentSignIn(spotId);
-
-            getSpotListFromServer();
-
-
+        silentSignIn(spotId);
+        // carica la spot list per la combo dei programmmi
+        getSpotListFromServer();
 
     }
 
@@ -474,19 +470,26 @@ public class MainActivity extends AppCompatActivity implements
         refreshFab.setVisibility(View.GONE);
         addFab.setVisibility(View.GONE);
 
-        if (mPosition == R.id.nav_favorites) {
-            ft.replace(R.id.content_frame, panelFragment);
-            refreshFab.setVisibility(View.VISIBLE);
-        } else if (mPosition == R.id.nav_program) {
-            ft.replace(R.id.content_frame, programListFragment);
-            addFab.setVisibility(View.VISIBLE);
-        } else if (mPosition == R.id.nav_meteostation) {
-            ft.replace(R.id.content_frame, spotMeteoListFragment);
-        } else if (mPosition == R.id.nav_settings) {
-            ft.replace(R.id.content_frame, settingsFragment);
-        } else if (mPosition == R.id.nav_profile) {
+        if (!signedIn) {
+            nextFragment = mPosition;
             ft.replace(R.id.content_frame, profileFragment);
             profileFragment.setProfile(mProfile);
+        } else {
+
+            if (mPosition == R.id.nav_favorites) {
+                ft.replace(R.id.content_frame, panelFragment);
+                refreshFab.setVisibility(View.VISIBLE);
+            } else if (mPosition == R.id.nav_program) {
+                ft.replace(R.id.content_frame, programListFragment);
+                addFab.setVisibility(View.VISIBLE);
+            } else if (mPosition == R.id.nav_meteostation) {
+                ft.replace(R.id.content_frame, spotMeteoListFragment);
+            } else if (mPosition == R.id.nav_settings) {
+                ft.replace(R.id.content_frame, settingsFragment);
+            } else if (mPosition == R.id.nav_profile) {
+                ft.replace(R.id.content_frame, profileFragment);
+                profileFragment.setProfile(mProfile);
+            }
         }
         ft.addToBackStack(null);
         ft.commit();
@@ -618,6 +621,7 @@ public class MainActivity extends AppCompatActivity implements
                         // ...
                         mProfile = null;
                         showNoUser();
+                        signedIn = false;
                     }
                 });
     }
@@ -697,6 +701,11 @@ public class MainActivity extends AppCompatActivity implements
             /*if (profileFragment != null) {
                 profileFragment.setProfile(mProfile);
             }*/
+
+            if (nextFragment != -1) {
+                showFragment(nextFragment);
+                nextFragment = -1;
+            }
 
         } else {
             signedIn = false;
