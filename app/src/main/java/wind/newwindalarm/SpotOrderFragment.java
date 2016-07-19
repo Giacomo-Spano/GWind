@@ -31,7 +31,7 @@ public class SpotOrderFragment extends ListFragment implements SpotOrderListener
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        List<Spot> sl = mSpotList;//MainActivity.getSpotList();
+        List<Spot> sl = mSpotList;//MainActivity.getSpotListFavorites();
 
         List<Spot> list = new ArrayList<Spot>();
         for (int i = 0; i < sl.size(); i++) {

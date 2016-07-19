@@ -31,9 +31,6 @@ public interface SpotListListener {
             this.context = context;
         }
 
-
-
-
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = (LayoutInflater) context
@@ -60,6 +57,8 @@ public interface SpotListListener {
                     mListener.onClickCheckBox(position, isChecked);
                 }
             });
+
+
 
             return rowView;
         }

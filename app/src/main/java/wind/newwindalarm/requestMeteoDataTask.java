@@ -174,7 +174,7 @@ public class requestMeteoDataTask extends
             dialog.dismiss();
         }
 
-        if (requestType == REQUEST_SPOTLIST)
+        if (requestType == REQUEST_SPOTLIST || requestType == REQUEST_SPOTLIST_FULLINFO)
             delegate.processFinishSpotList(list, error, errorMessage);
         else if (requestType == REQUEST_HISTORYMETEODATA)
             delegate.processFinishHistory(list, error, errorMessage);

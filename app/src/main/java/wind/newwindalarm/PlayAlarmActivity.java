@@ -153,12 +153,12 @@ public class PlayAlarmActivity extends AppCompatActivity implements AlarmFragmen
 
     private void showSpotDetail(int snoozeMinutes) {
 
-        Intent intent = new Intent(this, MainActivity.class);
+        /*Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(MainActivity.GO_DIRECTLY_TO_SPOT_DETAILS, true); //Optional parameters
         intent.putExtra("spotId", spotId); //Optional parameters
         intent.putExtra("alarmId", alarmId);
         intent.putExtra("snoozeMinutes", snoozeMinutes);
-        startActivity(intent);
+        startActivity(intent);*/
 
         finish();
     }

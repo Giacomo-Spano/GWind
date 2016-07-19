@@ -52,13 +52,13 @@ public class SettingsFragment extends PreferenceFragment {
             }
         });
 
-        pref = findPreference(KEY_PREF_SPOTLIST);
+        /*pref = findPreference(KEY_PREF_SPOTLIST);
         String newValue = mSettings.getListString();
         pref.setSummary(newValue);
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference pref) {
 
-                showSpotList();
+                //showSpotList();
                 return true;
             }
         });
@@ -69,10 +69,10 @@ public class SettingsFragment extends PreferenceFragment {
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference pref) {
 
-                showSpotOrder();
+                //showSpotOrder();
                 return true;
             }
-        });
+        });*/
     }
 
 
@@ -80,12 +80,12 @@ public class SettingsFragment extends PreferenceFragment {
         mSettings = settings;
     }
 
-    public void setServerSpotList(List<Spot> list) {
+    /*public void setServerSpotList(List<Spot> list) {
 
         mSpotList = list;
-    }
+    }*/
 
-    public void showSpotList() {
+    /*public void showSpotList() {
 
         SpotListFragment spotList = new SpotListFragment();
         if (mSpotList == null) {
@@ -108,9 +108,9 @@ public class SettingsFragment extends PreferenceFragment {
 
         transaction.addToBackStack(null);
         transaction.commit();
-    }
+    }*/
 
-    public void showSpotOrder() {
+    /*public void showSpotOrder() {
 
         SpotOrderFragment spotList = new SpotOrderFragment();
         if (mSpotList == null) {
@@ -141,7 +141,7 @@ public class SettingsFragment extends PreferenceFragment {
         transaction.replace(R.id.content_frame, spotList);
         transaction.addToBackStack(null);
         transaction.commit();
-    }
+    }*/
 
     private void showError() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
@@ -160,7 +160,7 @@ public class SettingsFragment extends PreferenceFragment {
         alertDialog.show();
     }
 
-    public void setSpotOrder(List<Long> list) {
+    /*public void setSpotOrder(List<Long> list) {
 
         mSettings.writeSpotOrder(list);
         Preference pref = findPreference(KEY_PREF_SPOTORDER);
@@ -174,7 +174,7 @@ public class SettingsFragment extends PreferenceFragment {
         Preference pref = findPreference(KEY_PREF_SPOTLIST);
         String newValue = mSettings.getListString();
         pref.setSummary(newValue);
-    }
+    }*/
 
 
 }

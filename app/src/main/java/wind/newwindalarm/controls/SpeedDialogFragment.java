@@ -11,18 +11,16 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.NumberPicker;
-
 import wind.newwindalarm.R;
 
 @SuppressLint("ValidFragment")
-public class TemperatureDialogFragment extends DialogFragment {
+public class SpeedDialogFragment extends DialogFragment {
     Handler mHandler;
-    Double temperature = 0.0;
+    Double speed = 0.0;
     String message = "";
     int mBand = 0;
 
-
-    public TemperatureDialogFragment(Handler h) {
+    public SpeedDialogFragment(Handler h) {
         /**
          * Getting the reference to the message handler instantiated in
          * MainActivity class
@@ -33,13 +31,11 @@ public class TemperatureDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        //int title = getArguments().getInt("title");
-
         /** Creating a bundle object to pass currently set date to the fragment */
         Bundle b = getArguments();
 
         /** Getting the day of month from bundle */
-        temperature = b.getDouble("set_temperature");
+        speed = b.getDouble("set_speed");
         message = b.getString("set_message");
         mBand = b.getInt("set_band");
 
@@ -50,27 +46,27 @@ public class TemperatureDialogFragment extends DialogFragment {
         np.setMinValue(0);
         np.setMaxValue(30);
         np.setWrapSelectorWheel(false);
-        np.setValue(temperature.intValue());
+        np.setValue(speed.intValue());
 
         final NumberPicker np2 = (NumberPicker) DialogView.findViewById(R.id.numberPicker2);
         np2.setMinValue(0);
         np2.setMaxValue(9);
         np2.setWrapSelectorWheel(false);
-        np2.setValue((int) (temperature*10.0 - temperature.intValue()*10));
+        np2.setValue((int) (speed *10.0 - speed.intValue()*10));
 
         return new AlertDialog.Builder(getActivity())
-                .setIcon(R.drawable.ic_launcher)
+                //.setIcon(R.drawable.ic_launcher)
                 .setView(DialogView)
-                .setTitle("Temperatura")
+                .setTitle("Velocità")
                 .setMessage(message)
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
-                        temperature = np.getValue() + np2.getValue() / 10.0;
+                        speed = np.getValue() + np2.getValue() / 10.0;
                         Bundle b = new Bundle();
-                        b.putDouble("set_temperature", temperature);
+                        b.putDouble("set_speed", speed);
                         b.putInt("set_band", mBand);
-                        b.putString("set_temperature_text", "Set speed : " + temperature.toString());
+                        b.putString("set_speed_text", "Imposta velocità : " + speed.toString());
                         Message m = new Message();
                         m.setData(b);
                         mHandler.sendMessage(m);

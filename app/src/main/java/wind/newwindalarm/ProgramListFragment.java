@@ -139,8 +139,8 @@ public class ProgramListFragment extends Fragment implements
 
     public void createProgram() {
 
-        if (mSpotList == null)
-            return;
+        //if (mSpotList == null)
+        //    return;
 
         WindAlarmProgram program = new WindAlarmProgram();
         if (alarmList.size() == 0)

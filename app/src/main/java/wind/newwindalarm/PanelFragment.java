@@ -21,18 +21,21 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import wind.newwindalarm.cardui.MeteoCardItem;
 import wind.newwindalarm.cardui.MeteoCardListener;
 
-public class PanelFragment extends Fragment implements OnItemSelectedListener,MeteoCardListener {
+public class PanelFragment extends Fragment implements OnItemSelectedListener, MeteoCardListener {
 
     private ProgressBar mProgress;
     private LinearLayout mcontainer;
     private LinearLayout mErrorLayout;
     private List<MeteoCardItem> meteoList = new ArrayList<MeteoCardItem>();
-    private List<Long> spotOrder = new ArrayList<Long>();;
+    private List<Long> spotOrder = new ArrayList<Long>();
+    ;
     private Menu mMenu;
 
 
@@ -68,12 +71,12 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener,Me
     }
 
     @Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-		// Retrieving the currently onClickMoveUp item number
-		//position = getArguments().getInt("position");
-		//String[] items = getResources().getStringArray(R.array.opzioni);
+        // Retrieving the currently onClickMoveUp item number
+        //position = getArguments().getInt("position");
+        //String[] items = getResources().getStringArray(R.array.opzioni);
 
         View v;
         v = inflater.inflate(R.layout.fragment_controlpanel, container, false);
@@ -91,8 +94,8 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener,Me
 
         mProgress = (ProgressBar) v.findViewById(R.id.progressBar);
 
-		// Updating the action bar title
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Stazioni meteo"/*items[position]*/);
+        // Updating the action bar title
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Stazioni meteo"/*items[position]*/);
 
         if (spotOrder.size() > 0)
             getMeteoData();
@@ -100,13 +103,14 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener,Me
         getMeteoData();
 
         return v;
-	}
+    }
 
 
     @Override
     public void meteocardselected(long index) {
 
     }
+
     public void showSpotDetail(long spotID) {
         Fragment spotDetail = new SpotDetailFragment();
 
@@ -129,10 +133,12 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener,Me
     private class requestDataResponse implements AsyncRequestMeteoDataResponse, MeteoCardListener {
 
         FragmentManager mFragmentManager;
+
         public requestDataResponse(FragmentManager fm) {
 
             mFragmentManager = fm;
         }
+
         @Override
         public void processFinish(List<Object> list, /*long spotID,*/ boolean error, String errorMessage) {
 
@@ -164,18 +170,41 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener,Me
                 }
                 meteoList.clear();
 
-                for (int k = 0; k < list.size(); k++) {
-                    MeteoStationData md = (MeteoStationData)list.get(k);
-                    final MeteoCardItem carditem = new MeteoCardItem(this, getActivity(),mcontainer);
+
+                Set<String> favorites = AlarmPreferences.getSpotListFavorites(getActivity());
+                Iterator iter = favorites.iterator();
+                while (iter.hasNext()) {
+                    long id = Long.valueOf((String) iter.next());
+                    Iterator resultIterator = list.iterator();
+                    while (resultIterator.hasNext()) {
+                        MeteoStationData md = (MeteoStationData) resultIterator.next();
+                        if(md.spotID == id) {
+                            final MeteoCardItem carditem = new MeteoCardItem(this, getActivity(), mcontainer);
+                            carditem.spotID = md.spotID;
+                            carditem.mWecamUrl = md.webcamurl;
+                            carditem.update(md);
+                            mcontainer.addView(carditem.card);
+                            meteoList.add(carditem);
+                        }
+                    }
+
+                }
+
+                /*for (int k = 0; k < list.size(); k++) {
+                    MeteoStationData md = (MeteoStationData) list.get(k);
+                    final MeteoCardItem carditem = new MeteoCardItem(this, getActivity(), mcontainer);
                     carditem.spotID = md.spotID;
                     carditem.mWecamUrl = md.webcamurl;
                     carditem.update(md);
                     mcontainer.addView(carditem.card);
                     meteoList.add(carditem);
-                }
+                }*/
                 mcontainer.invalidate();
             }
         }
+
+
+
 
         @Override
         public void processFinishHistory(List<Object> list, boolean error, String errorMessage) {
@@ -194,7 +223,7 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener,Me
 
     public void getMeteoData() {
 
-        String spotList = "";
+        /*String spotList = "";
         for (int i = 0; i < spotOrder.size(); i++) {
 
             if (i > 0)
@@ -203,14 +232,27 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener,Me
             spotList += spotOrder.get(i);
         }
         if (spotOrder == null || spotOrder.size() == 0)
+            return;*/
+
+        Set<String> favorites = AlarmPreferences.getSpotListFavorites(getActivity());
+        if (favorites.size() == 0)
             return;
 
-        new requestMeteoDataTask(getActivity(), new requestDataResponse(getFragmentManager())).execute(requestMeteoDataTask.REQUEST_LASTMETEODATA,spotList);
+        String spotList = "";
+        Iterator iter = favorites.iterator();
+        while (iter.hasNext()) {
+            long id = Long.valueOf((String)iter.next());
+            spotList += id;
+            if (iter.hasNext())
+                spotList += ",";
+        }
+
+        new requestMeteoDataTask(getActivity(), new requestDataResponse(getFragmentManager())).execute(requestMeteoDataTask.REQUEST_LASTMETEODATA, spotList);
     }
 
-	public void onNothingSelected(AdapterView<?> parent) {
-		// Another interface callback
-	}
+    public void onNothingSelected(AdapterView<?> parent) {
+        // Another interface callback
+    }
 
     public void updateProgressbar(int n) {
 
@@ -223,9 +265,9 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener,Me
             mMenu.findItem(R.id.options_refresh).setVisible(true);
     }
 
-	@Override
-	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
-			long arg3) {
+    @Override
+    public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+                               long arg3) {
 
-	}
+    }
 }

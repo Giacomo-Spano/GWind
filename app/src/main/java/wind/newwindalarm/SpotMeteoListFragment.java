@@ -8,13 +8,15 @@ import android.view.View;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class SpotMeteoListFragment extends ListFragment implements SpotMeteoListListener {
 
     // Container Activity must implement this interface
     public interface OnSpotMeteoListListener {
-        public void onSpotListChangeSelection(List<Long> list);
+        /*public */void onSpotListChangeSelection(List<Long> list);
     }
 
     OnSpotMeteoListListener mListener;
@@ -33,8 +35,9 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (mSpotList == null)
-            return;
+
+        /*if (mSpotList == null)
+            return;*/
 
 
         getSpotListFromServer(this);
@@ -44,6 +47,8 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
     }
 
     private void getSpotListFromServer(final SpotMeteoListListener listener) {
+
+        final Set<String> favorites = AlarmPreferences.getSpotListFavorites(getActivity());
 
         new requestMeteoDataTask(getActivity(), new AsyncRequestMeteoDataResponse() {
 
@@ -69,13 +74,20 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
                 List<Spot> sl = new ArrayList<Spot>();
                 for (int i = 0; i < list.size(); i++) {
                     Spot spot = (Spot) list.get(i);
+
+                    Iterator iter = favorites.iterator();
+                    spot.favorites = false;
+                    while (iter.hasNext()) {
+                        long id = Long.valueOf((String)iter.next());
+                        if (id == spot.id)
+                            spot.favorites = true;
+                    }
                     sl.add(spot);
                 }
                 SpotMeteoListArrayAdapter adapter = new SpotMeteoListArrayAdapter(getActivity(), sl, listener);
                 setListAdapter(adapter);
-                //spotMeteoListFragment.setSpotList(spotList);
             }
-        }).execute(requestMeteoDataTask.REQUEST_SPOTLIST);
+        }).execute(requestMeteoDataTask.REQUEST_SPOTLIST_FULLINFO);
     }
 
     @Override
@@ -91,20 +103,17 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
     public void onClickCheckBox(int position, boolean selected) {
         SpotMeteoListArrayAdapter adapter = (SpotMeteoListArrayAdapter) getListAdapter();
         adapter.getItem(position).enabled = selected;
-        sendList();
+        long spotId = adapter.getItem(position).id;
+
+        if (selected)
+            AlarmPreferences.addToSpotListFavorites(getActivity(),spotId);
+        else
+            AlarmPreferences.deleteFromSpotListFavorites(getActivity(),spotId);
     }
 
-    public void sendList() {
-
-        List<Long> list = new ArrayList<Long>();
-        SpotMeteoListArrayAdapter adapter = (SpotMeteoListArrayAdapter) getListAdapter();
-        for (int i = 0; i < adapter.getCount(); i++) {
-
-            if (adapter.getItem(i).enabled)
-                list.add(adapter.getItem(i).id);
-        }
-
-        mListener.onSpotListChangeSelection(list);
+    @Override
+    public void onClick(long spotId) {
+        showSpotDetail(spotId);
     }
 
     public void showSpotDetail(long spotID) {

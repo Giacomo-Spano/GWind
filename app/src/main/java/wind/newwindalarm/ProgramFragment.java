@@ -69,7 +69,7 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
         @Override
         public void handleMessage(Message m) {
             Bundle b = m.getData();
-            Double speed = b.getDouble("set_temperature");
+            Double speed = b.getDouble("set_speed");
             mSpeed.setText(speed.toString());
         }
     };
@@ -80,7 +80,7 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
         @Override
         public void handleMessage(Message m) {
             Bundle b = m.getData();
-            Double speed = b.getDouble("set_temperature");
+            Double speed = b.getDouble("set_speed");
             mAvSpeed.setText(speed.toString());
         }
     };
@@ -143,13 +143,12 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
     }
 
     private View loadProgramFragment(LayoutInflater inflater,
-                                     ViewGroup container/*, String[] items*/) {
+                                     ViewGroup container) {
 
         if (mSpotList == null) {
             showError();
             return null;
         }
-
 
         View v;
         v = inflater.inflate(R.layout.fragment_program, container, false);
@@ -171,33 +170,32 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
         mAvSpeed = (EditText) v.findViewById(R.id.editTextAvSpeed);
 
         mStartdate.setInputType(InputType.TYPE_NULL);
-        mStartdate.setOnClickListener(new programBandOnClickAndFocusChangeListener(pickerType.PROGRAMSTARTDATE, 0, "set program start date"));
-        mStartdate.setOnFocusChangeListener(new programBandOnClickAndFocusChangeListener(pickerType.PROGRAMSTARTDATE, 0, "set program start date"));
+        mStartdate.setOnClickListener(new programBandOnClickAndFocusChangeListener(pickerType.PROGRAMSTARTDATE, 0, "Imposta data inizio"));
+        mStartdate.setOnFocusChangeListener(new programBandOnClickAndFocusChangeListener(pickerType.PROGRAMSTARTDATE, 0, "Imposta data inizio"));
 
         mEnddate.setInputType(InputType.TYPE_NULL);
-        mEnddate.setOnClickListener(new programBandOnClickAndFocusChangeListener(pickerType.PROGRAMENDDATE, 0, "set program start date"));
-        mEnddate.setOnFocusChangeListener(new programBandOnClickAndFocusChangeListener(pickerType.PROGRAMENDDATE, 0, "set program start date"));
+        mEnddate.setOnClickListener(new programBandOnClickAndFocusChangeListener(pickerType.PROGRAMENDDATE, 0, "Imposta data fine"));
+        mEnddate.setOnFocusChangeListener(new programBandOnClickAndFocusChangeListener(pickerType.PROGRAMENDDATE, 0, "Imposta data fine"));
 
         mStartTime = (EditText) v.findViewById(R.id.startTimeEditText);
         mStartTime.setInputType(InputType.TYPE_NULL);
-        mStartTime.setOnClickListener(new programBandOnClickAndFocusChangeListener(pickerType.PROGRAMSTARTTIME, 0, "set program start time"));
-        mStartTime.setOnFocusChangeListener(new programBandOnClickAndFocusChangeListener(pickerType.PROGRAMSTARTTIME, 0, "set program start time"));
+        mStartTime.setOnClickListener(new programBandOnClickAndFocusChangeListener(pickerType.PROGRAMSTARTTIME, 0, "Imposta ora inizio"));
+        mStartTime.setOnFocusChangeListener(new programBandOnClickAndFocusChangeListener(pickerType.PROGRAMSTARTTIME, 0, "Imposta ora inizio"));
 
         mEndTime = (EditText) v.findViewById(R.id.endTimeEditText);
         mEndTime.setInputType(InputType.TYPE_NULL);
-        mEndTime.setOnClickListener(new programBandOnClickAndFocusChangeListener(pickerType.PROGRAMENDTIME, 0, "set program end time"));
-        mEndTime.setOnFocusChangeListener(new programBandOnClickAndFocusChangeListener(pickerType.PROGRAMENDTIME, 0, "set program end time"));
+        mEndTime.setOnClickListener(new programBandOnClickAndFocusChangeListener(pickerType.PROGRAMENDTIME, 0, "Imposta ora fine"));
+        mEndTime.setOnFocusChangeListener(new programBandOnClickAndFocusChangeListener(pickerType.PROGRAMENDTIME, 0, "Imposta ora fine"));
 
         mSpeed.setInputType(InputType.TYPE_NULL);
-        mSpeed.setOnClickListener(new programBandOnClickAndFocusChangeListener(pickerType.SPEED, 0, "set program min speed"));
-        mSpeed.setOnFocusChangeListener(new programBandOnClickAndFocusChangeListener(pickerType.SPEED, 0, "set program min speed"));
+        mSpeed.setOnClickListener(new programBandOnClickAndFocusChangeListener(pickerType.SPEED, 0, "Imposta velocità minima"));
+        mSpeed.setOnFocusChangeListener(new programBandOnClickAndFocusChangeListener(pickerType.SPEED, 0, "Imposta velocità minima"));
 
         mAvSpeed.setInputType(InputType.TYPE_NULL);
-        mAvSpeed.setOnClickListener(new programBandOnClickAndFocusChangeListener(pickerType.AVSPEED, 0, "set program min speed"));
-        mAvSpeed.setOnFocusChangeListener(new programBandOnClickAndFocusChangeListener(pickerType.AVSPEED, 0, "set program min speed"));
+        mAvSpeed.setOnClickListener(new programBandOnClickAndFocusChangeListener(pickerType.AVSPEED, 0, "Imposta velocità media minima"));
+        mAvSpeed.setOnFocusChangeListener(new programBandOnClickAndFocusChangeListener(pickerType.AVSPEED, 0, "Imposta velocità media minima"));
 
         mSpot = (Spinner) v.findViewById(R.id.spinnerSpot) ;
-        //List<Spot> sl = MainActivity.getSpotList();
         ArrayList<String> list = new ArrayList<String>();
         spotIdList = new ArrayList<Long>();
 

@@ -322,7 +322,6 @@ public class MainActivity extends AppCompatActivity implements
 
             getSpotListFromServer();
 
-        //}
 
 
     }
@@ -541,9 +540,9 @@ public class MainActivity extends AppCompatActivity implements
                     newlist = new ArrayList<Long>();
                 }
                 panelFragment.setSpotOrder(newlist);
-                settingsFragment.setServerSpotList(spotList);
+                //settingsFragment.setServerSpotList(spotList);
                 programListFragment.setServerSpotList(spotList);
-                spotMeteoListFragment.setSpotList(spotList);
+                //spotMeteoListFragment.setSpotList(spotList);
             }
         }).execute(requestMeteoDataTask.REQUEST_SPOTLIST);
     }

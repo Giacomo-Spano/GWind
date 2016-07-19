@@ -6,7 +6,7 @@ import org.json.JSONObject;
 public class WindAlarmProgram {
 
 	public String startDate = "01/01/2015";
-	public String endDate = "01/01/2016";
+	public String endDate = "01/01/2018";
 	public String lastRingDate = "01/01/2000";
 	public String lastRingTime = "00:00";
 	public Double speed = 0.0;

@@ -7,6 +7,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!--<CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/favoritecheckBox"
+            android:layout_centerVertical="true" />-->
+
+        <CheckBox
+            android:id="@+id/favoritecheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:padding="5dp"
+            style="?android:attr/starStyle"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -14,7 +28,8 @@
             android:text="99"
             android:id="@+id/spotIdTextView"
             android:layout_gravity="bottom"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/favoritecheckBox" />
 
         <TextView
             android:layout_width="wrap_content"

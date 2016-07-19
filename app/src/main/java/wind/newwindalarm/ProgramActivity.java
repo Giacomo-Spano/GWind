@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import com.google.gson.Gson;
 
 import wind.newwindalarm.controls.DatePickerDialogFragment;
+import wind.newwindalarm.controls.SpeedDialogFragment;
 import wind.newwindalarm.controls.TemperatureDialogFragment;
 import wind.newwindalarm.controls.TimePickerDialogFragment;
 
@@ -162,13 +163,13 @@ public class ProgramActivity extends AppCompatActivity {
     public void showSpeedPickerDialog(double speed, String message, Handler mHandler) {
 
         Bundle b = new Bundle();
-        b.putDouble("set_temperature", speed);
+        b.putDouble("set_speed", speed);
         b.putString("set_message", message);
-        TemperatureDialogFragment numberPicker = new TemperatureDialogFragment(mHandler);
+        SpeedDialogFragment numberPicker = new SpeedDialogFragment(mHandler);
         numberPicker.setArguments(b);
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.add(numberPicker, message/*"temperature_picker"*/);
+        ft.add(numberPicker, message);
         ft.commit();
     }
 }

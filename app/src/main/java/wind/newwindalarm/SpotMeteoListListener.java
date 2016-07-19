@@ -20,6 +20,8 @@ public interface SpotMeteoListListener {
 
     public void onClickCheckBox(int position, boolean selected);
 
+    public void onClick(long spotId);
+
     class SpotMeteoListArrayAdapter extends ArrayAdapter<Spot> {
         private final Context context;
         SpotMeteoListListener mListener;
@@ -36,6 +38,8 @@ public interface SpotMeteoListListener {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View rowView = inflater.inflate(R.layout.spotmeteolistrowlayout, parent, false);
+            rowView.setTag(getItem(position).id);
+
             TextView textView = (TextView) rowView.findViewById(R.id.spotNameTextView);
             textView.setText(getItem(position).name);
             TextView idView = (TextView) rowView.findViewById(R.id.spotIdTextView);
@@ -51,6 +55,27 @@ public interface SpotMeteoListListener {
             TextView dateView = (TextView) rowView.findViewById(R.id.dateTextView);
             dateView.setText("" + getItem(position).date);
 
+            CheckBox checkBox = (CheckBox) rowView.findViewById((R.id.favoritecheckBox));
+            checkBox.setTag(position);
+            checkBox.setChecked(getItem(position).favorites);
+            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                    int position = (int) buttonView.getTag();
+                    boolean selected = ((CheckBox) buttonView).isSelected();
+                    mListener.onClickCheckBox(position, isChecked);
+                }
+            });
+
+            rowView.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    long spotId = (long) v.getTag();
+                    mListener.onClick(spotId);
+
+                }
+            });
             return rowView;
         }
     }

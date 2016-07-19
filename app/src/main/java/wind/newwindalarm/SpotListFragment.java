@@ -13,7 +13,7 @@ public class SpotListFragment extends ListFragment implements SpotListListener {
     // Container Activity must implement this interface
     public interface OnSpotListListener {
         //public void onSpotListChangeOrder(List<Long> order);
-        public void onSpotListChangeSelection(List<Long> list);
+        /*public */void onSpotListChangeSelection(List<Long> list);
     }
 
     OnSpotListListener mListener;
@@ -32,7 +32,7 @@ public class SpotListFragment extends ListFragment implements SpotListListener {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        List<Spot> sl = mSpotList;//MainActivity.getSpotList();
+        List<Spot> sl = mSpotList;//MainActivity.getSpotListFavorites();
         SpotListArrayAdapter adapter = new SpotListArrayAdapter(getActivity(), sl, this);
         setListAdapter(adapter);
     }

@@ -17,6 +17,7 @@ public class Spot<T> {
     public String direction = "";
     public String date = "";
     public boolean offline = false;
+    public boolean favorites;
 
     public Spot(JSONObject jObject) throws JSONException {
 
