@@ -80,7 +80,11 @@
         </activity>
         <activity
             android:name=".ProgramActivity"
-            android:label="@string/title_activity_play_alarm" >
+            android:label="@string/title_activity_program" >
+        </activity>
+        <activity
+            android:name=".SendLogActivity"
+            android:label="@string/title_activity_sendlog" >
         </activity>
 
     </application>

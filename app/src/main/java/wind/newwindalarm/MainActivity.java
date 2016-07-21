@@ -53,9 +53,13 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
+import com.google.gson.Gson;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -76,7 +80,61 @@ public class MainActivity extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
 
-        SendLoagcatMail();
+        //startSendLogActivity();
+
+        //SendLoagcatMail();
+    }
+
+    private void startSendLogActivity() {
+
+        Intent resultIntent = new Intent(this, SendLogActivity.class);
+        //startActivityForResult(resultIntent, 1);
+        startActivity(resultIntent);
+        finish();
+    }
+
+    void sendLogToMail() {
+
+        String line, trace = "";
+
+        try {
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(MainActivity.this
+                            .openFileInput("stack.trace"))); // se non esiste Filenotfoundexception
+            while((line = reader.readLine()) != null) {
+                trace += line+"\n";
+            }
+
+            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            String subject = "Error report";
+            String body =
+                    "Giacomo, l'applicazione si è bloccata in questo punto: \n" +
+                            "Mail this to appdeveloper@gmail.com: "+
+                            "\n"+
+                            trace+
+                            "\n";
+
+            sendIntent.putExtra(Intent.EXTRA_EMAIL,
+                    new String[] {"giaggi70@gmail.com"});
+            sendIntent.putExtra(Intent.EXTRA_TEXT, body);
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            sendIntent.setType("message/rfc822");
+
+            MainActivity.this.startActivity(
+                    Intent.createChooser(sendIntent, "Title:"));
+
+            MainActivity.this.deleteFile("stack.trace");
+
+        } catch(FileNotFoundException fnfe) {
+
+            // se il file non esiste non fare nulla
+            return;
+// ...
+        } catch(IOException ioe) {
+// ...
+        }
+
+
     }
 
     public void SendLoagcatMail() {
@@ -166,6 +224,12 @@ public class MainActivity extends AppCompatActivity implements
 
         //  return;
         //}
+
+        sendLogToMail();
+        Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
+
+        String hh = null;
+        //hh.toString();
 
         instance = this;
 
