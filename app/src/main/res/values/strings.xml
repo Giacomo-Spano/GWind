@@ -82,6 +82,7 @@ Firmware version: <xliff:g id="firmware_revision">%s</xliff:g>\n
 Kernel version: <xliff:g id="kernel_version">%s</xliff:g>\n
 Build number: <xliff:g id="build_number">%s</xliff:g>\n
     </string>
+    <string name="options_diagfile">diag file</string>
 
 
 </resources>

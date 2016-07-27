@@ -34,11 +34,13 @@ public class requestprogramtask extends
     private boolean error = false;
     private String errorMessage = "";
     private String mServerURL;
+    private int deviceId;
 
-    public requestprogramtask(Activity activity, AsyncRequestProgramResponse asyncResponse) {
+    public requestprogramtask(Activity activity, AsyncRequestProgramResponse asyncResponse, int deviceId) {
         this.activity = activity;
         dialog = new ProgressDialog(activity);
         delegate = asyncResponse;//Assigning call back interfacethrough constructor
+        this.deviceId = deviceId;
     }
 
     protected List<WindAlarmProgram> doInBackground(String... params) {
@@ -49,9 +51,7 @@ public class requestprogramtask extends
         try {
             mServerURL = AlarmPreferences.getServerUrl(activity);
 
-
-            String regId = MainActivity.preferences.getRegId(activity);
-            url = new URL(mServerURL + "/alarm?regId="+regId+"&Id=1");
+            url = new URL(mServerURL + "/alarm?deviceId="+deviceId);
 
             Log.d("url=", url.toString());
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();

@@ -1,6 +1,5 @@
 package wind.newwindalarm;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -39,7 +38,7 @@ public class PlayAlarmActivity extends AppCompatActivity implements AlarmFragmen
         SendLoagcatMail();
     }
 
-    public void SendLoagcatMail(){
+    public void SendLoagcatMail() {
 
 
         DateFormat df = new SimpleDateFormat("ddMMyyyyHHmm");
@@ -94,8 +93,6 @@ public class PlayAlarmActivity extends AppCompatActivity implements AlarmFragmen
                         WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         setContentView(R.layout.activity_play_alarm);
 
-        //getSupportActionBar().hide();
-
         // Create a new Fragment to be placed in the activity layout
         mAlarmFragment = new AlarmFragment();
         mAlarmFragment.setArguments(getIntent().getExtras());
@@ -115,12 +112,11 @@ public class PlayAlarmActivity extends AppCompatActivity implements AlarmFragmen
         b.putDouble("curspeed", curspeed);
         b.putString("curdate", curDate);
         mAlarmFragment.setArguments(b);
-
     }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
 
         if (lastActiveAlarmFragment != null)
             lastActiveAlarmFragment.stopRingtone();
@@ -139,19 +135,15 @@ public class PlayAlarmActivity extends AppCompatActivity implements AlarmFragmen
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
     }
 
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
 
         mAlarmFragment.stopAlarm();
-
-        showSpotDetail(0);
-
-
+        stopAlarm(/*0*/);
     }
 
-    private void showSpotDetail(int snoozeMinutes) {
+    private void stopAlarm(/*int snoozeMinutes*/) {
 
         /*Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(MainActivity.GO_DIRECTLY_TO_SPOT_DETAILS, true); //Optional parameters
@@ -164,17 +156,16 @@ public class PlayAlarmActivity extends AppCompatActivity implements AlarmFragmen
     }
 
 
-
     @Override
     public void onStopAlarmClick() {
-        showSpotDetail(0);
+        stopAlarm(/*0*/);
     }
 
     @Override
     public void onSnoozeAlarmClick(int snoozeMinutes) {
 
-        snoozeAlarm(snoozeMinutes,alarmId);
-        showSpotDetail(snoozeMinutes);
+        snoozeAlarm(snoozeMinutes, alarmId);
+        stopAlarm(/*snoozeMinutes*/);
     }
 
     @Override
@@ -182,7 +173,7 @@ public class PlayAlarmActivity extends AppCompatActivity implements AlarmFragmen
 
         Date date = new Date();
         //updateAlarmRingDate(date);
-        updateAlarmRingDate(date,alarmId);
+        updateAlarmRingDate(date, alarmId);
     }
 
     private void updateAlarmRingDate(final Date date, final int alarmid) {
@@ -193,8 +184,9 @@ public class PlayAlarmActivity extends AppCompatActivity implements AlarmFragmen
                 // TODO
             }
 
-        }, postprogramtask.POST_UPDATEALARMRINGDATE).execute(alarmid,date);
+        }, postprogramtask.POST_UPDATEALARMRINGDATE).execute(alarmid, date);
     }
+
     private void snoozeAlarm(final int snoozeMinutes, final int alarmid) {
 
         new postprogramtask(this, new AsyncPostProgramResponse() {
@@ -204,7 +196,7 @@ public class PlayAlarmActivity extends AppCompatActivity implements AlarmFragmen
                 //finish();
             }
 
-        }, postprogramtask.POST_SNOOZEALARM).execute(alarmid,snoozeMinutes);
+        }, postprogramtask.POST_SNOOZEALARM).execute(alarmid, snoozeMinutes);
 
     }
 

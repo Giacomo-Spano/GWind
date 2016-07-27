@@ -6,14 +6,17 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
-
-
     <item
         android:id="@+id/options_refresh"
         android:icon="@drawable/refreshbutton"
         android:showAsAction="ifRoom"
         android:title="@string/options_refresh">
     </item>
+    <item
+        android:id="@+id/options_diagfile"
+        android:title="@string/options_diagfile">
+    </item>
+
     <item
         android:id="@+id/options_register"
         android:title="@string/options_register">

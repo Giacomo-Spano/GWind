@@ -2,6 +2,7 @@ package wind.newwindalarm;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -56,4 +57,5 @@ public class TopExceptionHandler implements Thread.UncaughtExceptionHandler {
 
         defaultUEH.uncaughtException(t, e);
     }
+
 }

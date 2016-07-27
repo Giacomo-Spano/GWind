@@ -35,6 +35,7 @@
 package wind.newwindalarm;
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -273,7 +274,8 @@ public class SendLogActivity extends Activity
                 
                 mSendIntent.putExtra(Intent.EXTRA_TEXT, log.toString());
                 //startActivity(Intent.createChooser(mSendIntent, getString(R.string.chooser_title)));
-                sendmail(log.toString());
+                //sendmail(log.toString());
+                createDiagFile(log.toString());
                 dismissProgressDialog();
                 dismissMainDialog();
                 finish();
@@ -314,6 +316,22 @@ public class SendLogActivity extends Activity
             Toast.makeText(this, "There is no email client installed.", Toast.LENGTH_SHORT).show();
         }
         //finish();
+    }
+
+    void createDiagFile(String log) {
+
+
+        Log.i(TAG, "CREATE LOG FILE INFO");
+        Log.e(TAG, "CREATE LOG ERROR");
+
+        try {
+            FileOutputStream trace = getApplication().openFileOutput(
+                    "stack.trace", Context.MODE_PRIVATE);
+            trace.write(log.getBytes());
+            trace.close();
+        } catch(IOException ioe) {
+// ...
+        }
     }
     
     void showErrorDialog(String errorMessage){

@@ -9,8 +9,8 @@ public class WindAlarmProgram {
 	public String endDate = "01/01/2018";
 	public String lastRingDate = "01/01/2000";
 	public String lastRingTime = "00:00";
-	public Double speed = 0.0;
-	public Double avspeed = 0.0;
+	public Double speed = 20.0;
+	public Double avspeed = 16.0;
 	public String startTime = "00:00";
 	public String endTime = "23:59";
 	public Boolean enabled = true;

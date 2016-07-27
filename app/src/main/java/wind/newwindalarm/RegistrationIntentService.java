@@ -37,9 +37,6 @@ package wind.newwindalarm;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.preference.ListPreference;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -81,13 +78,24 @@ public class RegistrationIntentService extends IntentService {
 
             boolean sentToken = sharedPreferences.getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
 
+            Log.i(TAG, "sentToken="+sentToken);
             //String str = MainActivity.getContext().getResources().getString(R.string.pref_serverURL_default);
             //String serverURL = sharedPreferences.getString(QuickstartPreferences.KEY_PREF_SERVERURL, str);
             String serverURL = AlarmPreferences.getServerUrl(MainActivity.getContext());
 
-            if (!sentToken)
+            Log.i(TAG, "serverURL="+serverURL);
+
+            //TelephonyManager mngr = (TelephonyManager) MainActivity.getContext().getSystemService(MainActivity.getContext().TELEPHONY_SERVICE);
+            int deviceId = getDeviceIdFromServer(token,serverURL);
+
+            if (!sentToken || deviceId == -1) {
+                //deviceId = MainActivity.getDeviceId();//MainActivity.getIMEI();
+                Log.i(TAG, "deviceId="+deviceId);
                 sendRegistrationToServer(token, serverURL);
 
+            }
+            deviceId = getDeviceIdFromServer(token,serverURL);
+            MainActivity.setDeviceId(deviceId);
             // Subscribe to topic channels
             subscribeTopics(token);
 
@@ -98,6 +106,18 @@ public class RegistrationIntentService extends IntentService {
             // [END register_for_gcm]
         } catch (Exception e) {
             Log.d(TAG, "Failed to complete token refresh", e);
+
+            /*AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle("Do you want to logout?");
+            alert.setMessage("Message: " + e.toString());
+            alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    //Your action here
+                }
+            });
+
+            alert.show();*/
+
             // If an exception happens while fetching the new token or updating our registration data
             // on a third-party server, this ensures that we'll attempt the update at a later time.
             sharedPreferences.edit().putBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false).apply();
@@ -118,6 +138,11 @@ public class RegistrationIntentService extends IntentService {
     private void sendRegistrationToServer(String token, String serverURL) {
         // Add custom implementation, as needed.
         ServerUtilities.register(token, serverURL);
+    }
+
+    private int getDeviceIdFromServer(String token, String serverURL) {
+        // Add custom implementation, as needed.
+        return ServerUtilities.getDeviceIdFromRegId(token, serverURL);
     }
 
     /**

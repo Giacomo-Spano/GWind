@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,11 +15,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+
+import com.google.gson.Gson;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,7 +35,7 @@ import wind.newwindalarm.controls.baseOnClickAndFocusChangeListener;
 
 public class ProgramFragment extends Fragment implements OnItemSelectedListener {
 
- WindAlarmProgram program = new WindAlarmProgram();
+    WindAlarmProgram program = new WindAlarmProgram();
     private String[] arraySpinner;
 
     /**
@@ -195,19 +199,33 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
         mAvSpeed.setOnClickListener(new programBandOnClickAndFocusChangeListener(pickerType.AVSPEED, 0, "Imposta velocità media minima"));
         mAvSpeed.setOnFocusChangeListener(new programBandOnClickAndFocusChangeListener(pickerType.AVSPEED, 0, "Imposta velocità media minima"));
 
-        mSpot = (Spinner) v.findViewById(R.id.spinnerSpot) ;
+        final Button testButton = (Button) v.findViewById(R.id.TestButton);
+        testButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                new postprogramtask(getActivity(), new AsyncPostProgramResponse() {
+                    @Override
+                    public void processFinish(Object obj, boolean error, String errorMessage) {
+                        confirmTestDialog();
+                    }
+
+                }, postprogramtask.POST_TESTALARM).execute(program.id);
+
+            }
+        });
+
+        mSpot = (Spinner) v.findViewById(R.id.spinnerSpot);
         ArrayList<String> list = new ArrayList<String>();
         spotIdList = new ArrayList<Long>();
 
-        for (int i= 0; i<mSpotList.size();i++) {
+        for (int i = 0; i < mSpotList.size(); i++) {
 
             list.add(mSpotList.get(i).name);
-            spotIdList.add(i,mSpotList.get(i).id);
+            spotIdList.add(i, mSpotList.get(i).id);
 
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>
-                (this.getActivity(),android.R.layout.simple_dropdown_item_1line, list);
+                (this.getActivity(), android.R.layout.simple_dropdown_item_1line, list);
         mSpot.setAdapter(adapter);
         mSpot.setOnItemSelectedListener(new OnItemSelectedListener() {
 
@@ -215,6 +233,7 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
                                        int arg2, long arg3) {
 
             }
+
             public void onNothingSelected(AdapterView<?> arg0) {
 
             }
@@ -224,6 +243,27 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
         updateProgramFragment();
 
         return v;
+    }
+
+    public void confirmTestDialog() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        alert.setTitle("Se il test della sveglia ha funzionato premere ok");
+        // alert.setMessage("Message");
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //Your action here
+            }
+        });
+
+        alert.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+                });
+
+        alert.show();
+
     }
 
     private int getIndexFromSpotId(long spotid) {
@@ -435,6 +475,7 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
 
         }
     }
+
     private void showError() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder.setTitle("Errore");

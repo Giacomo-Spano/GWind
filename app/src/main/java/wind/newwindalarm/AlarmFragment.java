@@ -20,11 +20,7 @@ import android.widget.TextView;
 import org.w3c.dom.Text;
 
 public class AlarmFragment extends Fragment implements
-        OnItemSelectedListener/*, MeteoCardListener*/ {
-
-    //private LinearLayout mContainer;
-    //public MeteoCardItem mCarditem;
-    //LineChart mLineChart;
+        OnItemSelectedListener {
 
     double mcurspeed, mcuravspeed;
     String mcurdate;
@@ -86,13 +82,6 @@ public class AlarmFragment extends Fragment implements
         View v;
         v = inflater.inflate(R.layout.fragment_alarm, container, false);
 
-        //mContainer = (LinearLayout) v.findViewById(R.id.container);
-        //mCarditem = new MeteoCardItem(this, this.getActivity(), mContainer);
-        //mContainer.addView(mCarditem.card,0);
-        //mContainer.invalidate();
-
-
-
         final Button stopButton = (Button) v.findViewById(R.id.stopAlarmButton);
         stopButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -118,14 +107,10 @@ public class AlarmFragment extends Fragment implements
         tv = (TextView) v.findViewById(R.id.spotTextView);
         tv.setText("spot: " + MainActivity.getSpotName(mspotid));
 
-
-        //mLineChart = (LineChart) v.findViewById(R.id.chart);
-
         return v;
     }
 
     public void playAlarm(int spot) {
-
 
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         if (alarmUri == null) {
@@ -143,17 +128,13 @@ public class AlarmFragment extends Fragment implements
             public void onFinish() {
                 //snoozeAlarm(5);
                 timerTextView.setText("done!");
+                stopAlarm();
             }
         }.start();
-
-
 
         if (mCallback != null)
             mCallback.onStartPlayAlarm();
 
-        //getMeteoData(spot);
-        //HistoryChart hc = new HistoryChart(getActivity(),mLineChart);
-        //new requestMeteoDataTask(getActivity(), hc).execute(requestMeteoDataTask.REQUEST_HISTORYMETEODATA, "" + spot);
     }
 
     public void stopRingtone() {

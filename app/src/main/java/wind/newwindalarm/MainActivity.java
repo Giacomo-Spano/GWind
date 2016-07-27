@@ -27,6 +27,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private static MainActivity instance;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-
+    private static int deviceId = -1;
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -224,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements
 
         //  return;
         //}
+        Log.i("PROVA", "MESSAGGIO");
 
         sendLogToMail();
         Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
@@ -459,6 +461,9 @@ public class MainActivity extends AppCompatActivity implements
 		 */
             case R.id.options_refresh:
                 //requestWebduinoUpdate();
+                return false;
+            case R.id.options_diagfile:
+                startSendLogActivity();
                 return false;
             /*case R.id.action_settings:
                 openSettings();
@@ -820,8 +825,14 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         protected Bitmap doInBackground(Object... params) {
 
-            String url = acct.getPhotoUrl().toString();
-            return loadBitmapFromUrl(url);
+            if(acct.getPhotoUrl() != null) {
+
+                String url = acct.getPhotoUrl().toString();
+                return loadBitmapFromUrl(url);
+            } else {
+                return null;
+            }
+
         }
 
         @Override
@@ -835,21 +846,18 @@ public class MainActivity extends AppCompatActivity implements
             mUserNameTextView.setText(mProfile.userName);
             memailTextView.setText(mProfile.email);
 
-            int currentBitmapWidth = resultBitmap.getWidth();
-            int currentBitmapHeight = resultBitmap.getHeight();
-            int ivWidth = mUserImageImageView.getWidth();
-            int ivHeight = mUserImageImageView.getHeight();
-            int newWidth = ivWidth;
-            int newHeight = (int) Math.floor((double) currentBitmapHeight * ((double) newWidth / (double) currentBitmapWidth));
-            Bitmap newbitMap = Bitmap.createScaledBitmap(resultBitmap, newWidth, newHeight, true);
+            if (resultBitmap != null) {
+                int currentBitmapWidth = resultBitmap.getWidth();
+                int currentBitmapHeight = resultBitmap.getHeight();
+                int ivWidth = mUserImageImageView.getWidth();
+                int ivHeight = mUserImageImageView.getHeight();
+                int newWidth = ivWidth;
+                int newHeight = (int) Math.floor((double) currentBitmapHeight * ((double) newWidth / (double) currentBitmapWidth));
+                Bitmap newbitMap = Bitmap.createScaledBitmap(resultBitmap, newWidth, newHeight, true);
 
-            //mProfile.userImage = newbitMap.copy(newbitMap.getConfig(), false);
-
-
-            mUserImageImageView.setImageBitmap(getCircleBitmap(newbitMap));
-
-            mProfile.userImage = ((BitmapDrawable) mUserImageImageView.getDrawable()).getBitmap();
-
+                mUserImageImageView.setImageBitmap(getCircleBitmap(newbitMap));
+                mProfile.userImage = ((BitmapDrawable) mUserImageImageView.getDrawable()).getBitmap();
+            }
 
             if (profileFragment != null)
                 profileFragment.setProfile(mProfile);
@@ -867,6 +875,7 @@ public class MainActivity extends AppCompatActivity implements
         } catch (IOException e) {
 
             e.printStackTrace();
+            return null;
         }
         return bitmap;
     }
@@ -892,6 +901,20 @@ public class MainActivity extends AppCompatActivity implements
         bitmap.recycle();
 
         return circuleBitmap;
+    }
+
+    /*public static String getIMEI() {
+        TelephonyManager mngr = (TelephonyManager) MainActivity.getContext().getSystemService(MainActivity.getContext().TELEPHONY_SERVICE);
+        String imei = mngr.getDeviceId();
+        return imei;
+    }*/
+    public static int getDeviceId() {
+
+        return deviceId;
+    }
+
+    public static void setDeviceId(int id) {
+        deviceId = id;
     }
 
 }

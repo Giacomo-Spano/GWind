@@ -15,18 +15,30 @@
  */
 package wind.newwindalarm;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.http.RequestQueue;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 //import com.google.android.gcm.GCMRegistrar;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -60,10 +72,12 @@ public final class ServerUtilities {
         params.put("regId", regId);
         String model = Build.MODEL;
         params.put("name", model);
+        //params.put("deviceId", deviceId);
+
 
         try {
             post(serverUrl, params);
-            AlarmPreferences.setRegId(MainActivity.getContext(),regId);
+            AlarmPreferences.setRegId(MainActivity.getContext(), regId);
             return true;
         } catch (IOException e) {
 
@@ -87,7 +101,7 @@ public final class ServerUtilities {
         params.put("unregister", "true");
 
         //post(serverUrl, params);
-        AlarmPreferences.setRegId(MainActivity.getContext(),regId);
+        AlarmPreferences.setRegId(MainActivity.getContext(), regId);
         AlarmPreferences.deleteRegId(MainActivity.getContext());
 
     }
@@ -95,10 +109,12 @@ public final class ServerUtilities {
     static boolean sendAuthCode(final String authCode, String serverUrl) {
         Log.i(TAG, "send auth code (authCode = " + authCode + ")");
 
-        serverUrl += "//debug";
+        serverUrl += "//register";
 
         Map<String, String> params = new HashMap<String, String>();
+        params.put("registeruser", "true");
         params.put("authcode", authCode);
+        params.put("deviceId", "" + MainActivity.getDeviceId());
 
         try {
             post(serverUrl, params);
@@ -167,4 +183,67 @@ public final class ServerUtilities {
     }
 
 
+    public static int getDeviceIdFromRegId(String token, String serverURL) {
+
+        int deviceId = -1;
+
+        try {
+
+            URL url = new URL(serverURL + "/register?regid="+token);
+
+            final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setAllowUserInteraction(false);
+            conn.setInstanceFollowRedirects(true);
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Content-Type", "application/json");
+
+            try {
+                BufferedInputStream in = new BufferedInputStream(
+                        conn.getInputStream());
+                // Convert the stream to a String
+                // There are various approaches, I'll leave it up to you
+                String json = convertStreamToString(in);
+
+                JSONObject jObject = new JSONObject(json);
+                if (jObject.has("id")) {
+                    deviceId = jObject.getInt("id");
+                }
+
+                if (conn != null)
+                    conn.disconnect();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return -1;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return -1;
+        }
+
+        return deviceId;
+    }
+    private static String convertStreamToString(InputStream is) {
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+
+        String line = null;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return sb.toString();
+    }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,7 +50,7 @@ public class AlarmPreferences {
     public static Set<String> getSpotListFavorites(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         //String regId = sharedPreferences.getString(QuickstartPreferences.KEY_SPOTLISTFAVORITES, "");
-        Set<String> stringSet = sharedPreferences.getStringSet(QuickstartPreferences.KEY_SPOTLISTFAVORITES, new HashSet<String>());
+        Set<String> stringSet = sharedPreferences.getStringSet(QuickstartPreferences.KEY_SPOTLISTFAVORITES, new HashSet<String>(Arrays.asList("0", "12","2","1")));
 
         return stringSet;
     }

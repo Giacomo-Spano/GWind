@@ -127,7 +127,7 @@ public class ProgramListFragment extends Fragment implements
                     offline = false;
                 }
             }
-        }).execute(((MainActivity) getActivity()).getServerURL());
+        }, MainActivity.getDeviceId()).execute();
     }
 
     @Override

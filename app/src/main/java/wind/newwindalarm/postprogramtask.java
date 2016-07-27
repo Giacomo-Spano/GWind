@@ -2,6 +2,7 @@ package wind.newwindalarm;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -29,10 +30,12 @@ import java.util.Locale;
  */
 public class postprogramtask extends AsyncTask<Object, Boolean, Boolean> {
 
+
     public static int POST_ALARM = 1;
     public static int POST_DELETEALARM = 2;
     public static int POST_UPDATEALARMRINGDATE = 3;
     public static int POST_SNOOZEALARM = 4;
+    public static final int POST_TESTALARM = 5;
     public static int POST_NOTIFICATIONSETTING = 100;
     private int postType;
 
@@ -66,18 +69,21 @@ public class postprogramtask extends AsyncTask<Object, Boolean, Boolean> {
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
 
         String regId = AlarmPreferences.getRegId(activity.getApplicationContext());
+        //String IMEI = MainActivity.getIMEI();
+        Integer deviceId = MainActivity.getDeviceId();
 
         if (postType == POST_ALARM || postType == POST_DELETEALARM) {
             alarm = (WindAlarmProgram) params[0];
             //mServerURL = (String) params[1];
             httppost = new HttpPost(mServerURL + "/alarm");
-            nameValuePairs.add(new BasicNameValuePair("Id", "" + alarm.id));
+            nameValuePairs.add(new BasicNameValuePair("alarmId", "" + alarm.id));
             //deletekey = (boolean) params[1];
-            if (postType== POST_DELETEALARM)
+            if (postType == POST_DELETEALARM)
                 nameValuePairs.add(new BasicNameValuePair("delete", "true"));
             jsonText = gson.toJson(alarm);
             nameValuePairs.add(new BasicNameValuePair("json", jsonText));
             nameValuePairs.add(new BasicNameValuePair("regId", regId));
+            nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId.toString()));
 
         } else if (postType == POST_UPDATEALARMRINGDATE) {
             int alarmId = (int) params[0];
@@ -93,6 +99,7 @@ public class postprogramtask extends AsyncTask<Object, Boolean, Boolean> {
             nameValuePairs.add(new BasicNameValuePair("time", "" + strTime));
             nameValuePairs.add(new BasicNameValuePair("snooze", "" + strTime));
             nameValuePairs.add(new BasicNameValuePair("regId", regId));
+            nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId.toString()));
 
         } else if (postType == POST_SNOOZEALARM) {
             int alarmId = (int) params[0];
@@ -102,6 +109,15 @@ public class postprogramtask extends AsyncTask<Object, Boolean, Boolean> {
             nameValuePairs.add(new BasicNameValuePair("snooze", "true"));
             nameValuePairs.add(new BasicNameValuePair("minutes", "" + snoozeMinutes));
             nameValuePairs.add(new BasicNameValuePair("regId", regId));
+            nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId.toString()));
+
+        } else if (postType == POST_TESTALARM) {
+            long alarmId = (long) params[0];
+            httppost = new HttpPost(mServerURL + "/alarm");
+            nameValuePairs.add(new BasicNameValuePair("alarmId", "" + alarmId));
+            nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId.toString()));
+            nameValuePairs.add(new BasicNameValuePair("test", "true"));
+            ;
 
         } else if (postType == POST_NOTIFICATIONSETTING) {
             notificationSettings = (NotificationSettings) params[0];
@@ -132,9 +148,24 @@ public class postprogramtask extends AsyncTask<Object, Boolean, Boolean> {
         }
         return true;
     }
+
     protected void onPreExecute() {
+
         this.dialog.setMessage("Saving...");
         this.dialog.show();
+
+        /*this.dialog.show(this.activity,
+                "Title",
+                "Message");*/
+        this.dialog.setCancelable(true);
+        this.dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                // TODO Auto-generated method stub
+                // Do something...
+            }
+        });
     }
 
     protected void onProgressUpdate(Integer... progress) {
@@ -146,7 +177,7 @@ public class postprogramtask extends AsyncTask<Object, Boolean, Boolean> {
         if (dialog.isShowing()) {
             dialog.dismiss();
         }
-        delegate.processFinish(alarm,error,errorMessage);
+        delegate.processFinish(alarm, error, errorMessage);
     }
 
 }
