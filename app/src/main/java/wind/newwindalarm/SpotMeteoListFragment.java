@@ -87,7 +87,7 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
                 SpotMeteoListArrayAdapter adapter = new SpotMeteoListArrayAdapter(getActivity(), sl, listener);
                 setListAdapter(adapter);
             }
-        }).execute(requestMeteoDataTask.REQUEST_SPOTLIST_FULLINFO);
+        },requestMeteoDataTask.REQUEST_SPOTLIST_FULLINFO).execute();
     }
 
     @Override

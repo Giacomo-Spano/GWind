@@ -97,8 +97,8 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
         // Updating the action bar title
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Stazioni meteo"/*items[position]*/);
 
-        if (spotOrder.size() > 0)
-            getMeteoData();
+        //if (spotOrder.size() > 0)
+        //    getMeteoData();
 
         getMeteoData();
 
@@ -247,7 +247,7 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
                 spotList += ",";
         }
 
-        new requestMeteoDataTask(getActivity(), new requestDataResponse(getFragmentManager())).execute(requestMeteoDataTask.REQUEST_LASTMETEODATA, spotList);
+        new requestMeteoDataTask(getActivity(), new requestDataResponse(getFragmentManager()),requestMeteoDataTask.REQUEST_LASTMETEODATA).execute(spotList);
     }
 
     public void onNothingSelected(AdapterView<?> parent) {

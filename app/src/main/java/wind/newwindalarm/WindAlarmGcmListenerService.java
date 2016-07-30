@@ -116,7 +116,7 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
         Intent resultIntent = new Intent(context, PlayAlarmActivity.class);
 
         //Bundle b = new Bundle();
-        //b.putInt("alarm", spot); //Your id
+        //b.putInt("regId", spot); //Your id
         String spotId = alarmData.getString("spotID");
         String alarmId = alarmData.getString("alarmId");
         String curDate = alarmData.getString("curDate");

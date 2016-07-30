@@ -208,7 +208,7 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
                         confirmTestDialog();
                     }
 
-                }, postprogramtask.POST_TESTALARM).execute(program.id);
+                }, postprogramtask.POST_TESTALARM).execute(MainActivity.getDeviceId(),program.id);
 
             }
         });
@@ -321,6 +321,7 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
     @SuppressLint("HandlerLeak")
     public WindAlarmProgram saveProgram() {
 
+        program.deviceId = MainActivity.getDeviceId();
         program.startTime = mStartTime.getText().toString();
         program.endTime = mEndTime.getText().toString();
         program.speed = Double.valueOf(mSpeed.getText().toString());

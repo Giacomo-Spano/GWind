@@ -70,9 +70,10 @@ public class postprogramtask extends AsyncTask<Object, Boolean, Boolean> {
 
         String regId = AlarmPreferences.getRegId(activity.getApplicationContext());
         //String IMEI = MainActivity.getIMEI();
-        Integer deviceId = MainActivity.getDeviceId();
+
 
         if (postType == POST_ALARM || postType == POST_DELETEALARM) {
+
             alarm = (WindAlarmProgram) params[0];
             //mServerURL = (String) params[1];
             httppost = new HttpPost(mServerURL + "/alarm");
@@ -83,7 +84,7 @@ public class postprogramtask extends AsyncTask<Object, Boolean, Boolean> {
             jsonText = gson.toJson(alarm);
             nameValuePairs.add(new BasicNameValuePair("json", jsonText));
             nameValuePairs.add(new BasicNameValuePair("regId", regId));
-            nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId.toString()));
+            //nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId.toString()));
 
         } else if (postType == POST_UPDATEALARMRINGDATE) {
             int alarmId = (int) params[0];
@@ -99,7 +100,7 @@ public class postprogramtask extends AsyncTask<Object, Boolean, Boolean> {
             nameValuePairs.add(new BasicNameValuePair("time", "" + strTime));
             nameValuePairs.add(new BasicNameValuePair("snooze", "" + strTime));
             nameValuePairs.add(new BasicNameValuePair("regId", regId));
-            nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId.toString()));
+            //nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId.toString()));
 
         } else if (postType == POST_SNOOZEALARM) {
             int alarmId = (int) params[0];
@@ -109,13 +110,13 @@ public class postprogramtask extends AsyncTask<Object, Boolean, Boolean> {
             nameValuePairs.add(new BasicNameValuePair("snooze", "true"));
             nameValuePairs.add(new BasicNameValuePair("minutes", "" + snoozeMinutes));
             nameValuePairs.add(new BasicNameValuePair("regId", regId));
-            nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId.toString()));
+            //nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId.toString()));
 
         } else if (postType == POST_TESTALARM) {
-            long alarmId = (long) params[0];
+            long alarmId = (long) params[1];
             httppost = new HttpPost(mServerURL + "/alarm");
             nameValuePairs.add(new BasicNameValuePair("alarmId", "" + alarmId));
-            nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId.toString()));
+            //nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId.toString()));
             nameValuePairs.add(new BasicNameValuePair("test", "true"));
             ;
 
@@ -151,7 +152,15 @@ public class postprogramtask extends AsyncTask<Object, Boolean, Boolean> {
 
     protected void onPreExecute() {
 
-        this.dialog.setMessage("Saving...");
+        String message = "attendere prego...";
+        if (postType == POST_TESTALARM)
+            message = "Test sveglia ij corso...";
+        else if (postType == POST_ALARM)
+            message = "Salvataggio in corso...";
+        else if (postType == POST_DELETEALARM)
+            message = "Cancellazione in corso...";
+
+        this.dialog.setMessage(message);
         this.dialog.show();
 
         /*this.dialog.show(this.activity,

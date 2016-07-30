@@ -34,9 +34,11 @@ package wind.newwindalarm;
  */
 
 
+import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -73,6 +75,7 @@ public class RegistrationIntentService extends IntentService {
             // [END get_token]
 
 
+            AlarmPreferences.setRegId(MainActivity.getContext(), token);
 
             Log.i(TAG, "GCM Registration Token: " + token);
 
@@ -81,21 +84,26 @@ public class RegistrationIntentService extends IntentService {
             Log.i(TAG, "sentToken="+sentToken);
             //String str = MainActivity.getContext().getResources().getString(R.string.pref_serverURL_default);
             //String serverURL = sharedPreferences.getString(QuickstartPreferences.KEY_PREF_SERVERURL, str);
-            String serverURL = AlarmPreferences.getServerUrl(MainActivity.getContext());
+            //String serverURL = AlarmPreferences.getServerUrl(MainActivity.getContext());
 
-            Log.i(TAG, "serverURL="+serverURL);
+            //Log.i(TAG, "serverURL="+serverURL);
 
             //TelephonyManager mngr = (TelephonyManager) MainActivity.getContext().getSystemService(MainActivity.getContext().TELEPHONY_SERVICE);
-            int deviceId = getDeviceIdFromServer(token,serverURL);
+            int deviceId = -1; //getDeviceIdFromServer(token,serverURL);
+
+
+
 
             if (!sentToken || deviceId == -1) {
                 //deviceId = MainActivity.getDeviceId();//MainActivity.getIMEI();
                 Log.i(TAG, "deviceId="+deviceId);
-                sendRegistrationToServer(token, serverURL);
+                //sendRegistrationToServer(token, serverURL);
+
+                //ServerUtilities.registerDevice(token);
 
             }
-            deviceId = getDeviceIdFromServer(token,serverURL);
-            MainActivity.setDeviceId(deviceId);
+            //deviceId = getDeviceIdFromServer(token,serverURL);
+            //MainActivity.setDeviceId(deviceId);
             // Subscribe to topic channels
             subscribeTopics(token);
 

@@ -46,23 +46,24 @@ public class requestMeteoDataTask extends
     private String mSpot;
     int requestType;
 
-    public requestMeteoDataTask(Activity activity, AsyncRequestMeteoDataResponse asyncResponse) {
+    public requestMeteoDataTask(Activity activity, AsyncRequestMeteoDataResponse asyncResponse, int type) {
         this.activity = activity;
         dialog = new ProgressDialog(activity);
         delegate = asyncResponse;//Assigning call back interfacethrough constructor
+        requestType = type;
     }
 
     protected List<Object> doInBackground(Object... params) {
 
         URL url;
         List<Object> list = new ArrayList<Object>();
-        requestType = (int) params[0];
+
 
         try {
             String path = "/meteo?";
 
             if (requestType == REQUEST_LASTMETEODATA) {
-                mSpot = (String) params[1]; //lista di spot separata da virgola
+                mSpot = (String) params[0]; //lista di spot separata da virgola
 
                 path += "lastdata=true";
                 path += "&history=false";
@@ -71,7 +72,7 @@ public class requestMeteoDataTask extends
                 path += "&spot="+mSpot;
 
             } else if (requestType == REQUEST_HISTORYMETEODATA) {
-                mSpot = (String) params[1]; //lista di spot separata da virgola
+                mSpot = (String) params[0]; //lista di spot separata da virgola
 
                 path += "lastdata=false";
                 path += "&history=true";
@@ -160,8 +161,19 @@ public class requestMeteoDataTask extends
 
     protected void onPreExecute() {
 
-        this.dialog.setMessage("Lettura dati..."/*getString(R.string.dialog_readingmeteo)*/);
+        String message = "attendere prego...";
+        if (requestType == REQUEST_SPOTLIST)
+            message = "Richiesta lista spot...";
+        else if (requestType == REQUEST_SPOTLIST_FULLINFO)
+            message = "Richiesta lista completa spot...";
+        else if (requestType == REQUEST_HISTORYMETEODATA)
+            message = "Richiesta dati storici...";
+        else if (requestType == REQUEST_LASTMETEODATA)
+            message = "Richiesta dati meteo...";
+
+        this.dialog.setMessage(message);
         this.dialog.show();
+
     }
 
     protected void onProgressUpdate(Integer... progress) {

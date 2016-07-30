@@ -24,11 +24,15 @@ public class WindAlarmProgram {
 	public Boolean sa = true;
 	public Boolean su = true;
 	public Long spotId = 0L;
+	public int deviceId = -1;
 
 	public WindAlarmProgram() {
 
 	}
 	public WindAlarmProgram(JSONObject jObject) throws JSONException {
+
+		if (jObject.has("deviceId"))
+			deviceId = jObject.getInt("deviceId");
 
 		startTime = jObject.getString("startTime");
 		endTime = jObject.getString("endTime");

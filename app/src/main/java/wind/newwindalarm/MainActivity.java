@@ -1,5 +1,6 @@
 package wind.newwindalarm;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -20,6 +21,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -55,6 +57,10 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -195,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements
     SettingsFragment settingsFragment;
     ProfileFragment profileFragment;
     SpotMeteoListFragment spotMeteoListFragment;
+    SplashScreenFragment splashFragment;
 
     // google properties
     TextView mUserNameTextView;
@@ -310,6 +317,8 @@ public class MainActivity extends AppCompatActivity implements
             startService(intent);
         }
 
+        // carica la spot list per la combo dei programmmi
+        //getSpotListFromServer();
 
         // [START configure_signin]
         // Configure sign-in to request the user's ID, email address, and basic
@@ -364,12 +373,13 @@ public class MainActivity extends AppCompatActivity implements
         panelFragment = new PanelFragment();
         programFragment = new ProgramFragment();
         programListFragment = new ProgramListFragment();
-        //messageFragment = new MessageFragment();
+        splashFragment = new SplashScreenFragment();
         settingsFragment = new SettingsFragment();
         settingsFragment.setSettings(mSettings);
         profileFragment = new ProfileFragment();
         spotMeteoListFragment = new SpotMeteoListFragment();
 
+        //showSplashScreen();
         showFragment(R.id.nav_profile);
         int spotId = 0;
         Bundle extras = getIntent().getExtras();
@@ -383,8 +393,7 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         silentSignIn(spotId);
-        // carica la spot list per la combo dei programmmi
-        getSpotListFromServer();
+
 
     }
 
@@ -406,7 +415,39 @@ public class MainActivity extends AppCompatActivity implements
         if (!isReceiverRegistered) {
             LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                     new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
+
             isReceiverRegistered = true;
+            String model = Build.MODEL;
+
+            new registertask(this, new AsyncRegisterResponse() {
+
+                @Override
+                public void processFinish(String jsonStr, boolean error, String errorMessage) {
+
+                    try {
+                        JSONObject json = new JSONObject(jsonStr);
+                        if (json.has("id")) {
+                            int deviceId = json.getInt("id");
+                            setDeviceId(deviceId);
+
+                            spotList = new ArrayList<Spot>();
+                            String str = json.getString("spotlist");
+                            //JSONObject jObject = new JSONObject(str);
+                            JSONArray jArray = new JSONArray(str);
+                            for (int i = 0; i < jArray.length(); i++) {
+                                JSONObject jObject2 = jArray.getJSONObject(i);
+                                Spot spt = new Spot(jObject2);
+                                spotList.add(spt);
+                            }
+                            programListFragment.setServerSpotList(spotList);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }, registertask.POST_REGISTERDEVICE).execute(AlarmPreferences.getRegId(this), model);
+
         }
     }
 
@@ -530,6 +571,14 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }
 
+    private void showSplashScreen() {
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.content_frame, splashFragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
     private void showFragment(int mPosition) {
 
         //Bundle data = new Bundle();
@@ -586,14 +635,17 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
 
-                spotList = new ArrayList<Spot>();
-
                 if (error) {
                     showError(errorMessage);
                     return;
                 }
 
-                List<Long> sl = mSettings.readSpotList();
+                spotList = new ArrayList<Spot>();
+                for (int i = 0; i < list.size(); i++) {
+                    spotList.add((Spot) list.get(i));
+                }
+
+                /*List<Long> sl = mSettings.readSpotList();
 
                 List<Long> newlist;
                 if (sl != null) {
@@ -611,12 +663,13 @@ public class MainActivity extends AppCompatActivity implements
                 } else {
                     newlist = new ArrayList<Long>();
                 }
-                panelFragment.setSpotOrder(newlist);
+                panelFragment.setSpotOrder(newlist);*/
                 //settingsFragment.setServerSpotList(spotList);
                 programListFragment.setServerSpotList(spotList);
                 //spotMeteoListFragment.setSpotList(spotList);
             }
-        }).execute(requestMeteoDataTask.REQUEST_SPOTLIST);
+        },requestMeteoDataTask.REQUEST_SPOTLIST).execute();
+
     }
 
     public void showError(String errorMessage) {

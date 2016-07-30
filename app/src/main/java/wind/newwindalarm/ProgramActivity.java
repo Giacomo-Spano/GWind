@@ -98,10 +98,7 @@ public class ProgramActivity extends AppCompatActivity {
                 if (error) {
 
                     setResult(ProgramListFragment.REQUESTRESULT_ERROR, null);
-
-
                 } else {
-
                     Intent output = new Intent();
                     output.putExtra("WindAlarmProgram", new Gson().toJson(program));
 

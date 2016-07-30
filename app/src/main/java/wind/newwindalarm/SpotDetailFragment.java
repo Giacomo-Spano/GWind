@@ -122,7 +122,7 @@ public class SpotDetailFragment extends Fragment {
 
         HistoryChart hc = new HistoryChart(getActivity(),mLineChart);
 
-        new requestMeteoDataTask(getActivity(), hc).execute(requestMeteoDataTask.REQUEST_HISTORYMETEODATA, "" + spot);
+        new requestMeteoDataTask(getActivity(), hc,requestMeteoDataTask.REQUEST_HISTORYMETEODATA).execute("" + spot);
 
         /*new requestMeteoDataTask(getActivity(), new AsyncRequestMeteoDataResponse() {
 
@@ -279,7 +279,7 @@ public class SpotDetailFragment extends Fragment {
             public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
 
             }
-        }).execute(requestMeteoDataTask.REQUEST_LASTMETEODATA, "" + spot);
+        },requestMeteoDataTask.REQUEST_LASTMETEODATA).execute("" + spot);
     }
 
 

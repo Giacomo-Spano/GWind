@@ -15,6 +15,7 @@
  */
 package wind.newwindalarm;
 
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -184,6 +185,8 @@ public final class ServerUtilities {
 
 
     public static int getDeviceIdFromRegId(String token, String serverURL) {
+
+
 
         int deviceId = -1;
 
