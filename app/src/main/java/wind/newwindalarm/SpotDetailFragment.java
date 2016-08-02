@@ -40,12 +40,8 @@ public class SpotDetailFragment extends Fragment {
 
     private int position;
 
-    //private LinearLayout mcontainer;
     private LineChart mLineChart;
-    //private TextView mTitleTextView;
-    //private LineData data;
     private long spotID;
-    //private String mImageURL = "";
     private ImageView mWebcamImageView;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -57,8 +53,6 @@ public class SpotDetailFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Do something that differs the Activity's menu here
         super.onCreateOptionsMenu(menu, inflater);
-
-
     }
 
     @Override
@@ -109,8 +103,10 @@ public class SpotDetailFragment extends Fragment {
     }
 
     private void refreshData() {
-        getLastData(spotID);
+
         getHistoryData(spotID);
+        getLastData(spotID);
+
     }
 
     public void onBackPressed() {
@@ -222,6 +218,7 @@ public class SpotDetailFragment extends Fragment {
 
 
     public void getLastData(long spot) {
+
 
         new requestMeteoDataTask(getActivity(), new AsyncRequestMeteoDataResponse() {
 

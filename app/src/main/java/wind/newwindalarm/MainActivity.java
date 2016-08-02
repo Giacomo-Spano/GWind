@@ -100,49 +100,7 @@ public class MainActivity extends AppCompatActivity implements
         finish();
     }
 
-    void sendLogToMail() {
 
-        String line, trace = "";
-
-        try {
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(MainActivity.this
-                            .openFileInput("stack.trace"))); // se non esiste Filenotfoundexception
-            while((line = reader.readLine()) != null) {
-                trace += line+"\n";
-            }
-
-            Intent sendIntent = new Intent(Intent.ACTION_SEND);
-            String subject = "Error report";
-            String body =
-                    "Giacomo, l'applicazione si è bloccata in questo punto: \n" +
-                            "Mail this to appdeveloper@gmail.com: "+
-                            "\n"+
-                            trace+
-                            "\n";
-
-            sendIntent.putExtra(Intent.EXTRA_EMAIL,
-                    new String[] {"giaggi70@gmail.com"});
-            sendIntent.putExtra(Intent.EXTRA_TEXT, body);
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-            sendIntent.setType("message/rfc822");
-
-            MainActivity.this.startActivity(
-                    Intent.createChooser(sendIntent, "Title:"));
-
-            MainActivity.this.deleteFile("stack.trace");
-
-        } catch(FileNotFoundException fnfe) {
-
-            // se il file non esiste non fare nulla
-            return;
-// ...
-        } catch(IOException ioe) {
-// ...
-        }
-
-
-    }
 
     public void SendLoagcatMail() {
 
@@ -211,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements
     FloatingActionButton addFab;
     FloatingActionButton refreshFab;
 
+
     private UserProfile mProfile = null;
     static boolean signedIn = false;
     static int nextFragment = -1;
@@ -234,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements
         //}
         Log.i("PROVA", "MESSAGGIO");
 
-        sendLogToMail();
+        //sendLogToMail();
         Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
 
         String hh = null;
@@ -254,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements
                 programListFragment.createProgram();
             }
         });
+
 
         refreshFab = (FloatingActionButton) findViewById(R.id.refreshFab);
         refreshFab.setOnClickListener(new View.OnClickListener() {
@@ -437,6 +397,8 @@ public class MainActivity extends AppCompatActivity implements
                             for (int i = 0; i < jArray.length(); i++) {
                                 JSONObject jObject2 = jArray.getJSONObject(i);
                                 Spot spt = new Spot(jObject2);
+
+
                                 spotList.add(spt);
                             }
                             programListFragment.setServerSpotList(spotList);
@@ -588,6 +550,7 @@ public class MainActivity extends AppCompatActivity implements
         refreshFab.setVisibility(View.GONE);
         addFab.setVisibility(View.GONE);
 
+
         if (!signedIn) {
             nextFragment = mPosition;
             ft.replace(R.id.content_frame, profileFragment);
@@ -619,6 +582,7 @@ public class MainActivity extends AppCompatActivity implements
         return syncConnPref;
     }
 
+    /*
     private void getSpotListFromServer() {
 
         new requestMeteoDataTask(this, new AsyncRequestMeteoDataResponse() {
@@ -645,25 +609,7 @@ public class MainActivity extends AppCompatActivity implements
                     spotList.add((Spot) list.get(i));
                 }
 
-                /*List<Long> sl = mSettings.readSpotList();
 
-                List<Long> newlist;
-                if (sl != null) {
-                    for (int i = 0; i < list.size(); i++) {
-                        Spot spot = (Spot) list.get(i);
-                        for (int k = 0; k < sl.size(); k++) {
-                            if (spot.id == sl.get(k)) {
-                                spot.enabled = true;
-                                break;
-                            }
-                        }
-                        spotList.add((Spot) list.get(i));
-                    }
-                    newlist = mSettings.getNewOrderList(sl);
-                } else {
-                    newlist = new ArrayList<Long>();
-                }
-                panelFragment.setSpotOrder(newlist);*/
                 //settingsFragment.setServerSpotList(spotList);
                 programListFragment.setServerSpotList(spotList);
                 //spotMeteoListFragment.setSpotList(spotList);
@@ -671,6 +617,7 @@ public class MainActivity extends AppCompatActivity implements
         },requestMeteoDataTask.REQUEST_SPOTLIST).execute();
 
     }
+*/
 
     public void showError(String errorMessage) {
 
@@ -708,6 +655,18 @@ public class MainActivity extends AppCompatActivity implements
         for (int i = 0; i < spotList.size(); i++) {
             if (spotList.get(i).id == id)
                 return spotList.get(i).name;
+        }
+        return null;
+    }
+
+    public static Spot getSpotFromId(long id) {
+
+        if (spotList == null)
+            return null;
+
+        for (int i = 0; i < spotList.size(); i++) {
+            if (spotList.get(i).id == id)
+                return spotList.get(i);
         }
         return null;
     }
@@ -844,7 +803,7 @@ public class MainActivity extends AppCompatActivity implements
     private void showNoUser() {
         mUserNameTextView.setText("no user");
         memailTextView.setText("no email");
-        mUserImageImageView.setImageResource(R.drawable.wind);
+        mUserImageImageView.setImageResource(R.drawable.user_white);
 
         if (profileFragment != null) {
             profileFragment.setProfile(null);

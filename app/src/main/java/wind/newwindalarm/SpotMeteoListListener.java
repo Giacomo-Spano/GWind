@@ -55,6 +55,9 @@ public interface SpotMeteoListListener {
             TextView dateView = (TextView) rowView.findViewById(R.id.dateTextView);
             dateView.setText("" + getItem(position).date);
 
+            TextView sourceView = (TextView) rowView.findViewById(R.id.sourceTextView);
+            sourceView.setText(getItem(position).sourceUrl);
+
             CheckBox checkBox = (CheckBox) rowView.findViewById((R.id.favoritecheckBox));
             checkBox.setTag(position);
             checkBox.setChecked(getItem(position).favorites);

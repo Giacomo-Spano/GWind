@@ -16,7 +16,7 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
 
     // Container Activity must implement this interface
     public interface OnSpotMeteoListListener {
-        /*public */void onSpotListChangeSelection(List<Long> list);
+        void onSpotListChangeSelection(List<Long> list);
     }
 
     OnSpotMeteoListListener mListener;
@@ -35,15 +35,7 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-
-        /*if (mSpotList == null)
-            return;*/
-
-
         getSpotListFromServer(this);
-        /*List<Spot> sl = mSpotList;
-        SpotMeteoListArrayAdapter adapter = new SpotMeteoListArrayAdapter(getActivity(), sl, this);
-        setListAdapter(adapter);*/
     }
 
     private void getSpotListFromServer(final SpotMeteoListListener listener) {
@@ -95,8 +87,6 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
 
         long spotId = mSpotList.get((int) id).id;
         showSpotDetail(spotId);
-
-
     }
 
     @Override

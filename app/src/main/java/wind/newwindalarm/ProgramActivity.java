@@ -5,10 +5,12 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.gson.Gson;
 
@@ -21,10 +23,14 @@ public class ProgramActivity extends AppCompatActivity {
 
     protected ProgramFragment programFragment;
     protected String mServerUrl;
+    FloatingActionButton saveProgramFab;
+    FloatingActionButton deleteProgramFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_program);
 
         // Display the fragment as the main content.
         programFragment = new ProgramFragment();
@@ -33,7 +39,7 @@ public class ProgramActivity extends AppCompatActivity {
         data2.putInt("position", 1);
         programFragment.setArguments(data2);
         getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, programFragment)
+                .replace(/*android.R.id.content*/R.id.content_frame, programFragment)
                 .commit();
 
         String jsonMyObject;
@@ -53,6 +59,30 @@ public class ProgramActivity extends AppCompatActivity {
 
             mServerUrl = getIntent().getStringExtra("serverurl");
         }
+        saveProgramFab = (FloatingActionButton) findViewById(R.id.saveProgramFab);
+        saveProgramFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                postProgram(false);
+            }
+        });
+        saveProgramFab.setVisibility(View.VISIBLE);
+
+        deleteProgramFab = (FloatingActionButton) findViewById(R.id.deleteProgramFab);
+        deleteProgramFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                postProgram(true);
+            }
+        });
+        deleteProgramFab.setVisibility(View.VISIBLE);
+
+
+        //saveProgramFab.setVisibility(View.VISIBLE);
+        //deleteProgramFab.setVisibility(View.GONE);
+
     }
 
     @Override

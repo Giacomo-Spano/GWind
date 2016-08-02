@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/imageView7"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/hand" />
+        android:src="@drawable/webcam" />
 
     <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/chart"

@@ -133,7 +133,7 @@ public class ProfileFragment extends Fragment {
             mEMailTextView.setVisibility(View.VISIBLE);
             mUserImageView.setVisibility(View.VISIBLE);
             mUserImageView.setImageBitmap(mProfile.userImage);
-            mRegIdTextView.setVisibility(View.VISIBLE);
+            mRegIdTextView.setVisibility(View.GONE);
             mSignonButton.setVisibility(View.GONE);
             mSignoutButton.setVisibility(View.VISIBLE);
             mDisconnectButton.setVisibility(View.VISIBLE);
@@ -142,8 +142,8 @@ public class ProfileFragment extends Fragment {
             mUserNameTextView.setVisibility(View.GONE);
             mEMailTextView.setText("");
             mEMailTextView.setVisibility(View.GONE);
-            mUserImageView.setImageResource(R.drawable.wind);
-            mUserImageView.setVisibility(View.GONE);
+            mUserImageView.setImageResource(R.drawable.user_white);
+            //mUserImageView.setVisibility(View.GONE);
             mRegIdTextView.setVisibility(View.GONE);
             mSignonButton.setVisibility(View.VISIBLE);
             mSignoutButton.setVisibility(View.GONE);

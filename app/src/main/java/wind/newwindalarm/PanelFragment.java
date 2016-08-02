@@ -74,20 +74,10 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // Retrieving the currently onClickMoveUp item number
-        //position = getArguments().getInt("position");
-        //String[] items = getResources().getStringArray(R.array.opzioni);
 
         View v;
         v = inflater.inflate(R.layout.fragment_controlpanel, container, false);
 
-        /*FloatingActionButton addFab = (FloatingActionButton) v.findViewById(R.id.addFab);
-        addFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });*/
 
         mcontainer = (LinearLayout) v.findViewById(R.id.meteolist);
         mErrorLayout = (LinearLayout) v.findViewById(R.id.errorLayout);
@@ -96,9 +86,6 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
 
         // Updating the action bar title
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Stazioni meteo"/*items[position]*/);
-
-        //if (spotOrder.size() > 0)
-        //    getMeteoData();
 
         getMeteoData();
 
@@ -181,7 +168,14 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
                         if(md.spotID == id) {
                             final MeteoCardItem carditem = new MeteoCardItem(this, getActivity(), mcontainer);
                             carditem.spotID = md.spotID;
-                            carditem.mWecamUrl = md.webcamurl;
+                            Spot spot = MainActivity.getSpotFromId(md.spotID);
+                            if (spot != null) {
+                                carditem.card.setTitle(spot.name);
+                                carditem.card.setSourceUrl(spot.sourceUrl);
+                                if (md.offline) {
+                                    carditem.card.setTitle("offline");
+                                }
+                            }
                             carditem.update(md);
                             mcontainer.addView(carditem.card);
                             meteoList.add(carditem);
@@ -190,15 +184,6 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
 
                 }
 
-                /*for (int k = 0; k < list.size(); k++) {
-                    MeteoStationData md = (MeteoStationData) list.get(k);
-                    final MeteoCardItem carditem = new MeteoCardItem(this, getActivity(), mcontainer);
-                    carditem.spotID = md.spotID;
-                    carditem.mWecamUrl = md.webcamurl;
-                    carditem.update(md);
-                    mcontainer.addView(carditem.card);
-                    meteoList.add(carditem);
-                }*/
                 mcontainer.invalidate();
             }
         }

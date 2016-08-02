@@ -9,23 +9,24 @@ import org.json.JSONObject;
  */
 public class MeteoStationData extends Object {
 
+
     //static public String Spot_All = "all";
 
-    public Double speed = 0.0;
-    public Double averagespeed = 0.0;
+    public Double speed = null;
+    public Double averagespeed = null;
     public String direction;
-    public Double directionangle = 0.0;
+    public Double directionangle = null;
     public String date;
-    //public String time;
-    public Double temperature = 0.0;
-    public Double pressure = 0.0;
-    public Double humidity = 0.0;
-    public Double rainrate = 0.0;
+    public Double temperature = null;
+    public Double pressure = null;
+    public Double humidity = null;
+    public Double rainrate = null;
     public String sampledatetime;
     public String spotName;
     public Long spotID;
     public Double trend = 0.0;
     public String webcamurl = "";
+    public boolean offline = false;
 
     public MeteoStationData(JSONObject jObject) throws JSONException {
 
@@ -57,6 +58,8 @@ public class MeteoStationData extends Object {
             spotID = jObject.getLong("spotid");
         if (!jObject.isNull("webcamurl"))
             webcamurl = jObject.getString("webcamurl");
+        if (!jObject.isNull("offline"))
+            offline = jObject.getBoolean("offline");
     }
 
     public String toJson() {

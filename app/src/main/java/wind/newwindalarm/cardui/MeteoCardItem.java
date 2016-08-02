@@ -12,7 +12,6 @@ import wind.newwindalarm.R;
 public class MeteoCardItem {
 
     public long spotID;
-    public String mWecamUrl = "";
     MeteoStationData md;
     public MeteoCard card;
     MeteoCardListener listener;
@@ -41,21 +40,45 @@ public class MeteoCardItem {
 
         md = data;
 
-        card.setTitle(data.spotName);
-        card.setSpeed("" + data.speed/* + " km/h"*/ /*+ data.direction + data.directionangle*/);
+        if (data.speed != null) {
+            card.setSpeed("" + data.speed);
+        } else {
+            card.setSpeed("--");
+        }
         card.setSpeed(data.speed);
-        card.setDirection(data.directionangle,data.direction);
+
+        if (data.directionangle != null) {
+            card.setDirection(data.directionangle,data.direction);
+        } else {
+            card.setDirection(0.0,"--");
+        }
         card.setTrend(data.trend);
-        card.setAvSpeed("" + data.averagespeed/* + " km/h"*/);
-        card.setTemperature("" + data.temperature/* + " C"*/);
-        card.setHumidity("" +data.humidity/* + " %"*/);
-        card.setPressure("" + data.pressure/* + " hPa"*/);
-        card.setRainRate("" + data.rainrate /*+ " mm"*/);
+
+        if (data.averagespeed != null) {
+            card.setAvSpeed("" + data.averagespeed);
+        } else {
+            card.setAvSpeed("--");
+        }
+        if (data.temperature != null) {
+            card.setTemperature("" + data.temperature);
+        } else {
+            card.setTemperature("--");
+        }
+        if (data.humidity != null) {
+            card.setHumidity("" + data.humidity);
+        } else {
+            card.setHumidity("--");
+        }
+        if (data.pressure != null) {
+            card.setPressure("" + data.pressure);
+        } else {
+            card.setPressure("--");
+        }
+        if (data.rainrate != null) {
+            card.setRainRate("" + data.rainrate);
+        } else {
+            card.setRainRate("--");
+        }
         card.setDate(data.date/* + " " + data.time*/);
-        //card.setDate(data.date + " " + data.time);
-
-        //mWindControl.setPower(data.speed);
-        //mWindControl.setDirection(data.directionangle);
-
     }
 }

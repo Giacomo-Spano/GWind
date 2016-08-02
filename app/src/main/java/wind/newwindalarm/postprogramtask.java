@@ -152,9 +152,9 @@ public class postprogramtask extends AsyncTask<Object, Boolean, Boolean> {
 
     protected void onPreExecute() {
 
-        String message = "attendere prego...";
+        String message = "Attendere prego...";
         if (postType == POST_TESTALARM)
-            message = "Test sveglia ij corso...";
+            message = "Test sveglia i corso...";
         else if (postType == POST_ALARM)
             message = "Salvataggio in corso...";
         else if (postType == POST_DELETEALARM)

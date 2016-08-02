@@ -112,7 +112,7 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
             mEndTime.setText(time);
         }
     };
-    private TextView mId;
+    //private TextView mId;
     private EditText mStartdate;
     private EditText mEnddate;
     private EditText mStartTime;
@@ -156,9 +156,7 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
 
         View v;
         v = inflater.inflate(R.layout.fragment_program, container, false);
-        TextView tv = (TextView) v.findViewById(R.id.tv_content);
 
-        mId = (TextView) v.findViewById(R.id.textViewID);
         mMonday = (CheckBox) v.findViewById(R.id.mondayCheckBox);
         mTuesday = (CheckBox) v.findViewById(R.id.tuesdayCheckBox);
         mWednesday = (CheckBox) v.findViewById(R.id.wednesdayCheckBox);
@@ -239,7 +237,8 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
             }
         });
 
-        tv.requestFocus();
+        View titleText = v.findViewById(R.id.titleTextView);
+        titleText.requestFocus();
         updateProgramFragment();
 
         return v;
@@ -301,7 +300,7 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
 
     private void updateProgramFragment() {
 
-        mId.setText("" + program.id);
+        //mId.setText("" + program.id);
         mSpeed.setText(program.speed.toString());
         mAvSpeed.setText(program.avspeed.toString());
         mStartdate.setText(program.startDate);
@@ -334,7 +333,7 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
 
         program.direction = "N";
         program.enabled = true;
-        program.id = Long.valueOf(mId.getText().toString());
+        //program.id = Long.valueOf(mId.getText().toString());
 
         program.mo = mMonday.isChecked();
         program.tu = mTuesday.isChecked();

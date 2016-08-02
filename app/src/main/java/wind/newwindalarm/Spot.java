@@ -9,6 +9,8 @@ import org.json.JSONObject;
 public class Spot<T> {
     public String name;
     public Long id;
+    public String sourceUrl;
+    public String webcamUrl;
     public boolean enabled = false;
 
     public double speed = 0.0;
@@ -21,10 +23,17 @@ public class Spot<T> {
 
     public Spot(JSONObject jObject) throws JSONException {
 
-        if (!jObject.isNull("spotname"))
-            name = jObject.getString("spotname");
         if (!jObject.isNull("id"))
             id = jObject.getLong("id");
+
+
+        if (!jObject.isNull("spotname"))
+            name = jObject.getString("spotname");
+        if (!jObject.isNull("sourceurl"))
+            sourceUrl = jObject.getString("sourceurl");
+        if (!jObject.isNull("webcamurl"))
+            webcamUrl = jObject.getString("webcamurl");
+
 
         if (jObject.isNull("speed") || jObject.isNull("avspeed") || jObject.isNull("direction") || jObject.isNull("directionangle") || jObject.isNull("datetime")) {
             offline = true;

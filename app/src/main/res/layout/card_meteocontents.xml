@@ -452,11 +452,18 @@
 
     </RelativeLayout>
 
-
     <Space
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:id="@+id/bottomspace" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="source:"
+        android:id="@+id/sourceTextView"
+        android:layout_gravity="right|top"
+        android:textColor="@color/textmisure_color" />
 
 </LinearLayout>

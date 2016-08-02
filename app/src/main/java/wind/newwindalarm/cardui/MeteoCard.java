@@ -25,7 +25,7 @@ public class MeteoCard extends LinearLayout {
     private TextView mTitle;
     private RelativeLayout mDetailsLinearLayout;
     private Space mBottomSpace;
-    //private int spotid
+    private TextView mSourceUrl;
 
     public MeteoCard(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -50,6 +50,8 @@ public class MeteoCard extends LinearLayout {
                 openclose();
             }
         });
+
+        mSourceUrl = (TextView) findViewById(R.id.sourceTextView);
     }
 
     private void openclose() {
@@ -68,8 +70,11 @@ public class MeteoCard extends LinearLayout {
     }
 
     public void setTitle(String title) {
-        //TextView tv = (TextView) findViewById(R.id.title);
         mTitle.setText(title);
+    }
+
+    public void setSourceUrl(String url) {
+        mSourceUrl.setText(url);
     }
 
     public void setSpeed(String speed) {
@@ -77,11 +82,7 @@ public class MeteoCard extends LinearLayout {
         TextView tv = (TextView) findViewById(R.id.speedTextView);
         tv.setText(speed);
     }
-    /*public void setSpotID(int id) {
 
-        TextView tv = (TextView) findViewById(R.id.speedTextView);
-        tv.setText(speed);
-    }*/
     public void setSpeed(Double speed) {
 
         WindControl wc = (WindControl) findViewById(R.id.windcontrol);

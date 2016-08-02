@@ -63,8 +63,8 @@
     <string name="server_unregister_error">Could not unregister device on Demo Server (%1$s).</string>
 
     <string name="title_activity_play_alarm">PlayAlarmActivity</string>
-    <string name="title_activity_program">PlayAlarmActivity</string>
-    <string name="title_activity_sendlog">PlayAlarmActivity</string>
+    <string name="title_activity_program">ProgramActivity</string>
+    <string name="title_activity_sendlog">SendLogActivity</string>
 
 
     <string name="message_subject">Android device log</string>
