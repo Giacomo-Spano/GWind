@@ -30,6 +30,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.TelephonyManager;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -43,6 +44,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -65,6 +67,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -200,6 +203,10 @@ public class MainActivity extends AppCompatActivity implements
         //hh.toString();
 
         instance = this;
+
+        registerReceiver(mHandleMessageReceiver, new IntentFilter(
+                wind.newwindalarm.CommonUtilities.DISPLAY_MESSAGE_ACTION));
+
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -370,6 +377,36 @@ public class MainActivity extends AppCompatActivity implements
         isReceiverRegistered = false;
         super.onPause();
     }
+
+    private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            String newMessage = intent.getExtras().getString(CommonUtilities.EXTRA_MESSAGE/*EXTRA_MESSAGE*/);
+
+            // Waking up mobile if it is sleeping
+            //WakeLocker.acquire(getApplicationContext());
+
+            /**
+             * Take appropriate action on this message
+             * depending upon your app requirement
+             * For now i am just displaying it on the screen
+             * */
+            Toast.makeText(getApplicationContext(), "New Message: " + newMessage, Toast.LENGTH_LONG).show();
+
+            String title = intent.getExtras().getString("title");
+
+            Time today = new Time(Time.getCurrentTimezone());
+            today.setToNow();
+            newMessage = today.format("%d.%m.%Y %H:%M:%S") + title + " - " + newMessage + "\n";
+
+
+            //messageFragment.appendMessage(newMessage/* + "\n"*/);
+
+            // Releasing wake lock
+            //WakeLocker.release();
+        }
+    };
 
     private void registerReceiver() {
         if (!isReceiverRegistered) {

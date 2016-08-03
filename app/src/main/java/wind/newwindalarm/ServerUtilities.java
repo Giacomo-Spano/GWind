@@ -15,19 +15,11 @@
  */
 package wind.newwindalarm;
 
-import android.app.Activity;
-import android.app.DownloadManager;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.http.RequestQueue;
 import android.os.Build;
-import android.preference.PreferenceManager;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
 //import com.google.android.gcm.GCMRegistrar;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,7 +31,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -48,7 +39,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 
 import static wind.newwindalarm.CommonUtilities.TAG;
-import static wind.newwindalarm.CommonUtilities.displayMessage;
+import static wind.newwindalarm.CommonUtilities.sendMessageToMainActivity;
 
 /**
  * Helper class used to communicate with the demo server.

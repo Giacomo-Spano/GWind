@@ -16,6 +16,7 @@
 
 package wind.newwindalarm;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -25,9 +26,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
+
+import static wind.newwindalarm.CommonUtilities.sendMessageToMainActivity;
 
 public class WindAlarmGcmListenerService extends GcmListenerService {
 
@@ -60,21 +62,21 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
          *     - Store message in local database.
          *     - Update UI.
          */
+
         String notificationType = data.getString("notificationtype");
-
-
         // notifies user
         if (notificationType.equals("Alarm")) {
 
-            playAlarm(getApplicationContext()/*MainActivity.getContext()*/, data);
+            playAlarm(getApplicationContext(), data);
+
             return;
 
         } else {
 
             String title = data.getString("title");
             message = data.getString("message");
-            //displayMessage(context, title, messagetext/*message*/, notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
-            //generateNotification(context, messagetext, title, notificationType); // questo genera la notifica nella barra notifica
+            CommonUtilities.sendMessageToMainActivity(getApplicationContext(), title, "messagetext", notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
+            generateUINotification(getApplicationContext(), message, title); // questo genera la notifica nella barra notifica
         }
 
         /**
@@ -115,8 +117,6 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
     private void playAlarm(Context context, Bundle alarmData) {
         Intent resultIntent = new Intent(context, PlayAlarmActivity.class);
 
-        //Bundle b = new Bundle();
-        //b.putInt("regId", spot); //Your id
         String spotId = alarmData.getString("spotID");
         String alarmId = alarmData.getString("alarmId");
         String curDate = alarmData.getString("curDate");
@@ -150,6 +150,71 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         getApplication().startActivity(resultIntent);
 
+        generateUINotification(getApplicationContext(), curDate.toString()
+                                + "\nSveglia vento attivata (id:" + alarmId+ ")"
+                                + "\nIntensità vento " + curspeed
+                                + "\nIntensità media " + curavspeed, MainActivity.getSpotName(Integer.valueOf(spotId)));
+        //sendMessageToMainActivity(getApplicationContext(), "title", "messagetext", notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
+
+
 
     }
+
+    /**
+     * Issues a notification to inform the user that server has sent a message. // cioe mostra un messaggio nella barra notifiche e fa in modo
+     * che venga aperta una activiti se l'utente clicca sulla notifica
+     */
+    private void generateUINotification(Context context, String message, String title) {
+
+        String titleTxt = "wd";//context.getString(R.string.app_name);
+        titleTxt += title;
+        int icon = R.drawable.logo;
+
+        /*NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                        .setSmallIcon(icon)
+                        .setContentTitle(titleTxt)
+                        .setContentText(message)
+                        .setAutoCancel(true);*/
+
+        Intent resultIntent = new Intent(context, MainActivity.class);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+                context);
+        Notification notification = mBuilder.setSmallIcon(icon).setTicker(title).setWhen(0)
+                .setAutoCancel(true)
+                .setContentTitle(title)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                //.setContentIntent(resultIntent)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setSmallIcon(icon)
+                .setContentText(message).build();
+        // Creates an explicit intent for an Activity in your app
+
+
+        // The stack builder object will contain an artificial back stack for the
+        // started Activity.
+        // This ensures that navigating backward from the Activity leads out of
+        // your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        // Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(MainActivity.class);
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);  // questo fa in modo che venga aperta l'activiti quando l'user clicca sulla notifica
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // mId allows you to update the notification later on.
+        int mId = 1;
+        mNotificationManager.notify(mId, notification/*mBuilder.build()*/);
+
+
+    }
+
 }

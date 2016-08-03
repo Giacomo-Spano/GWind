@@ -63,15 +63,15 @@ public final class CommonUtilities {
      * @param context application's context.
      * @param message message to be displayed.
      */
-    static void displayMessage(Context context, String title, String message, String notificationType) {
+    static void sendMessageToMainActivity(Context context, String title, String message, String notificationType) {
         Intent intent = new Intent(DISPLAY_MESSAGE_ACTION);
         intent.putExtra(EXTRA_MESSAGE, message);
         intent.putExtra(EXTRA_TITLE, title);
         intent.putExtra(EXTRA_NOTIFICATIONTYPE, notificationType);
         context.sendBroadcast(intent);
     }
-    static void displayMessage(Context context, String title, String message) {
-        displayMessage(context, title, message, "");
+    static void sendMessageToMainActivity(Context context, String title, String message) {
+        sendMessageToMainActivity(context, title, message, "");
     }
     
 

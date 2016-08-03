@@ -119,7 +119,11 @@ public class HistoryChart implements AsyncRequestMeteoDataResponse {
 
             LineData data = new LineData(xVals, dataSets);
             mLineChart.setData(data);
-            mLineChart.invalidate(); // refresh
+
+            mLineChart.setVisibleXRange(30); // allow 20 values to be displayed at once on the x-axis, not more
+            mLineChart.moveViewToX(xVals.size()-30); // set the left edge of the chart to x-index 10
+
+            //mLineChart.invalidate(); // refresh
         }
     }
 

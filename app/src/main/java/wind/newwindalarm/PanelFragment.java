@@ -172,9 +172,9 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
                             if (spot != null) {
                                 carditem.card.setTitle(spot.name);
                                 carditem.card.setSourceUrl(spot.sourceUrl);
-                                if (md.offline) {
+                                /*if (md.offline) {
                                     carditem.card.setTitle("offline");
-                                }
+                                }*/
                             }
                             carditem.update(md);
                             mcontainer.addView(carditem.card);
