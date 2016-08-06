@@ -1,6 +1,5 @@
 package wind.newwindalarm;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -27,9 +26,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
-import android.telephony.TelephonyManager;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
@@ -58,18 +55,13 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -86,6 +78,8 @@ public class MainActivity extends AppCompatActivity implements
     private static MainActivity instance;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static int deviceId = -1;
+
+    public static String authCode = "";
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -169,6 +163,11 @@ public class MainActivity extends AppCompatActivity implements
     TextView memailTextView;
     ImageView mUserImageImageView;
 
+    ProgressBar progressBar;
+    public ProgressBar getProgressBar() {
+        return progressBar;
+    }
+
     FloatingActionButton addFab;
     FloatingActionButton refreshFab;
 
@@ -229,6 +228,8 @@ public class MainActivity extends AppCompatActivity implements
                 panelFragment.getMeteoData();
             }
         });
+
+        progressBar = (ProgressBar) findViewById(R.id.mainProgressBar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -764,8 +765,8 @@ public class MainActivity extends AppCompatActivity implements
 
                     if (signedIn) {
                         showFragment(R.id.nav_favorites);
-                        if (spotId != 0)
-                            panelFragment.showSpotDetail(spotId);
+                        //if (spotId != 0)
+                        //    panelFragment.showSpotDetail(spotId, meteoStationData);
                     } else {
                         showFragment(R.id.nav_profile);
                     }
@@ -811,7 +812,7 @@ public class MainActivity extends AppCompatActivity implements
 
             new LoadImagefromUrl().execute(/*mUserImageImageView, acct.getPhotoUrl().toString(),mProfile.userImage*/);
             //GoogleSignInAccount acct = result.getSignInAccount();
-            String authCode = acct.getServerAuthCode();
+            authCode = acct.getServerAuthCode();
             //mAuthCodeTextView.setText("Auth Code: " + authCode);
             // TODO(user): send code to server and exchange for access/refresh/ID tokens.
 
@@ -820,10 +821,12 @@ public class MainActivity extends AppCompatActivity implements
                 profileFragment.setProfile(mProfile);
             }*/
 
-            if (nextFragment != -1) {
+            showFragment(R.id.nav_favorites);
+
+            /*if (nextFragment != -1) {
                 showFragment(nextFragment);
                 nextFragment = -1;
-            }
+            }*/
 
         } else {
             signedIn = false;

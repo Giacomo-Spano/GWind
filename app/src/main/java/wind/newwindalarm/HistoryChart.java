@@ -75,12 +75,13 @@ public class HistoryChart implements AsyncRequestMeteoDataResponse {
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
                     Date date = null;
-                    date = sdf.parse(md.date/* + " " + md.time*/);
+                    if (md.date == null)
+                        continue;
+                    date = sdf.parse(md.date);
 
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTimeInMillis(date.getTime());
                     Time time = new Time();
-                    //time.set( int second, int minute, int hourOfDay, int monthDay, int month, int year);
 
                     if (!md.date.equals(lastTime)) {
                         Entry speedEntry = new Entry(Float.valueOf(String.valueOf(md.speed)), index); // 0 == quarter 1
@@ -120,8 +121,8 @@ public class HistoryChart implements AsyncRequestMeteoDataResponse {
             LineData data = new LineData(xVals, dataSets);
             mLineChart.setData(data);
 
-            mLineChart.setVisibleXRange(30); // allow 20 values to be displayed at once on the x-axis, not more
-            mLineChart.moveViewToX(xVals.size()-30); // set the left edge of the chart to x-index 10
+            mLineChart.setVisibleXRange(40); // allow 20 values to be displayed at once on the x-axis, not more
+            mLineChart.moveViewToX(xVals.size()-40); // set the left edge of the chart to x-index 10
 
             //mLineChart.invalidate(); // refresh
         }

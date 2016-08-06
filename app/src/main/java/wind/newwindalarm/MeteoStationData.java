@@ -7,7 +7,7 @@ import org.json.JSONObject;
 /**
  * Created by giacomo on 07/06/2015.
  */
-public class MeteoStationData extends Object {
+public class MeteoStationData /*extends Object*/ {
 
 
     //static public String Spot_All = "all";
@@ -27,6 +27,25 @@ public class MeteoStationData extends Object {
     public Double trend = 0.0;
     public String webcamurl = "";
     public boolean offline = false;
+
+    public MeteoStationData(MeteoStationData md) {
+
+        speed = md.speed;
+        averagespeed = md.averagespeed;
+        direction = md.direction;
+        directionangle = md.directionangle;
+        date = md.date;
+        temperature = md.temperature;
+        pressure  = md.pressure;
+        humidity  = md.humidity;
+        rainrate  = md.rainrate;
+        sampledatetime = md.sampledatetime;;
+        spotName = md.spotName;;
+        spotID = md.spotID;;
+        trend = md.trend;
+        webcamurl = md.webcamurl;
+        offline  = md.offline;
+    }
 
     public MeteoStationData(JSONObject jObject) throws JSONException {
 

@@ -7,6 +7,8 @@ import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,12 +47,18 @@ public class requestMeteoDataTask extends
     private String errorMessage = "";
     private String mSpot;
     int requestType;
+    ProgressBar progressBar;
+    int contentSize;
 
     public requestMeteoDataTask(Activity activity, AsyncRequestMeteoDataResponse asyncResponse, int type) {
         this.activity = activity;
         dialog = new ProgressDialog(activity);
         delegate = asyncResponse;//Assigning call back interfacethrough constructor
         requestType = type;
+
+        progressBar = ((MainActivity)activity).getProgressBar();
+        progressBar.setProgress(0);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     protected List<Object> doInBackground(Object... params) {
@@ -100,20 +108,26 @@ public class requestMeteoDataTask extends
             url = new URL(serverUrl + path);
 
             Log.d("url=", url.toString());
+
+
+
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("user",MainActivity.authCode);
             conn.setConnectTimeout(5000); //set timeout to 5 seconds
             conn.setAllowUserInteraction(false);
             conn.setInstanceFollowRedirects(true);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Content-Type", "application/json");
 
+
+
             try {
                 BufferedInputStream in = new BufferedInputStream(
                         conn.getInputStream());
                 // Convert the stream to a String
                 // There are various approaches, I'll leave it up to you
+                contentSize = Integer.valueOf(conn.getHeaderField("Length"));//conn.getContentLength();
                 String json = convertStreamToString(in);
-
 
                 if (requestType == REQUEST_SPOTLIST || requestType == REQUEST_SPOTLIST_FULLINFO) {
                     JSONObject jObject = new JSONObject(json);
@@ -132,6 +146,7 @@ public class requestMeteoDataTask extends
                         list.add(md);
                     }
                 }
+
                 if (conn != null)
                     conn.disconnect();
             } catch (JSONException e) {
@@ -153,13 +168,15 @@ public class requestMeteoDataTask extends
             errorMessage = e.toString();
         }
 
-        if (dialog.isShowing()) {
+        /*if (dialog.isShowing()) {
             dialog.dismiss();
-        }
+        }*/
         return list;
     }
 
     protected void onPreExecute() {
+
+        //progressBar.setProgress(10);
 
         String message = "attendere prego...";
         if (requestType == REQUEST_SPOTLIST)
@@ -171,13 +188,15 @@ public class requestMeteoDataTask extends
         else if (requestType == REQUEST_LASTMETEODATA)
             message = "Richiesta dati meteo...";
 
-        this.dialog.setMessage(message);
-        this.dialog.show();
+        //this.dialog.setMessage(message);
+        //this.dialog.show();
 
     }
 
-    protected void onProgressUpdate(Integer... progress) {
-        // setProgressPercent(progress[0]);
+
+    @Override
+    protected void onProgressUpdate(Long... values) {
+        progressBar.setProgress(values[0].intValue());
     }
 
     protected void onPostExecute(List<Object> list) {
@@ -192,6 +211,8 @@ public class requestMeteoDataTask extends
             delegate.processFinishHistory(list, error, errorMessage);
         else if (requestType == REQUEST_LASTMETEODATA)
             delegate.processFinish(list, error, errorMessage);
+
+        progressBar.setVisibility(View.GONE);
     }
     private String convertStreamToString(InputStream is) {
 
@@ -202,6 +223,10 @@ public class requestMeteoDataTask extends
         try {
             while ((line = reader.readLine()) != null) {
                 sb.append(line + "\n");
+
+                long l = 100 * sb.length() / contentSize;
+
+                publishProgress(l);
             }
         } catch (IOException e) {
             e.printStackTrace();

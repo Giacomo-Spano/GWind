@@ -92,7 +92,7 @@ public class AlarmFragment extends Fragment implements
         final Button snoozeButton = (Button) v.findViewById(R.id.snoozeAlarmButton);
         snoozeButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                snoozeAlarm(60);
+                snoozeAlarm(5);
             }
         });
 

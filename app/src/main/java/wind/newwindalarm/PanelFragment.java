@@ -7,7 +7,6 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,6 +19,9 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +30,7 @@ import java.util.Set;
 import wind.newwindalarm.cardui.MeteoCardItem;
 import wind.newwindalarm.cardui.MeteoCardListener;
 
-public class PanelFragment extends Fragment implements OnItemSelectedListener, MeteoCardListener {
+public class PanelFragment extends Fragment implements OnItemSelectedListener/*, MeteoCardListener*/ {
 
     private ProgressBar mProgress;
     private LinearLayout mcontainer;
@@ -93,17 +95,14 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
     }
 
 
-    @Override
-    public void meteocardselected(long index) {
-
-    }
-
-    public void showSpotDetail(long spotID) {
-        Fragment spotDetail = new SpotDetailFragment();
+    public void showSpotDetail(long spotID, MeteoStationData meteoStationData) {
+        SpotDetailFragment spotDetail = new SpotDetailFragment();
 
         Bundle data = new Bundle();
         data.putLong("spotID", spotID);
+        data.putString("meteodata", meteoStationData.toJson());
         spotDetail.setArguments(data);
+        //spotDetail.setMeteoData(meteoStationData);
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
@@ -116,6 +115,12 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
         // Commit the transaction
         transaction.commit();
     }
+
+    /*@Override
+    public void meteocardselected(long index, String meteoStationData) {
+
+    }*/
+
 
     private class requestDataResponse implements AsyncRequestMeteoDataResponse, MeteoCardListener {
 
@@ -165,7 +170,7 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
                     Iterator resultIterator = list.iterator();
                     while (resultIterator.hasNext()) {
                         MeteoStationData md = (MeteoStationData) resultIterator.next();
-                        if(md.spotID == id) {
+                        if (md.spotID == id) {
                             final MeteoCardItem carditem = new MeteoCardItem(this, getActivity(), mcontainer);
                             carditem.spotID = md.spotID;
                             Spot spot = MainActivity.getSpotFromId(md.spotID);
@@ -189,8 +194,6 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
         }
 
 
-
-
         @Override
         public void processFinishHistory(List<Object> list, boolean error, String errorMessage) {
         }
@@ -199,10 +202,11 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
         public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
         }
 
-        @Override
-        public void meteocardselected(long spotID) {
 
-            showSpotDetail(spotID);
+        @Override
+        public void meteocardselected(long spotID, MeteoStationData meteoStationData) {
+
+            showSpotDetail(spotID, meteoStationData);
         }
     }
 
@@ -226,13 +230,13 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
         String spotList = "";
         Iterator iter = favorites.iterator();
         while (iter.hasNext()) {
-            long id = Long.valueOf((String)iter.next());
+            long id = Long.valueOf((String) iter.next());
             spotList += id;
             if (iter.hasNext())
                 spotList += ",";
         }
 
-        new requestMeteoDataTask(getActivity(), new requestDataResponse(getFragmentManager()),requestMeteoDataTask.REQUEST_LASTMETEODATA).execute(spotList);
+        new requestMeteoDataTask(getActivity(), new requestDataResponse(getFragmentManager()), requestMeteoDataTask.REQUEST_LASTMETEODATA).execute(spotList);
     }
 
     public void onNothingSelected(AdapterView<?> parent) {

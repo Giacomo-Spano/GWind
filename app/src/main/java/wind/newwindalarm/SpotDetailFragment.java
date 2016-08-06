@@ -28,6 +28,9 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,11 +41,10 @@ import java.util.List;
 
 public class SpotDetailFragment extends Fragment {
 
-    private int position;
-
     private LineChart mLineChart;
     private long spotID;
     private ImageView mWebcamImageView;
+    private MeteoStationData meteoData;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +55,10 @@ public class SpotDetailFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Do something that differs the Activity's menu here
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    public void setMeteoData(MeteoStationData data) {
+        meteoData = data;
     }
 
     @Override
@@ -82,8 +88,16 @@ public class SpotDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // Retrieving the currently onClickMoveUp item number
         spotID = getArguments().getLong("spotID");
+        String str = getArguments().getString("meteodata");
+        try {
+            JSONObject json = new JSONObject(str);
+            meteoData = new MeteoStationData(json);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
         View v;
         v = inflater.inflate(R.layout.fragment_spotdetail, container, false);
@@ -104,8 +118,12 @@ public class SpotDetailFragment extends Fragment {
 
     private void refreshData() {
 
+        new DownloadImageTask(mWebcamImageView).execute(meteoData.webcamurl);
+
         getHistoryData(spotID);
-        getLastData(spotID);
+
+
+        //getLastData(spotID);
 
     }
 
@@ -118,102 +136,8 @@ public class SpotDetailFragment extends Fragment {
 
         HistoryChart hc = new HistoryChart(getActivity(),mLineChart);
 
-        new requestMeteoDataTask(getActivity(), hc,requestMeteoDataTask.REQUEST_HISTORYMETEODATA).execute("" + spot);
+        new requestMeteoDataTask(getActivity(),hc,requestMeteoDataTask.REQUEST_HISTORYMETEODATA).execute("" + spot);
 
-        /*new requestMeteoDataTask(getActivity(), new AsyncRequestMeteoDataResponse() {
-
-            @Override
-            public void processFinish(List<Object> list, boolean error, String errorMessage) {
-            }
-
-            @Override
-            public void processFinishHistory(List<Object> list, boolean error, String errorMessage) {
-                if (error) {
-
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-
-                    alertDialogBuilder.setTitle("Errore");
-                    alertDialogBuilder
-                            .setMessage(errorMessage)
-                            .setCancelable(false);
-                    alertDialogBuilder
-                            .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            });
-                    AlertDialog alertDialog;
-                    alertDialog = alertDialogBuilder.create();
-                    alertDialog.show();
-
-                } else {
-
-                    //mTitleTextView.setText(MainActivity.getSpotName(spot));
-
-                    ArrayList<Entry> valsComp1 = new ArrayList<Entry>();
-                    ArrayList<Entry> valsComp2 = new ArrayList<Entry>();
-                    ArrayList<String> xVals = new ArrayList<String>();
-
-                    String lastTime = "";
-                    int index = 0;
-                    for (int i = 0; i < list.size(); i++) {
-
-                        MeteoStationData md = (MeteoStationData) list.get(i);
-
-                        try {
-                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                            Date date = null;
-                            date = sdf.parse(md.date);
-
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTimeInMillis(date.getTime());
-                            Time time = new Time();
-
-                            if (!md.date.equals(lastTime)) {
-                                Entry speedEntry = new Entry(Float.valueOf(String.valueOf(md.speed)), index); // 0 == quarter 1
-                                Entry avspeedEntry = new Entry(Float.valueOf(String.valueOf(md.averagespeed)), index); // 0 == quarter 1
-                                valsComp1.add(speedEntry);
-                                valsComp2.add(avspeedEntry);
-                                xVals.add(md.date);
-                                lastTime = md.date;
-                                index++;
-                            }
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-
-
-                    }
-                    LineDataSet setComp1 = new LineDataSet(valsComp1, "Speed");
-                    setComp1.setAxisDependency(YAxis.AxisDependency.LEFT);
-                    setComp1.setColor(Color.RED);
-                    setComp1.setDrawCircles(true);
-                    setComp1.setCircleColor(Color.RED);
-
-                    LineDataSet setComp2 = new LineDataSet(valsComp2, "Average Speed");
-                    setComp2.setAxisDependency(YAxis.AxisDependency.LEFT);
-                    setComp2.setColor(Color.BLUE);
-                    setComp2.setDrawCircles(true);
-                    setComp2.setCircleColor(Color.BLUE);
-
-
-                    ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
-                    dataSets.add(setComp1);
-                    dataSets.add(setComp2);
-
-                    mLineChart.setDescription("Km/h");
-
-                    LineData data = new LineData(xVals, dataSets);
-                    mLineChart.setData(data);
-                    mLineChart.invalidate(); // refresh
-                }
-            }
-
-            @Override
-            public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
-
-            }
-        }).execute(requestMeteoDataTask.REQUEST_HISTORYMETEODATA, "" + spot);*/
     }
 
 

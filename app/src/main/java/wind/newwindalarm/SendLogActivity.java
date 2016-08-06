@@ -139,7 +139,7 @@ public class SendLogActivity extends Activity
             mSendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.message_subject));
             mSendIntent.setType("text/plain");//$NON-NLS-1$
 
-            mAdditonalInfo = getString(R.string.device_info_fmt, getVersionNumber(this), Build.MODEL, Build.VERSION.RELEASE, getFormattedKernelVersion(), Build.DISPLAY);
+            //mAdditonalInfo = "" + getVersionNumber(this) + "" + Build.MODEL + " " + Build.VERSION.RELEASE + " " + getFormattedKernelVersion()+ " " + Build.DISPLAY);
             mFormat = "time";
         }
         

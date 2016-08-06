@@ -161,7 +161,7 @@ public class postprogramtask extends AsyncTask<Object, Boolean, Boolean> {
             message = "Cancellazione in corso...";
 
         this.dialog.setMessage(message);
-        this.dialog.show();
+        //this.dialog.show();
 
         /*this.dialog.show(this.activity,
                 "Title",
@@ -183,9 +183,9 @@ public class postprogramtask extends AsyncTask<Object, Boolean, Boolean> {
 
     protected void onPostExecute(Boolean res) {
 
-        if (dialog.isShowing()) {
+        /*if (dialog.isShowing()) {
             dialog.dismiss();
-        }
+        }*/
         delegate.processFinish(alarm, error, errorMessage);
     }
 

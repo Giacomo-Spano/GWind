@@ -12,7 +12,7 @@ import wind.newwindalarm.R;
 public class MeteoCardItem {
 
     public long spotID;
-    MeteoStationData md;
+    public MeteoStationData meteoStationData;
     public MeteoCard card;
     MeteoCardListener listener;
 
@@ -28,7 +28,7 @@ public class MeteoCardItem {
             @Override
             public void onClick(View v) {
 
-                listener.meteocardselected(spotID);
+                listener.meteocardselected(spotID,meteoStationData);
                 // Create new fragment and transaction
             }
         });
@@ -38,7 +38,7 @@ public class MeteoCardItem {
 
     public void update(MeteoStationData data) {
 
-        md = data;
+        meteoStationData = new MeteoStationData(data);
 
         if (data.speed != null) {
             card.setSpeed("" + data.speed);
