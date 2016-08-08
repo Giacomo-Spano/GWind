@@ -124,7 +124,7 @@ public class HistoryChart implements AsyncRequestMeteoDataResponse {
             mLineChart.setVisibleXRange(40); // allow 20 values to be displayed at once on the x-axis, not more
             mLineChart.moveViewToX(xVals.size()-40); // set the left edge of the chart to x-index 10
 
-            //mLineChart.invalidate(); // refresh
+            mLineChart.invalidate(); // refresh
         }
     }
 

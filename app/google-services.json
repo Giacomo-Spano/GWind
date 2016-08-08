@@ -13,15 +13,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "931700652688-pciplnqb4p3l0p4e0lbp56knr6k7rpb0.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.windalarm",
-            "certificate_hash": "338E15F2E8546F2C97608393CE94007701D302B0"
-          }
-        },
-        {
-          "client_id": "931700652688-5kp1p440m43casud9ajouspqgr0aa8j9.apps.googleusercontent.com",
+          "client_id": "931700652688-vlqjc9s8klmjeti70p52ssnj4orgsdel.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -52,15 +44,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "931700652688-v8q9in40s00ml2gkrchdeg1kko9tji8d.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.windalarm.clientapp",
-            "certificate_hash": "C72D527A76F96F2D2A77C28BBD70132AD034F371"
-          }
-        },
-        {
-          "client_id": "931700652688-5kp1p440m43casud9ajouspqgr0aa8j9.apps.googleusercontent.com",
+          "client_id": "931700652688-vlqjc9s8klmjeti70p52ssnj4orgsdel.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -95,11 +79,11 @@
           "client_type": 1,
           "android_info": {
             "package_name": "wind.newwindalarm",
-            "certificate_hash": "C72D527A76F96F2D2A77C28BBD70132AD034F371"
+            "certificate_hash": "64CB8388E307E5A7A0A8442235438CDCBB3C0824"
           }
         },
         {
-          "client_id": "931700652688-5kp1p440m43casud9ajouspqgr0aa8j9.apps.googleusercontent.com",
+          "client_id": "931700652688-vlqjc9s8klmjeti70p52ssnj4orgsdel.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

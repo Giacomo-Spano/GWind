@@ -829,6 +829,8 @@ public class MainActivity extends AppCompatActivity implements
             }*/
 
         } else {
+
+            Log.d(TAG, "handleSignInResult:" + result.toString());
             signedIn = false;
             mProfile = null;
             showNoUser();

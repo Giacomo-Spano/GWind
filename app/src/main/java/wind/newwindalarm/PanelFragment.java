@@ -102,7 +102,6 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener/*,
         data.putLong("spotID", spotID);
         data.putString("meteodata", meteoStationData.toJson());
         spotDetail.setArguments(data);
-        //spotDetail.setMeteoData(meteoStationData);
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
 

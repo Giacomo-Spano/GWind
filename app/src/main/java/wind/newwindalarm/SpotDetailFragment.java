@@ -88,30 +88,34 @@ public class SpotDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        spotID = getArguments().getLong("spotID");
-        String str = getArguments().getString("meteodata");
-        try {
-            JSONObject json = new JSONObject(str);
-            meteoData = new MeteoStationData(json);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
 
         View v;
         v = inflater.inflate(R.layout.fragment_spotdetail, container, false);
-
         mWebcamImageView = (ImageView) v.findViewById(R.id.imageView7);
-
         // Updating the action bar title
         String txt = MainActivity.getSpotName(spotID);// + */""+spotID;
         if (txt != null) {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(txt);
-            // in this example, a LineChart is initialized from xml
             mLineChart = (LineChart) v.findViewById(R.id.chart);
+           //refreshData();
+        }
 
-            refreshData();
+        spotID = getArguments().getLong("spotID");
+        String str = getArguments().getString("meteodata");
+
+        if (str != null) {
+            try {
+                JSONObject json = new JSONObject(str);
+                meteoData = new MeteoStationData(json);
+                refreshData();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            getLastData(spotID);
         }
         return v;
     }
@@ -119,12 +123,7 @@ public class SpotDetailFragment extends Fragment {
     private void refreshData() {
 
         new DownloadImageTask(mWebcamImageView).execute(meteoData.webcamurl);
-
         getHistoryData(spotID);
-
-
-        //getLastData(spotID);
-
     }
 
     public void onBackPressed() {
@@ -171,20 +170,20 @@ public class SpotDetailFragment extends Fragment {
 
                 } else {
 
-                    //mTitleTextView.setText(MainActivity.getSpotName(spotID));
-                    MeteoStationData md = null;
+                    meteoData = null;
                     for (int i = 0; i < list.size(); i++) {
 
-                        md = (MeteoStationData) list.get(i);
-                        if (md.spotID == spotID)
+                        meteoData = (MeteoStationData) list.get(i);
+                        if (meteoData.spotID == spotID)
                             break;
                     }
-                    if (md == null)
+                    if (meteoData == null)
                         return;
 
 
-                    DownloadImageTask downloadImageTask = (DownloadImageTask) new DownloadImageTask(mWebcamImageView)
-                            .execute(md.webcamurl);
+                    //DownloadImageTask downloadImageTask = (DownloadImageTask) new DownloadImageTask(mWebcamImageView)
+                    //        .execute(md.webcamurl);
+                    refreshData();
 
 
                 }

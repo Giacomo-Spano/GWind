@@ -71,15 +71,7 @@ public class AlarmCard extends LinearLayout {
         ImageView iv = (ImageView) findViewById(R.id.labelImage);
         iv.setImageResource(resId);
     }
-    public void addLine(String line) {// todo eliminare??
-        TextView valueTV = new TextView(getContext());
-        valueTV.setText(line);
-        valueTV.setId(5);
-        valueTV.setLayoutParams(new ViewGroup.LayoutParams(
-                LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT));
-        addView(valueTV);
-    }
+
     public void addSeparator() {
 
         LayoutInflater inflater = LayoutInflater.from(getContext());

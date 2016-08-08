@@ -17,9 +17,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <!-- [END gcm_permission] -->
 
-
-
-
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- serve per leggere il codice IMEI -->

@@ -126,7 +126,7 @@ public class requestMeteoDataTask extends
                         conn.getInputStream());
                 // Convert the stream to a String
                 // There are various approaches, I'll leave it up to you
-                contentSize = Integer.valueOf(conn.getHeaderField("Length"));//conn.getContentLength();
+                contentSize = 1000;//Integer.valueOf(conn.getHeaderField("Length"));//conn.getContentLength();
                 String json = convertStreamToString(in);
 
                 if (requestType == REQUEST_SPOTLIST || requestType == REQUEST_SPOTLIST_FULLINFO) {

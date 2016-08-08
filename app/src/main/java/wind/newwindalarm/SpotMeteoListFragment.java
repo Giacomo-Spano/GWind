@@ -111,7 +111,9 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
 
         Bundle data = new Bundle();
         data.putLong("spotID", spotID);
+        //data.putString("meteodata", meteoStationData.toJson());
         spotDetail.setArguments(data);
+
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.content_frame, spotDetail);
         transaction.addToBackStack(null);
