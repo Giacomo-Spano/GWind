@@ -36,6 +36,19 @@ public class AlarmPreferences {
         editor.commit(); // commit changes*/
     }
 
+    public static int getDeviceId(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        int deviceId = sharedPreferences.getInt(QuickstartPreferences.DEVICE_ID, -1);
+        return deviceId;
+    }
+
+    public static void setDeviceId(Context context, int deviceId) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(QuickstartPreferences.DEVICE_ID, deviceId);  // Saving string
+        editor.commit(); // commit changes*/
+    }
+
     public static void deleteRegId(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();

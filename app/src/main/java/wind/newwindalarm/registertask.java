@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -63,7 +64,6 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
 
         this.postType = postType;
         this.activity = activity;
-        dialog = new ProgressDialog(activity);
         delegate = asyncResponse;//Assigning call back interfacethrough constructor
 
     }
@@ -84,7 +84,7 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
                 myUrl = new URL(serverURL + "/register");
                 conn = (HttpURLConnection) myUrl.openConnection();
                 conn.setReadTimeout(10000);
-                conn.setConnectTimeout(15000);
+                conn.setConnectTimeout(60000);
                 conn.setRequestMethod("POST");
                 conn.setDoInput(true);
                 conn.setDoOutput(true);
@@ -118,40 +118,30 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
                 os.close();
             } catch (MalformedURLException e) {
                 e.printStackTrace();
+                return false;
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
+                return false;
             } catch (ProtocolException e) {
                 e.printStackTrace();
+                return false;
+            } catch (SocketTimeoutException e) {
+                e.printStackTrace();
+                return false;
             } catch (IOException e) {
                 e.printStackTrace();
+                return false;
             }
         }
-        return null;
+        return true;
     }
 
 
     protected void onPreExecute() {
 
-        String message = "attendere prego...";
-        if (postType == POST_REGISTERDEVICE)
-            message = "Registrazione in corso...";
-
-        this.dialog.setMessage(message);
-        this.dialog.show();
 
 
-        /*this.dialog.show(this.activity,
-                "Title",
-                "Message");*/
-        this.dialog.setCancelable(true);
-        this.dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
 
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                // TODO Auto-generated method stub
-                // Do something...
-            }
-        });
     }
 
     protected void onProgressUpdate(Integer... progress) {
@@ -160,9 +150,7 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
 
     protected void onPostExecute(Boolean res) {
 
-        if (dialog.isShowing()) {
-            dialog.dismiss();
-        }
+
         delegate.processFinish(response, error, errorMessage);
     }
 

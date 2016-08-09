@@ -21,8 +21,10 @@ public class QuickstartPreferences {
     public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
     public static final String REGISTRATION_ID = "key_regId";
+    public static final String DEVICE_ID = "key_deviceId";
     public static final String KEY_PREF_SERVERURL = "serverURL";
 
     public static final String KEY_SPOTLISTFAVORITES = "Favorites";
+
 
 }

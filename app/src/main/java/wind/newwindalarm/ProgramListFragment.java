@@ -127,7 +127,7 @@ public class ProgramListFragment extends Fragment implements
                     offline = false;
                 }
             }
-        }, MainActivity.getDeviceId()).execute();
+        }, AlarmPreferences.getDeviceId(getActivity())/*MainActivity.getDeviceId()*/).execute();
     }
 
     @Override

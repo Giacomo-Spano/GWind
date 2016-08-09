@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         // carica la spot list per la combo dei programmmi
-        //getSpotListFromServer();
+        getSpotListFromServer();
 
         // [START configure_signin]
         // Configure sign-in to request the user's ID, email address, and basic
@@ -415,9 +415,9 @@ public class MainActivity extends AppCompatActivity implements
                     new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
 
             isReceiverRegistered = true;
-            String model = Build.MODEL;
+            //String model = Build.MODEL;
 
-            new registertask(this, new AsyncRegisterResponse() {
+            /*new registertask(this, new AsyncRegisterResponse() {
 
                 @Override
                 public void processFinish(String jsonStr, boolean error, String errorMessage) {
@@ -428,9 +428,8 @@ public class MainActivity extends AppCompatActivity implements
                             int deviceId = json.getInt("id");
                             setDeviceId(deviceId);
 
-                            spotList = new ArrayList<Spot>();
+                            *//*spotList = new ArrayList<Spot>();
                             String str = json.getString("spotlist");
-                            //JSONObject jObject = new JSONObject(str);
                             JSONArray jArray = new JSONArray(str);
                             for (int i = 0; i < jArray.length(); i++) {
                                 JSONObject jObject2 = jArray.getJSONObject(i);
@@ -439,15 +438,13 @@ public class MainActivity extends AppCompatActivity implements
 
                                 spotList.add(spt);
                             }
-                            programListFragment.setServerSpotList(spotList);
+                            programListFragment.setServerSpotList(spotList);*//*
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 }
-            }, registertask.POST_REGISTERDEVICE).execute(AlarmPreferences.getRegId(this), model);
-
+            }, registertask.POST_REGISTERDEVICE).execute(AlarmPreferences.getRegId(this), model);*/
         }
     }
 
@@ -620,7 +617,7 @@ public class MainActivity extends AppCompatActivity implements
         return syncConnPref;
     }
 
-    /*
+
     private void getSpotListFromServer() {
 
         new requestMeteoDataTask(this, new AsyncRequestMeteoDataResponse() {
@@ -628,12 +625,9 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void processFinish(List<Object> list, boolean error, String errorMessage) {
             }
-
             @Override
             public void processFinishHistory(List<Object> list, boolean error, String errorMessage) {
-
             }
-
             @Override
             public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
 
@@ -647,7 +641,6 @@ public class MainActivity extends AppCompatActivity implements
                     spotList.add((Spot) list.get(i));
                 }
 
-
                 //settingsFragment.setServerSpotList(spotList);
                 programListFragment.setServerSpotList(spotList);
                 //spotMeteoListFragment.setSpotList(spotList);
@@ -655,7 +648,7 @@ public class MainActivity extends AppCompatActivity implements
         },requestMeteoDataTask.REQUEST_SPOTLIST).execute();
 
     }
-*/
+
 
     public void showError(String errorMessage) {
 

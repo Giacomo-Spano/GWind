@@ -31,6 +31,8 @@ public class SplashScreenFragment extends Fragment {
         View v;
         v = inflater.inflate(R.layout.fragment_profile, container, false);
 
+
+
         // Updating the action bar title
         ((AppCompatActivity)getActivity()).getSupportActionBar().hide();//.setTitle("Profilo");
 

@@ -15,8 +15,8 @@ android {
         applicationId "wind.newwindalarm"
         minSdkVersion 18
         targetSdkVersion 24
-        versionCode 3
-        versionName "1.01"
+        versionCode 7
+        versionName "0.90"
     }
     buildTypes {
         release {

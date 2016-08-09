@@ -115,6 +115,16 @@ public class ProfileFragment extends Fragment {
 
         showUserProfile();
 
+        int versionCode = BuildConfig.VERSION_CODE;
+        String versionName = BuildConfig.VERSION_NAME;
+        TextView tv =  (TextView) v.findViewById(R.id.versionCodeTextView);
+        tv.setText("Build "+versionCode);
+        tv =  (TextView) v.findViewById(R.id.versionNameTextView);
+        tv.setText("Versione "+versionName);
+        tv =  (TextView) v.findViewById(R.id.deviceTextView);
+        tv.setText("Device "+AlarmPreferences.getDeviceId(MainActivity.getContext()));
+
+
         return v;
     }
     public void setProfile(UserProfile profile) {
@@ -133,7 +143,7 @@ public class ProfileFragment extends Fragment {
             mEMailTextView.setVisibility(View.VISIBLE);
             mUserImageView.setVisibility(View.VISIBLE);
             mUserImageView.setImageBitmap(mProfile.userImage);
-            mRegIdTextView.setVisibility(View.GONE);
+            mRegIdTextView.setVisibility(View.VISIBLE);
             mSignonButton.setVisibility(View.GONE);
             mSignoutButton.setVisibility(View.VISIBLE);
             mDisconnectButton.setVisibility(View.VISIBLE);
@@ -144,7 +154,7 @@ public class ProfileFragment extends Fragment {
             mEMailTextView.setVisibility(View.GONE);
             mUserImageView.setImageResource(R.drawable.user_white);
             //mUserImageView.setVisibility(View.GONE);
-            mRegIdTextView.setVisibility(View.GONE);
+            mRegIdTextView.setVisibility(View.VISIBLE);
             mSignonButton.setVisibility(View.VISIBLE);
             mSignoutButton.setVisibility(View.GONE);
             mDisconnectButton.setVisibility(View.GONE);

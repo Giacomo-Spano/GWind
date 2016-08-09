@@ -2,15 +2,29 @@ package wind.newwindalarm;
 
 /**
  * Created by Giacomo Spanò on 11/06/2016.
- * <p>
+ * <p/>
  * Copyright 2015 Google Inc. All Rights Reserved.
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * <p/>
+ * Copyright 2015 Google Inc. All Rights Reserved.
+ * <p/>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,6 +53,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -46,6 +61,9 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -81,7 +99,7 @@ public class RegistrationIntentService extends IntentService {
 
             boolean sentToken = sharedPreferences.getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
 
-            Log.i(TAG, "sentToken="+sentToken);
+            Log.i(TAG, "sentToken=" + sentToken);
             //String str = MainActivity.getContext().getResources().getString(R.string.pref_serverURL_default);
             //String serverURL = sharedPreferences.getString(QuickstartPreferences.KEY_PREF_SERVERURL, str);
             //String serverURL = AlarmPreferences.getServerUrl(MainActivity.getContext());
@@ -89,18 +107,14 @@ public class RegistrationIntentService extends IntentService {
             //Log.i(TAG, "serverURL="+serverURL);
 
             //TelephonyManager mngr = (TelephonyManager) MainActivity.getContext().getSystemService(MainActivity.getContext().TELEPHONY_SERVICE);
-            int deviceId = -1; //getDeviceIdFromServer(token,serverURL);
+            //int deviceId = -1; //getDeviceIdFromServer(token,serverURL);
 
 
-
-
-            if (!sentToken || deviceId == -1) {
+            if (!sentToken /*|| deviceId == -1*/) {
                 //deviceId = MainActivity.getDeviceId();//MainActivity.getIMEI();
-                Log.i(TAG, "deviceId="+deviceId);
-                //sendRegistrationToServer(token, serverURL);
-
+                //Log.i(TAG, "deviceId=" + deviceId);
+                sendRegistrationToServer();
                 //ServerUtilities.registerDevice(token);
-
             }
             //deviceId = getDeviceIdFromServer(token,serverURL);
             //MainActivity.setDeviceId(deviceId);
@@ -143,9 +157,30 @@ public class RegistrationIntentService extends IntentService {
      *
      * @param token The new token.
      */
-    private void sendRegistrationToServer(String token, String serverURL) {
+    private void sendRegistrationToServer() {
         // Add custom implementation, as needed.
-        ServerUtilities.register(token, serverURL);
+        //ServerUtilities.register(token, serverURL);
+        String model = Build.MODEL;
+
+        new registertask(MainActivity.getInstance(), new AsyncRegisterResponse() {
+
+            @Override
+            public void processFinish(String jsonStr, boolean error, String errorMessage) {
+
+
+                try {
+                    JSONObject json = new JSONObject(jsonStr);
+                    if (json.has("id")) {
+                        int deviceId = json.getInt("id");
+                        //MainActivity.setDeviceId(deviceId);
+                        AlarmPreferences.setDeviceId(MainActivity.getContext(),deviceId);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, registertask.POST_REGISTERDEVICE).execute(AlarmPreferences.getRegId(this), model);
+
     }
 
     private int getDeviceIdFromServer(String token, String serverURL) {

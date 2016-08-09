@@ -50,35 +50,7 @@ public final class ServerUtilities {
     private static final int BACKOFF_MILLI_SECONDS = 2000;
     private static final Random random = new Random();
 
-    /**
-     * Register this account/device pair within the server.
-     *
-     * @return whether the registration succeeded or not.
-     */
-    static boolean register(final String regId, String serverUrl) {
-        Log.i(TAG, "registering device (regId = " + regId + ")");
 
-        serverUrl += "//register";
-
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("regId", regId);
-        String model = Build.MODEL;
-        params.put("name", model);
-        //params.put("deviceId", deviceId);
-
-
-        try {
-            post(serverUrl, params);
-            AlarmPreferences.setRegId(MainActivity.getContext(), regId);
-            return true;
-        } catch (IOException e) {
-
-            Log.e(TAG, "Failed to register on attempt ", e);
-
-        }
-
-        return false;
-    }
 
     /**
      * Unregister this account/device pair within the server.
@@ -106,7 +78,7 @@ public final class ServerUtilities {
         Map<String, String> params = new HashMap<String, String>();
         params.put("registeruser", "true");
         params.put("authcode", authCode);
-        params.put("deviceId", "" + MainActivity.getDeviceId());
+        //rams.put("deviceId", "" + AlarmPreferences.getDeviceId(gt)/*MainActivity.getDeviceId()*/);
 
         try {
             post(serverUrl, params);
