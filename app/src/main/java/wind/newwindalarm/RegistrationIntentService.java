@@ -113,7 +113,9 @@ public class RegistrationIntentService extends IntentService {
             if (!sentToken /*|| deviceId == -1*/) {
                 //deviceId = MainActivity.getDeviceId();//MainActivity.getIMEI();
                 //Log.i(TAG, "deviceId=" + deviceId);
-                sendRegistrationToServer();
+                String personId = AlarmPreferences.getPersonId(MainActivity.getContext());
+
+                sendRegistrationToServer(personId);
                 //ServerUtilities.registerDevice(token);
             }
             //deviceId = getDeviceIdFromServer(token,serverURL);
@@ -157,7 +159,7 @@ public class RegistrationIntentService extends IntentService {
      *
      * @param token The new token.
      */
-    private void sendRegistrationToServer() {
+    private void sendRegistrationToServer(String personId) {
         // Add custom implementation, as needed.
         //ServerUtilities.register(token, serverURL);
         String model = Build.MODEL;
@@ -179,7 +181,7 @@ public class RegistrationIntentService extends IntentService {
                     e.printStackTrace();
                 }
             }
-        }, registertask.POST_REGISTERDEVICE).execute(AlarmPreferences.getRegId(this), model);
+        }, registertask.POST_REGISTERDEVICE).execute(AlarmPreferences.getRegId(this), model, personId);
 
     }
 

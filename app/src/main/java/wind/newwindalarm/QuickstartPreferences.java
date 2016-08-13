@@ -23,8 +23,9 @@ public class QuickstartPreferences {
     public static final String REGISTRATION_ID = "key_regId";
     public static final String DEVICE_ID = "key_deviceId";
     public static final String KEY_PREF_SERVERURL = "serverURL";
-
+    public static final String PERSON_ID = "key_personId";
     public static final String KEY_SPOTLISTFAVORITES = "Favorites";
+
 
 
 }

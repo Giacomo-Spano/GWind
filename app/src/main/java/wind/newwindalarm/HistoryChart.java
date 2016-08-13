@@ -64,6 +64,9 @@ public class HistoryChart implements AsyncRequestMeteoDataResponse {
 
             ArrayList<Entry> valsComp1 = new ArrayList<Entry>();
             ArrayList<Entry> valsComp2 = new ArrayList<Entry>();
+            ArrayList<Entry> valsComp3 = new ArrayList<Entry>();
+            ArrayList<Entry> valsComp4 = new ArrayList<Entry>();
+            ArrayList<Entry> valsComp5 = new ArrayList<Entry>();
             ArrayList<String> xVals = new ArrayList<String>();
 
             String lastTime = "";
@@ -84,10 +87,34 @@ public class HistoryChart implements AsyncRequestMeteoDataResponse {
                     Time time = new Time();
 
                     if (!md.date.equals(lastTime)) {
-                        Entry speedEntry = new Entry(Float.valueOf(String.valueOf(md.speed)), index); // 0 == quarter 1
-                        Entry avspeedEntry = new Entry(Float.valueOf(String.valueOf(md.averagespeed)), index); // 0 == quarter 1
-                        valsComp1.add(speedEntry);
-                        valsComp2.add(avspeedEntry);
+
+                        if (md.speed != null) {
+                            Entry speedEntry = new Entry(Float.valueOf(String.valueOf(md.speed)), index); // 0 == quarter 1
+                            valsComp1.add(speedEntry);
+                        }
+
+                        if (md.averagespeed != null) {
+                            Entry avspeedEntry = new Entry(Float.valueOf(String.valueOf(md.averagespeed)), index); // 0 == quarter 1
+                            valsComp2.add(avspeedEntry);
+                        }
+
+                        if (md.directionangle != null) {
+                            Entry direction = new Entry(Float.valueOf(String.valueOf(md.directionangle+180)), index);
+                            valsComp3.add(direction);
+                        }
+
+                        if (md.trend != null) {
+                            Entry trend = new Entry(Float.valueOf(String.valueOf(md.trend + 20.0)), index);
+                            valsComp4.add(trend);
+                        }
+
+                        if (md.temperature != null) {
+                            Entry temperature = new Entry(Float.valueOf(String.valueOf(md.temperature)), index);
+                            valsComp5.add(temperature);
+                        }
+
+
+
                         xVals.add(md.date);
                         lastTime = md.date;
                         index++;
@@ -110,10 +137,31 @@ public class HistoryChart implements AsyncRequestMeteoDataResponse {
             setComp2.setDrawCircles(true);
             setComp2.setCircleColor(Color.BLUE);
 
+            LineDataSet setComp3 = new LineDataSet(valsComp3, "Direction");
+            setComp3.setAxisDependency(YAxis.AxisDependency.RIGHT);
+            setComp3.setColor(Color.BLACK);
+            setComp3.setDrawCircles(true);
+            setComp3.setCircleColor(Color.BLACK);
+
+            LineDataSet setComp4 = new LineDataSet(valsComp4, "Trend");
+            setComp4.setAxisDependency(YAxis.AxisDependency.LEFT);
+            setComp4.setColor(Color.GREEN);
+            setComp4.setDrawCircles(true);
+            setComp4.setCircleColor(Color.GREEN);
+
+            LineDataSet setComp5 = new LineDataSet(valsComp5, "Temperatura");
+            setComp5.setAxisDependency(YAxis.AxisDependency.LEFT);
+            setComp5.setColor(Color.CYAN);
+            setComp5.setDrawCircles(true);
+            setComp5.setCircleColor(Color.CYAN);
+
 
             ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
             dataSets.add(setComp1);
             dataSets.add(setComp2);
+            dataSets.add(setComp3);
+            dataSets.add(setComp4);
+            dataSets.add(setComp5);
 
 
             mLineChart.setDescription("Km/h");

@@ -19,6 +19,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
     private GoogleApiClient mGoogleApiClient;
-    GoogleSignInAccount acct;
+    static GoogleSignInAccount acct;
 
     public static final String GO_DIRECTLY_TO_SPOT_DETAILS = "GoDirectlyToSpotDetails";
 
@@ -257,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
+        /*mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -274,16 +275,15 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         };
-        mInformationTextView = (TextView) findViewById(R.id.informationTextView);
+        mInformationTextView = (TextView) findViewById(R.id.informationTextView);*/
 
         // Registering BroadcastReceiver
-        registerReceiver();
-
-        if (checkPlayServices()) {
+        //registerReceiver();
+        /*if (checkPlayServices()) {
             // Start IntentService to register this application with GCM.
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
-        }
+        }*/
 
         // carica la spot list per la combo dei programmmi
         getSpotListFromServer();
@@ -369,11 +369,17 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver();
+
+        if (signedIn)
+            registerReceiver();
     }
 
     @Override
     protected void onPause() {
+        unregisterReceiver();
+    }
+
+    private void unregisterReceiver() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         isReceiverRegistered = false;
         super.onPause();
@@ -415,36 +421,6 @@ public class MainActivity extends AppCompatActivity implements
                     new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
 
             isReceiverRegistered = true;
-            //String model = Build.MODEL;
-
-            /*new registertask(this, new AsyncRegisterResponse() {
-
-                @Override
-                public void processFinish(String jsonStr, boolean error, String errorMessage) {
-
-                    try {
-                        JSONObject json = new JSONObject(jsonStr);
-                        if (json.has("id")) {
-                            int deviceId = json.getInt("id");
-                            setDeviceId(deviceId);
-
-                            *//*spotList = new ArrayList<Spot>();
-                            String str = json.getString("spotlist");
-                            JSONArray jArray = new JSONArray(str);
-                            for (int i = 0; i < jArray.length(); i++) {
-                                JSONObject jObject2 = jArray.getJSONObject(i);
-                                Spot spt = new Spot(jObject2);
-
-
-                                spotList.add(spt);
-                            }
-                            programListFragment.setServerSpotList(spotList);*//*
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }, registertask.POST_REGISTERDEVICE).execute(AlarmPreferences.getRegId(this), model);*/
         }
     }
 
@@ -512,7 +488,11 @@ public class MainActivity extends AppCompatActivity implements
                 ;
                 return true;
             case R.id.action_unregister:
-                ServerUtilities.unregister(AlarmPreferences.getRegId(this), AlarmPreferences.getServerUrl(this));
+                //ServerUtilities.unregister(AlarmPreferences.getRegId(this), AlarmPreferences.getServerUrl(this));
+                unregister();
+
+
+
                 return true;
             /*case R.id.action_clear:
                 deleteFile(messageFragment.messageFileName);
@@ -739,6 +719,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void silentSignIn(final int spotId) {
+
         OptionalPendingResult<GoogleSignInResult> pendingResult =
                 Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
         if (pendingResult.isDone()) {
@@ -806,12 +787,39 @@ public class MainActivity extends AppCompatActivity implements
             new LoadImagefromUrl().execute(/*mUserImageImageView, acct.getPhotoUrl().toString(),mProfile.userImage*/);
             //GoogleSignInAccount acct = result.getSignInAccount();
             authCode = acct.getServerAuthCode();
+            String personId = acct.getId();
+            String personName = acct.getDisplayName();
+            String personEmail = acct.getEmail();
+            Uri personPhoto = acct.getPhotoUrl();
             //mAuthCodeTextView.setText("Auth Code: " + authCode);
             // TODO(user): send code to server and exchange for access/refresh/ID tokens.
-
             //ServerUtilities.sendAuthCode(authCode,getServerURL());
-            /*if (profileFragment != null) {
-                profileFragment.setProfile(mProfile);
+            registerUser(personId, personName, personEmail, personPhoto,authCode);
+
+            /*mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
+            mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
+                    SharedPreferences sharedPreferences =
+                            PreferenceManager.getDefaultSharedPreferences(context);
+                    boolean sentToken = sharedPreferences
+                            .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
+                    if (sentToken) {
+                        mInformationTextView.setText(getString(R.string.gcm_send_message));
+                        mInformationTextView.setVisibility(ProgressBar.GONE);
+                    } else {
+                        mInformationTextView.setText(getString(R.string.token_error_message));
+                    }
+                }
+            };
+            mInformationTextView = (TextView) findViewById(R.id.informationTextView);
+            // Registering BroadcastReceiver
+            registerReceiver();
+            if (checkPlayServices()) {
+                // Start IntentService to register this application with GCM.
+                Intent intent = new Intent(this, RegistrationIntentService.class);
+                startService(intent);
             }*/
 
             showFragment(R.id.nav_favorites);
@@ -831,8 +839,73 @@ public class MainActivity extends AppCompatActivity implements
                 profileFragment.setProfile(mProfile);
             }
 
+            unregisterReceiver();
+
 
         }
+    }
+    private void unregister() {
+        AlarmPreferences.deleteRegId(this);
+        AlarmPreferences.deletePersonId(this);
+    }
+
+    private void registerUser(String personId, String personName, String personEmail, Uri personPhoto, String authCode) {
+
+        new registertask(MainActivity.getInstance(), new AsyncRegisterResponse() {
+
+            @Override
+            public void processFinish(String jsonStr, boolean error, String errorMessage) {
+
+                try {
+                    JSONObject json = new JSONObject(jsonStr);
+                    if (json.has("id")) {
+                        int userId = json.getInt("id");
+
+                    }
+                    if (json.has("personid")) {
+                        String personId = json.getString("personid");
+                        AlarmPreferences.setPersonId(getContext(), personId);
+
+
+                        mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
+                        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+                            @Override
+                            public void onReceive(Context context, Intent intent) {
+                                mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
+                                SharedPreferences sharedPreferences =
+                                        PreferenceManager.getDefaultSharedPreferences(context);
+                                boolean sentToken = sharedPreferences
+                                        .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
+                                if (sentToken) {
+                                    mInformationTextView.setText(getString(R.string.gcm_send_message));
+                                    mInformationTextView.setVisibility(ProgressBar.GONE);
+                                } else {
+                                    mInformationTextView.setText(getString(R.string.token_error_message));
+                                }
+                            }
+                        };
+                        mInformationTextView = (TextView) findViewById(R.id.informationTextView);
+                        // Registering BroadcastReceiver
+                        registerReceiver();
+                        if (checkPlayServices()) {
+                            // Start IntentService to register this application with GCM.
+                            Intent intent = new Intent(MainActivity.getContext(), RegistrationIntentService.class);
+                            startService(intent);
+
+
+                        }
+                    }
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }, registertask.POST_REGISTERUSER).execute(personId, personName, personEmail, personPhoto, authCode);
     }
 
     private void showNoUser() {
@@ -866,6 +939,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onDisconnectClick() {
         revokeAccess();
     }
+
 
     private class LoadImagefromUrl extends AsyncTask<Object, Void, Bitmap> {
 

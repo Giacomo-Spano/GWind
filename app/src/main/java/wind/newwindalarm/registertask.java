@@ -3,6 +3,7 @@ package wind.newwindalarm;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.AsyncTask;
 
 import com.google.gson.Gson;
@@ -44,12 +45,8 @@ import java.util.Locale;
 public class registertask extends AsyncTask<Object, Boolean, Boolean> {
 
 
-    public static int POST_REGISTERDEVICE = 1;
-    public static int POST_DELETEALARM = 2;
-    public static int POST_UPDATEALARMRINGDATE = 3;
-    public static int POST_SNOOZEALARM = 4;
-    public static final int POST_TESTALARM = 5;
-    public static int POST_NOTIFICATIONSETTING = 100;
+    public static final int POST_REGISTERDEVICE = 1;
+    public static final int POST_REGISTERUSER = 2;
     private int postType;
 
     public AsyncRegisterResponse delegate = null;//Call back interface
@@ -65,7 +62,6 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
         this.postType = postType;
         this.activity = activity;
         delegate = asyncResponse;//Assigning call back interfacethrough constructor
-
     }
 
     @Override
@@ -74,74 +70,115 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
         URL myUrl = null;
         HttpURLConnection conn = null;
 
-        String regId = (String) params[0];
-        String name = (String) params[1];
-
         String serverURL = AlarmPreferences.getServerUrl(activity);//getServerURL();
 
-        if (postType == POST_REGISTERDEVICE) {
-            try {
-                myUrl = new URL(serverURL + "/register");
-                conn = (HttpURLConnection) myUrl.openConnection();
-                conn.setReadTimeout(10000);
-                conn.setConnectTimeout(60000);
-                conn.setRequestMethod("POST");
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
+        try {
 
-                //one long string, first encode is the key to get the  data on your web
-                //page, second encode is the value, keep concatenating key and value.
-                //theres another ways which easier then this long string in case you are
-                //posting a lot of info, look it up.
-                String postData = URLEncoder.encode("registerdevice", "UTF-8") + "=" +
+            myUrl = new URL(serverURL + "/register");
+            conn = (HttpURLConnection) myUrl.openConnection();
+            conn.setReadTimeout(10000);
+            conn.setConnectTimeout(60000);
+            conn.setRequestMethod("POST");
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+            String postData = "";
+
+            if (postType == POST_REGISTERDEVICE) {
+                String regId = (String) params[0];
+                String name = (String) params[1];
+                String personId = (String) params[2];
+
+                postData = URLEncoder.encode("registerdevice", "UTF-8") + "=" +
                         URLEncoder.encode("true", "UTF-8") + "&" +
                         URLEncoder.encode("regId", "UTF-8") + "=" +
                         URLEncoder.encode(regId, "UTF-8") + "&" +
                         URLEncoder.encode("name", "UTF-8") + "=" +
-                        URLEncoder.encode(name, "UTF-8") + "&";
-                OutputStream os = conn.getOutputStream();
+                        URLEncoder.encode(name, "UTF-8") + "&" +
+                        URLEncoder.encode("personid", "UTF-8") + "=" +
+                        URLEncoder.encode(personId, "UTF-8") + "&";
 
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                bufferedWriter.write(postData);
-                bufferedWriter.flush();
-                bufferedWriter.close();
+            } else if (postType == POST_REGISTERUSER) {
 
-                InputStream inputStream = conn.getInputStream();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-                String line = "";
-                while ((line = bufferedReader.readLine()) != null) {
-                    response += line;
-                }
-                bufferedReader.close();
-                inputStream.close();
-                conn.disconnect();
-                os.close();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                return false;
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-                return false;
-            } catch (ProtocolException e) {
-                e.printStackTrace();
-                return false;
-            } catch (SocketTimeoutException e) {
-                e.printStackTrace();
-                return false;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
+                String personId = (String) params[0];
+                String personName = (String) params[1];
+                String personEmail = (String) params[2];
+                Uri personPhoto = (Uri) params[3];
+                String authCode = (String) params[4];
+
+                postData = URLEncoder.encode("registeruser", "UTF-8") + "=" +
+                        URLEncoder.encode("true", "UTF-8") + "&" +
+                        URLEncoder.encode("personId", "UTF-8") + "=" +
+                        URLEncoder.encode(personId, "UTF-8") + "&"+
+                        URLEncoder.encode("personName", "UTF-8") + "=" +
+                        URLEncoder.encode(personName, "UTF-8") + "&"+
+                        /*URLEncoder.encode("personEmail", "UTF-8") + "=" +
+                        URLEncoder.encode(personEmail, "UTF-8") + "&"+
+                        URLEncoder.encode("personPhoto", "UTF-8") + "=" +
+                        URLEncoder.encode(personPhoto.toString(), "UTF-8") + "&"+*/
+                        URLEncoder.encode("authCode", "UTF-8") + "=" +
+                        URLEncoder.encode(authCode, "UTF-8") + "&";
+
             }
+            OutputStream os = conn.getOutputStream();
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+            bufferedWriter.write(postData);
+            bufferedWriter.flush();
+            bufferedWriter.close();
+
+            InputStream inputStream = conn.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+            String line = "";
+            while ((line = bufferedReader.readLine()) != null) {
+                response += line;
+            }
+            bufferedReader.close();
+            inputStream.close();
+            conn.disconnect();
+            os.close();
+
+
+        } catch (
+                MalformedURLException e
+                )
+
+        {
+            e.printStackTrace();
+            return false;
+        } catch (
+                UnsupportedEncodingException e
+                )
+
+        {
+            e.printStackTrace();
+            return false;
+        } catch (
+                ProtocolException e
+                )
+
+        {
+            e.printStackTrace();
+            return false;
+        } catch (
+                SocketTimeoutException e
+                )
+
+        {
+            e.printStackTrace();
+            return false;
+        } catch (
+                IOException e
+                )
+
+        {
+            e.printStackTrace();
+            return false;
         }
+
         return true;
     }
 
 
     protected void onPreExecute() {
-
-
-
-
     }
 
     protected void onProgressUpdate(Integer... progress) {
@@ -149,8 +186,6 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
     }
 
     protected void onPostExecute(Boolean res) {
-
-
         delegate.processFinish(response, error, errorMessage);
     }
 

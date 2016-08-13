@@ -100,4 +100,24 @@ public class AlarmPreferences {
         editor.commit(); // commit changes*/
     }
 
+    public static String getPersonId(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String personId = sharedPreferences.getString(QuickstartPreferences.PERSON_ID,null);
+        return personId;
+    }
+
+    public static void setPersonId(Context context, String personId) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(QuickstartPreferences.PERSON_ID, personId);  // Saving string
+        editor.commit(); // commit changes*/
+    }
+
+    public static void deletePersonId(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(QuickstartPreferences.PERSON_ID);
+        editor.commit();
+
+    }
 }
