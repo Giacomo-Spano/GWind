@@ -1,5 +1,6 @@
 package wind.newwindalarm;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static int deviceId = -1;
 
-    public static String authCode = "";
+   // public static String authCode = "";
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -143,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
     private GoogleApiClient mGoogleApiClient;
-    static GoogleSignInAccount acct;
+    protected static GoogleSignInAccount acct;
 
     public static final String GO_DIRECTLY_TO_SPOT_DETAILS = "GoDirectlyToSpotDetails";
 
@@ -204,6 +205,13 @@ public class MainActivity extends AppCompatActivity implements
 
         instance = this;
 
+
+
+
+
+
+
+
         registerReceiver(mHandleMessageReceiver, new IntentFilter(
                 wind.newwindalarm.CommonUtilities.DISPLAY_MESSAGE_ACTION));
 
@@ -211,6 +219,9 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
+        mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
 
         addFab = (FloatingActionButton) findViewById(R.id.addFab);
         addFab.setOnClickListener(new View.OnClickListener() {
@@ -700,6 +711,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private void signIn() {
 
+        mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -714,6 +726,7 @@ public class MainActivity extends AppCompatActivity implements
                         mProfile = null;
                         showNoUser();
                         signedIn = false;
+                        unregister();
                     }
                 });
     }
@@ -755,7 +768,10 @@ public class MainActivity extends AppCompatActivity implements
                     @Override
                     public void onResult(Status status) {
                         // ...
+                        mProfile = null;
                         showNoUser();
+                        signedIn = false;
+                        unregister();
                     }
                 });
 
@@ -774,6 +790,10 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    public static GoogleSignInAccount getAcct() {
+        return acct;
+    }
+
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
@@ -786,17 +806,10 @@ public class MainActivity extends AppCompatActivity implements
 
             new LoadImagefromUrl().execute(/*mUserImageImageView, acct.getPhotoUrl().toString(),mProfile.userImage*/);
             //GoogleSignInAccount acct = result.getSignInAccount();
-            authCode = acct.getServerAuthCode();
-            String personId = acct.getId();
-            String personName = acct.getDisplayName();
-            String personEmail = acct.getEmail();
-            Uri personPhoto = acct.getPhotoUrl();
-            //mAuthCodeTextView.setText("Auth Code: " + authCode);
-            // TODO(user): send code to server and exchange for access/refresh/ID tokens.
-            //ServerUtilities.sendAuthCode(authCode,getServerURL());
-            registerUser(personId, personName, personEmail, personPhoto,authCode);
+            //authCode = acct.getServerAuthCode();
 
-            /*mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
+            ///
+            //mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
             mRegistrationBroadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
@@ -818,9 +831,11 @@ public class MainActivity extends AppCompatActivity implements
             registerReceiver();
             if (checkPlayServices()) {
                 // Start IntentService to register this application with GCM.
-                Intent intent = new Intent(this, RegistrationIntentService.class);
+                Intent intent = new Intent(MainActivity.getContext(), RegistrationIntentService.class);
                 startService(intent);
-            }*/
+
+
+            }
 
             showFragment(R.id.nav_favorites);
 
@@ -849,6 +864,7 @@ public class MainActivity extends AppCompatActivity implements
         AlarmPreferences.deletePersonId(this);
     }
 
+    /*
     private void registerUser(String personId, String personName, String personEmail, Uri personPhoto, String authCode) {
 
         new registertask(MainActivity.getInstance(), new AsyncRegisterResponse() {
@@ -907,6 +923,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         }, registertask.POST_REGISTERUSER).execute(personId, personName, personEmail, personPhoto, authCode);
     }
+    */
 
     private void showNoUser() {
         mUserNameTextView.setText("no user");

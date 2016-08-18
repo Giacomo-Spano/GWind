@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -18,9 +19,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -115,12 +113,6 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener/*,
         transaction.commit();
     }
 
-    /*@Override
-    public void meteocardselected(long index, String meteoStationData) {
-
-    }*/
-
-
     private class requestDataResponse implements AsyncRequestMeteoDataResponse, MeteoCardListener {
 
         FragmentManager mFragmentManager;
@@ -206,6 +198,7 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener/*,
         public void meteocardselected(long spotID, MeteoStationData meteoStationData) {
 
             showSpotDetail(spotID, meteoStationData);
+            //startSpotDetailsActivity();
         }
     }
 

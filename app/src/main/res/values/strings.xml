@@ -63,6 +63,8 @@
     <string name="title_activity_play_alarm">PlayAlarmActivity</string>
     <string name="title_activity_program">ProgramActivity</string>
     <string name="title_activity_sendlog">SendLogActivity</string>
+    <string name="title_activity_fullchart">Fullchart</string>
+
 
     <string name="message_subject">Android device log</string>
     <string name="acquiring_log_progress_dialog_message">Acquiring log from the system &#8230;</string>

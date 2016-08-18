@@ -22,7 +22,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -88,6 +91,15 @@ public class requestMeteoDataTask extends
                 path += "&fullinfo=false";
                 path += "&spot="+mSpot;
 
+                Date end = new Date();
+                SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy-HH:mm:ss");
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(end);
+                cal.add(Calendar.HOUR_OF_DAY, -6); //minus number would decrement the hours
+                Date start = cal.getTime();
+                path += "&start=" + df.format(start);
+                path += "&end=" + df.format(end);
+
             } else if (requestType == REQUEST_SPOTLIST) {
                 path += "lastdata=false";
                 path += "&history=false";
@@ -112,7 +124,8 @@ public class requestMeteoDataTask extends
 
 
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestProperty("user",MainActivity.authCode);
+            if (MainActivity.getAcct() != null)
+                conn.setRequestProperty("user",MainActivity.getAcct().getServerAuthCode());
             conn.setConnectTimeout(5000); //set timeout to 5 seconds
             conn.setAllowUserInteraction(false);
             conn.setInstanceFollowRedirects(true);

@@ -76,14 +76,15 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
             String title = data.getString("title");
             message = data.getString("message");
             CommonUtilities.sendMessageToMainActivity(getApplicationContext(), title, "messagetext", notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
-            generateUINotification(getApplicationContext(), message, title); // questo genera la notifica nella barra notifica
+            //generateUINotification(getApplicationContext(), message, title); // questo genera la notifica nella barra notifica
         }
 
         /**
          * In some cases it may be useful to show a notification indicating to the user
          * that a message was received.
          */
-        sendNotification(message);
+        //sendNotification(message);
+        generateUINotification(getApplicationContext(), message, "GWindAlarm"); // questo genera la notifica nella barra notifica
         // [END_EXCLUDE]
     }
     // [END receive_message]
@@ -101,8 +102,8 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_stat_ic_notification)
-                .setContentTitle("GCM Message")
+                .setSmallIcon(R.drawable.logo)
+                .setContentTitle("GWindAlarm")
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)

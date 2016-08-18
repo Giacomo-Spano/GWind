@@ -15,6 +15,8 @@
     tools:context="wind.newwindalarm.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"

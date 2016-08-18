@@ -52,6 +52,7 @@ import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -113,9 +114,15 @@ public class RegistrationIntentService extends IntentService {
             if (!sentToken /*|| deviceId == -1*/) {
                 //deviceId = MainActivity.getDeviceId();//MainActivity.getIMEI();
                 //Log.i(TAG, "deviceId=" + deviceId);
-                String personId = AlarmPreferences.getPersonId(MainActivity.getContext());
+                //String personId = AlarmPreferences.getPersonId(MainActivity.getContext());
 
-                sendRegistrationToServer(personId);
+                String personId = MainActivity.getAcct().getId();
+                String personName = MainActivity.getAcct().getDisplayName();
+                String personEmail = MainActivity.getAcct().getEmail();
+                Uri personPhoto = MainActivity.getAcct().getPhotoUrl();
+                String authCode = MainActivity.getAcct().getServerAuthCode();
+
+                sendRegistrationToServer(personId, personName, personEmail, personPhoto,authCode);
                 //ServerUtilities.registerDevice(token);
             }
             //deviceId = getDeviceIdFromServer(token,serverURL);
@@ -159,7 +166,7 @@ public class RegistrationIntentService extends IntentService {
      *
      * @param token The new token.
      */
-    private void sendRegistrationToServer(String personId) {
+    private void sendRegistrationToServer(String personId, String personName, String personEmail, Uri personPhoto, String authCode) {
         // Add custom implementation, as needed.
         //ServerUtilities.register(token, serverURL);
         String model = Build.MODEL;
@@ -172,16 +179,19 @@ public class RegistrationIntentService extends IntentService {
 
                 try {
                     JSONObject json = new JSONObject(jsonStr);
-                    if (json.has("id")) {
-                        int deviceId = json.getInt("id");
-                        //MainActivity.setDeviceId(deviceId);
+                    if (json.has("deviceid")) {
+                        int deviceId = json.getInt("deviceid");
                         AlarmPreferences.setDeviceId(MainActivity.getContext(),deviceId);
                     }
+                    /*if (json.has("userid")) {
+                        int deviceId = json.getInt("userid");
+                        AlarmPreferences.set(MainActivity.getContext(),deviceId);
+                    }*/
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-        }, registertask.POST_REGISTERDEVICE).execute(AlarmPreferences.getRegId(this), model, personId);
+        }, registertask.POST_REGISTERDEVICE).execute(AlarmPreferences.getRegId(this), model, personId, personName, personEmail, personPhoto, authCode);
 
     }
 

@@ -87,6 +87,11 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
                 String regId = (String) params[0];
                 String name = (String) params[1];
                 String personId = (String) params[2];
+                String personName = (String) params[3];
+                String personEmail = (String) params[4];
+                Uri personPhoto = (Uri) params[5];
+                String authCode = (String) params[6];
+
 
                 postData = URLEncoder.encode("registerdevice", "UTF-8") + "=" +
                         URLEncoder.encode("true", "UTF-8") + "&" +
@@ -94,8 +99,17 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
                         URLEncoder.encode(regId, "UTF-8") + "&" +
                         URLEncoder.encode("name", "UTF-8") + "=" +
                         URLEncoder.encode(name, "UTF-8") + "&" +
-                        URLEncoder.encode("personid", "UTF-8") + "=" +
-                        URLEncoder.encode(personId, "UTF-8") + "&";
+                        URLEncoder.encode("personId", "UTF-8") + "=" +
+                        URLEncoder.encode(personId, "UTF-8") + "&" +
+                        URLEncoder.encode("personName", "UTF-8") + "=" +
+                        URLEncoder.encode(personName, "UTF-8") + "&"+
+                        /*URLEncoder.encode("personEmail", "UTF-8") + "=" +
+                        URLEncoder.encode(personEmail, "UTF-8") + "&"+
+                        URLEncoder.encode("personPhoto", "UTF-8") + "=" +
+                        URLEncoder.encode(personPhoto.toString(), "UTF-8") + "&"+*/
+                        URLEncoder.encode("authCode", "UTF-8") + "=" +
+                        URLEncoder.encode(authCode, "UTF-8") + "&";
+
 
             } else if (postType == POST_REGISTERUSER) {
 
