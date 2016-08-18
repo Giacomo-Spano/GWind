@@ -100,6 +100,15 @@ public class AlarmPreferences {
         editor.commit(); // commit changes*/
     }
 
+    public static boolean isSpotFavorite(Context context, long spotId) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Set<String> favorites = getSpotListFavorites(context);
+        if (!favorites.contains("" + spotId))
+            return true;
+        return false;
+    }
+
     public static String getPersonId(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String personId = sharedPreferences.getString(QuickstartPreferences.PERSON_ID,null);

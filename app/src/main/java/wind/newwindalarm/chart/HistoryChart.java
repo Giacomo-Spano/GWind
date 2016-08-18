@@ -37,11 +37,19 @@ public class HistoryChart implements AsyncRequestMeteoDataResponse {
     private LineChart mTrendChart;
     private LineChart mTemperatureChart;
 
+    LineData windData;
+    LineData trendData;
+    LineData temperatureData;
+
     public HistoryChart(Context context, LineChart windChart, LineChart trendChart, LineChart temperatureChart) {
         mContext = context;
         mWindChart = windChart;
         mTrendChart = trendChart;
         mTemperatureChart = temperatureChart;
+    }
+
+    public LineData getWindLineData() {
+        return windData;
     }
 
     @Override
@@ -129,19 +137,19 @@ public class HistoryChart implements AsyncRequestMeteoDataResponse {
                 }
             }
 
-            LineDataSet setCompSpeed = new LineDataSet(valsCompSpeed, "Speed");
+            LineDataSet setCompSpeed = new LineDataSet(valsCompSpeed, "Velocità");
             setCompSpeed.setAxisDependency(YAxis.AxisDependency.LEFT);
             setCompSpeed.setColor(Color.RED);
             setCompSpeed.setDrawCircles(true);
             setCompSpeed.setCircleColor(Color.RED);
 
-            LineDataSet setCompAvSpeed = new LineDataSet(valsCompAvSpeed, "Average Speed");
+            LineDataSet setCompAvSpeed = new LineDataSet(valsCompAvSpeed, "Velocità media");
             setCompAvSpeed.setAxisDependency(YAxis.AxisDependency.LEFT);
             setCompAvSpeed.setColor(Color.BLUE);
             setCompAvSpeed.setDrawCircles(true);
             setCompAvSpeed.setCircleColor(Color.BLUE);
 
-            LineDataSet setCompDirection = new LineDataSet(valsCompDirection, "Direction");
+            LineDataSet setCompDirection = new LineDataSet(valsCompDirection, "Direzione");
             setCompDirection.setAxisDependency(YAxis.AxisDependency.RIGHT);
             setCompDirection.setColor(Color.BLACK);
             setCompDirection.setDrawCircles(true);
@@ -233,11 +241,11 @@ public class HistoryChart implements AsyncRequestMeteoDataResponse {
                 }
             });
 
-            LineData windData = new LineData(windDataSets);
+            windData = new LineData(windDataSets);
             mWindChart.setData(windData);
-            LineData trendData = new LineData(trendDataSets);
+            trendData = new LineData(trendDataSets);
             mTrendChart.setData(trendData);
-            LineData temperatureData = new LineData(temperatureDataSets);
+            temperatureData = new LineData(temperatureDataSets);
             mTemperatureChart.setData(temperatureData);
 
 
@@ -245,7 +253,7 @@ public class HistoryChart implements AsyncRequestMeteoDataResponse {
             Legend legend = mWindChart.getLegend();
             legend.setFormSize(10f); // set the size of the legend forms/shapes
             legend.setForm(Legend.LegendForm.CIRCLE); // set what type of form/shape should be used
-            legend.setPosition(Legend.LegendPosition.BELOW_CHART_RIGHT);
+            legend.setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);
             //l.setTypeface(...);
             legend.setTextSize(12f);
             legend.setTextColor(Color.BLACK);
@@ -255,6 +263,8 @@ public class HistoryChart implements AsyncRequestMeteoDataResponse {
 
 
             mWindChart.invalidate(); // refresh
+            mTemperatureChart.invalidate(); // refresh
+            mTrendChart.invalidate(); // refresh
 
             //mWindChart.setVisibleXRange(40); // allow 20 values to be displayed at once on the x-axis, not more
             //mWindChart.moveViewToX(xVals.size()-40); // set the left edge of the chart to x-index 10

@@ -577,7 +577,7 @@ public class MainActivity extends AppCompatActivity implements
         addFab.setVisibility(View.GONE);
 
 
-        if (!signedIn) {
+        if (!signedIn && mPosition != R.id.nav_settings) {
             nextFragment = mPosition;
             ft.replace(R.id.content_frame, profileFragment);
             profileFragment.setProfile(mProfile);

@@ -25,6 +25,7 @@ public class ChartFragment extends Fragment {
     private LineChart mWindChart, mTrendChar, mTemperatureChart;
     private long spotID;
     MeteoStationData meteoData;
+    HistoryChart hc;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,7 +144,7 @@ public class ChartFragment extends Fragment {
 
     public void getHistoryData(final long spot) {
 
-        HistoryChart hc = new HistoryChart(getActivity(), mWindChart, mTrendChar, mTemperatureChart);
+        hc = new HistoryChart(getActivity(), mWindChart, mTrendChar, mTemperatureChart);
 
         new requestMeteoDataTask(getActivity(), hc, requestMeteoDataTask.REQUEST_HISTORYMETEODATA).execute("" + spot);
 
@@ -151,6 +152,8 @@ public class ChartFragment extends Fragment {
 
 
     private void startFullChartActivity() {
+        //hc.
+
         Intent resultIntent = new Intent(getActivity(), FullChartActivity.class);
         int request = 0;
         startActivityForResult(resultIntent, request);

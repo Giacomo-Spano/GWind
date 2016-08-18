@@ -5,18 +5,41 @@
     android:orientation="vertical"
     >
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="DIAGRAMMA DEL VENTO"
+        android:id="@+id/textView20" />
+
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chartWind"
         android:layout_width="match_parent"
-        android:layout_height="200dp" />
+        android:layout_height="300dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="DIAGRAMMA TENDENZA VENTO"
+        android:id="@+id/textView17" />
+
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chartTrend"
         android:layout_width="match_parent"
-        android:layout_height="200dp" />
+        android:layout_height="300dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="DIAGRAMMA TEMPERATURA"
+        android:id="@+id/textView21" />
+
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chartTemperature"
         android:layout_width="match_parent"
-        android:layout_height="200dp" />
+        android:layout_height="300dp" />
 
 
 </LinearLayout>

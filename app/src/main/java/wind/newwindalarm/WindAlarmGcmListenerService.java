@@ -73,10 +73,16 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
 
         } else {
 
+            String spotId = data.getString("spotID");
+            if (spotId != null) {
+                if (!AlarmPreferences.isSpotFavorite(MainActivity.getContext(),Integer.valueOf(spotId)))
+                    return;
+            }
+
             String title = data.getString("title");
             message = data.getString("message");
-            CommonUtilities.sendMessageToMainActivity(getApplicationContext(), title, "messagetext", notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
-            //generateUINotification(getApplicationContext(), message, title); // questo genera la notifica nella barra notifica
+            //CommonUtilities.sendMessageToMainActivity(getApplicationContext(), title, "messagetext", notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
+            generateUINotification(getApplicationContext(), message, title); // questo genera la notifica nella barra notifica
         }
 
         /**
@@ -84,7 +90,7 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
          * that a message was received.
          */
         //sendNotification(message);
-        generateUINotification(getApplicationContext(), message, "GWindAlarm"); // questo genera la notifica nella barra notifica
+        //generateUINotification(getApplicationContext(), message, "GWindAlarm"); // questo genera la notifica nella barra notifica
         // [END_EXCLUDE]
     }
     // [END receive_message]
@@ -167,16 +173,7 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
      */
     private void generateUINotification(Context context, String message, String title) {
 
-        String titleTxt = "wd";//context.getString(R.string.app_name);
-        titleTxt += title;
         int icon = R.drawable.logo;
-
-        /*NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context)
-                        .setSmallIcon(icon)
-                        .setContentTitle(titleTxt)
-                        .setContentText(message)
-                        .setAutoCancel(true);*/
 
         Intent resultIntent = new Intent(context, MainActivity.class);
 
