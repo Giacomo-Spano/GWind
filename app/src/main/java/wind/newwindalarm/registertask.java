@@ -97,12 +97,12 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
                         URLEncoder.encode("true", "UTF-8") + "&" +
                         URLEncoder.encode("regId", "UTF-8") + "=" +
                         URLEncoder.encode(regId, "UTF-8") + "&" +
-                        URLEncoder.encode("name", "UTF-8") + "=" +
+                        URLEncoder.encode("spotName", "UTF-8") + "=" +
                         URLEncoder.encode(name, "UTF-8") + "&" +
                         URLEncoder.encode("personId", "UTF-8") + "=" +
                         URLEncoder.encode(personId, "UTF-8") + "&" +
                         URLEncoder.encode("personName", "UTF-8") + "=" +
-                        URLEncoder.encode(personName, "UTF-8") + "&"+
+                        URLEncoder.encode(personName, "UTF-8") + "&" +
                         /*URLEncoder.encode("personEmail", "UTF-8") + "=" +
                         URLEncoder.encode(personEmail, "UTF-8") + "&"+
                         URLEncoder.encode("personPhoto", "UTF-8") + "=" +
@@ -122,9 +122,9 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
                 postData = URLEncoder.encode("registeruser", "UTF-8") + "=" +
                         URLEncoder.encode("true", "UTF-8") + "&" +
                         URLEncoder.encode("personId", "UTF-8") + "=" +
-                        URLEncoder.encode(personId, "UTF-8") + "&"+
+                        URLEncoder.encode(personId, "UTF-8") + "&" +
                         URLEncoder.encode("personName", "UTF-8") + "=" +
-                        URLEncoder.encode(personName, "UTF-8") + "&"+
+                        URLEncoder.encode(personName, "UTF-8") + "&" +
                         /*URLEncoder.encode("personEmail", "UTF-8") + "=" +
                         URLEncoder.encode(personEmail, "UTF-8") + "&"+
                         URLEncoder.encode("personPhoto", "UTF-8") + "=" +

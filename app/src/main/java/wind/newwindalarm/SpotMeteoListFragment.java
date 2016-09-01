@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import wind.newwindalarm.fragment.SpotDetailsFragment;
+
 public class SpotMeteoListFragment extends ListFragment implements SpotMeteoListListener {
 
     // Container Activity must implement this interface
@@ -40,7 +42,7 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
 
     private void getSpotListFromServer(final SpotMeteoListListener listener) {
 
-        final Set<String> favorites = AlarmPreferences.getSpotListFavorites(getActivity());
+        final Set<String> favorites = AlarmPreferences.getSpotListFavorites();
 
         new requestMeteoDataTask(getActivity(), new AsyncRequestMeteoDataResponse() {
 
@@ -107,7 +109,7 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
     }
 
     public void showSpotDetail(long spotID) {
-        Fragment spotDetail = new SpotDetailFragment();
+        Fragment spotDetail = new SpotDetailsFragment();
 
         Bundle data = new Bundle();
         data.putLong("spotID", spotID);

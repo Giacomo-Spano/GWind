@@ -6,13 +6,12 @@ import org.json.JSONObject;
 /**
  * Created by giacomo on 15/07/2015.
  */
-public class Spot<T> {
-    public String name;
+public class Spot {
+    public String spotName;
     public Long id;
     public String sourceUrl;
     public String webcamUrl;
     public boolean enabled = false;
-
     public double speed = 0.0;
     public double avSpeed = 0.0;
     public double directionAngle = 0.0;
@@ -21,20 +20,17 @@ public class Spot<T> {
     public boolean offline = false;
     public boolean favorites;
 
+
     public Spot(JSONObject jObject) throws JSONException {
 
         if (!jObject.isNull("id"))
             id = jObject.getLong("id");
-
-
         if (!jObject.isNull("spotname"))
-            name = jObject.getString("spotname");
+            spotName = jObject.getString("spotname");
         if (!jObject.isNull("sourceurl"))
             sourceUrl = jObject.getString("sourceurl");
         if (!jObject.isNull("webcamurl"))
             webcamUrl = jObject.getString("webcamurl");
-
-
         if (jObject.isNull("speed") || jObject.isNull("avspeed") || jObject.isNull("direction") || jObject.isNull("directionangle") || jObject.isNull("datetime")) {
             offline = true;
         } else {
@@ -45,10 +41,5 @@ public class Spot<T> {
             direction = jObject.getString("direction");
             date = jObject.getString("datetime");
         }
-
-    }
-
-    public String toString() {
-        return name;
     }
 }

@@ -70,26 +70,12 @@ public class WebcamFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
         View v;
         v = inflater.inflate(R.layout.fragment_webcam, container, false);
         mWebcamImageView = (ImageView) v.findViewById(R.id.imageView7);
 
-        spotID = getArguments().getLong("spotID");
-        String str = getArguments().getString("meteodata");
-
-        if (str != null) {
-            try {
-                JSONObject json = new JSONObject(str);
-                meteoData = new MeteoStationData(json);
-                refreshData();
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else {
-            getLastData(spotID);
-        }
+        //spotID = getArguments().getLong("spotID");
+        refreshData();
         return v;
     }
 
@@ -98,72 +84,6 @@ public class WebcamFragment extends Fragment {
         new DownloadImageTask(mWebcamImageView).execute(meteoData.webcamurl);
     }
 
-    public void onBackPressed() {
-        // super.onBackPressed();
-        // myFragment.onBackPressed();
-    }
-
-    public void getLastData(long spot) {
-
-
-        new requestMeteoDataTask(getActivity(), new AsyncRequestMeteoDataResponse() {
-
-            @Override
-            public void processFinish(List<Object> list, boolean error, String errorMessage) {
-
-                if (error) {
-
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-
-                    alertDialogBuilder.setTitle("Errore");
-                    alertDialogBuilder
-                            .setMessage(errorMessage)
-                            .setCancelable(false);
-                    alertDialogBuilder
-                            .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    // if this button is clicked, just close
-                                    // the dialog box and do nothing
-                                    dialog.cancel();
-                                }
-                            });
-                    AlertDialog alertDialog;
-                    alertDialog = alertDialogBuilder.create();
-                    alertDialog.show();
-
-                } else {
-
-                    meteoData = null;
-                    for (int i = 0; i < list.size(); i++) {
-
-                        meteoData = (MeteoStationData) list.get(i);
-                        if (meteoData.spotID == spotID)
-                            break;
-                    }
-                    if (meteoData == null)
-                        return;
-
-
-                    //DownloadImageTask downloadImageTask = (DownloadImageTask) new DownloadImageTask(mWebcamImageView)
-                    //        .execute(md.webcamurl);
-                    refreshData();
-
-
-                }
-
-            }
-
-            @Override
-            public void processFinishHistory(List<Object> list, boolean error, String errorMessage) {
-
-            }
-
-            @Override
-            public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
-
-            }
-        }, requestMeteoDataTask.REQUEST_LASTMETEODATA).execute("" + spot);
-    }
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 

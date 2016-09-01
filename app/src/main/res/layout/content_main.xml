@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/mainProgressBar"
-        style="@android:style/Widget.ProgressBar.Horizontal"
+        style="@android:style/Widget.ProgressBar.Large"
         />
 
     <LinearLayout

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include
+            android:id="@+id/windcontrol"
+            layout="@layout/windcontrol_main"
+            android:layout_width="@dimen/meteodata_icon_width"
+            android:layout_height="@dimen/meteodata_icon_height"
+            android:layout_alignParentRight="false"
+            android:layout_gravity="center_horizontal"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Velocità vento"
+            android:id="@+id/textView24"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentStart="false"
+            android:layout_toEndOf="@id/windcontrol"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="32dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Large Text"
+            android:id="@+id/textView28"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="@dimen/meteodata_icon_width"
+            android:layout_height="@dimen/meteodata_icon_height"
+            android:id="@+id/imageView11"
+            android:src="@drawable/temperature" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Temperatura"
+            android:id="@+id/textView23"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentStart="false"
+            android:layout_toEndOf="@id/imageView11"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="32dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Large Text"
+            android:id="@+id/textView27"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+
+</LinearLayout>

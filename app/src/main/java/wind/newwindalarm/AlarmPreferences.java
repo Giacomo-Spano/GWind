@@ -60,8 +60,8 @@ public class AlarmPreferences {
 
     }
 
-    public static Set<String> getSpotListFavorites(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    public static Set<String> getSpotListFavorites() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.getContext());
         //String regId = sharedPreferences.getString(QuickstartPreferences.KEY_SPOTLISTFAVORITES, "");
         Set<String> stringSet = sharedPreferences.getStringSet(QuickstartPreferences.KEY_SPOTLISTFAVORITES, new HashSet<String>(Arrays.asList("0", "12","2","1")));
 
@@ -78,7 +78,7 @@ public class AlarmPreferences {
     public static void addToSpotListFavorites(Context context, long spotId) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        Set<String> favorites = getSpotListFavorites(context);
+        Set<String> favorites = getSpotListFavorites();
         if (!favorites.contains("" + spotId))
             favorites.add("" + spotId);
         editor.clear();
@@ -89,7 +89,7 @@ public class AlarmPreferences {
     public static void deleteFromSpotListFavorites(Context context, long spotId) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        Set<String> favorites = getSpotListFavorites(context);
+        Set<String> favorites = getSpotListFavorites();
         for (int i = 0; i < favorites.size(); i++) {
             if (favorites.toArray()[i].equals("" + spotId)) {
                 favorites.remove("" + spotId);
@@ -103,7 +103,7 @@ public class AlarmPreferences {
     public static boolean isSpotFavorite(Context context, long spotId) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        Set<String> favorites = getSpotListFavorites(context);
+        Set<String> favorites = getSpotListFavorites();
         if (!favorites.contains("" + spotId))
             return true;
         return false;

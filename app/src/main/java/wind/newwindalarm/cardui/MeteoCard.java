@@ -19,7 +19,6 @@ import wind.newwindalarm.controls.WindControl;
  */
 public class MeteoCard extends LinearLayout {
 
-    private String Id;
     private boolean mDetailsHidden = false;
     private ImageView mDetailsImage;
     private TextView mTitle;
@@ -153,65 +152,4 @@ public class MeteoCard extends LinearLayout {
         TextView tv = (TextView) findViewById(R.id.dateTextView);
         tv.setText(date);
     }
-
-
-
-
-    public void setDescription(String description) {
-        TextView tv = (TextView) findViewById(R.id.title);
-        tv.setText(description);
-    }
-
-    public void setID(String Id) {
-        this.Id = Id;
-    }
-    public String getID() {
-        return Id;
-    }
-
-    public void setImageTextUp(String text) {
-        TextView tv = (TextView) findViewById(R.id.imagetextup);
-        tv.setText(text);
-    }
-    public void setImageTextDown(String text) {
-        TextView tv = (TextView) findViewById(R.id.imagetextdown);
-        tv.setText(text);
-    }
-
-    public void setStatusText(String text) {
-        TextView tv = (TextView) findViewById(R.id.statusText);
-        tv.setText(text);
-    }
-
-    public void setLabelImage(int resId) {
-        ImageView iv = (ImageView) findViewById(R.id.labelImage);
-        iv.setImageResource(resId);
-    }
-
-    public void addSeparator() {
-
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View v = inflater.inflate(R.layout.cardsubitem_layout, this, false);
-
-        LinearLayout view = new LinearLayout(getContext());
-
-        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(
-                LayoutParams.MATCH_PARENT,
-                LayoutParams.WRAP_CONTENT);
-        lp.height = 5;
-        view.setLayoutParams(lp);
-        view.setBackgroundResource(R.drawable.card_separator);
-
-        addView(view);
-    }
-    public AlarmCardSubitem addSubItem(String text) {
-
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        AlarmCardSubitem v = (AlarmCardSubitem) inflater.inflate(R.layout.cardsubitem_layout, this, false);
-        addView(v);
-
-        v.setDescription(text);
-        return v;
-    }
-
 }

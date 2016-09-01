@@ -1,6 +1,5 @@
 package wind.newwindalarm;
 
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -20,9 +19,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -58,10 +55,6 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -70,36 +63,35 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
+import wind.newwindalarm.fragment.PanelFragment;
+import wind.newwindalarm.fragment.SpotDetailsFragment;
 
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
-        ProfileFragment.OnSignInClickListener {
+        ProfileFragment.OnSignInClickListener,
+        PanelFragment.OnSpotClickListener {
 
     private static MainActivity instance;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static int deviceId = -1;
+    private List<MeteoStationData> meteoDataList = new ArrayList<>();
 
-   // public static String authCode = "";
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        //startSendLogActivity();
-
-        //SendLoagcatMail();
     }
 
     private void startSendLogActivity() {
-
         Intent resultIntent = new Intent(this, SendLogActivity.class);
         //startActivityForResult(resultIntent, 1);
         startActivity(resultIntent);
         finish();
     }
-
-
 
     public void SendLoagcatMail() {
 
@@ -145,11 +137,9 @@ public class MainActivity extends AppCompatActivity implements
     private static final int RC_SIGN_IN = 9001;
     private GoogleApiClient mGoogleApiClient;
     protected static GoogleSignInAccount acct;
-
     public static final String GO_DIRECTLY_TO_SPOT_DETAILS = "GoDirectlyToSpotDetails";
 
-
-    public static List<Spot> spotList;
+    public List<Spot> spotList;
     private Settings mSettings;
 
     PanelFragment panelFragment;
@@ -158,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements
     SettingsFragment settingsFragment;
     ProfileFragment profileFragment;
     SpotMeteoListFragment spotMeteoListFragment;
+    SpotDetailsFragment spotDetailsFragment;
     SplashScreenFragment splashFragment;
 
     // google properties
@@ -173,8 +164,8 @@ public class MainActivity extends AppCompatActivity implements
     FloatingActionButton addFab;
     FloatingActionButton refreshFab;
 
-
     private UserProfile mProfile = null;
+    private long spotId = -1;
     static boolean signedIn = false;
     static int nextFragment = -1;
 
@@ -237,7 +228,8 @@ public class MainActivity extends AppCompatActivity implements
         refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                panelFragment.getMeteoData();
+                getLastMeteoData();
+                //panelFragment.getMeteoData();
             }
         });
 
@@ -260,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements
         mSettings.setListener(new Settings.SettingsListener() {
             @Override
             public void onChangeOrder(List<Long> order) {
-                panelFragment.setSpotOrder(order);
+                //panelFragment.setSpotOrder(order);
             }
 
             @Override
@@ -343,13 +335,7 @@ public class MainActivity extends AppCompatActivity implements
         //signInButton.setScopes(gso.getScopeArray());
         // [END customize_button]
 
-        //findViewById(R.id.sign_in_button).setOnClickListener(this);
-        //findViewById(R.id.sign_out_button).setOnClickListener(this);
-        //findViewById(R.id.disconnect_button).setOnClickListener(this);
-
-        //notificationFragment = new NotificationFragment();
-        //notificationFragment.setContext(this);
-        panelFragment = new PanelFragment();
+        //panelFragment = new PanelFragment();
         programFragment = new ProgramFragment();
         programListFragment = new ProgramListFragment();
         splashFragment = new SplashScreenFragment();
@@ -357,9 +343,11 @@ public class MainActivity extends AppCompatActivity implements
         settingsFragment.setSettings(mSettings);
         profileFragment = new ProfileFragment();
         spotMeteoListFragment = new SpotMeteoListFragment();
+        spotDetailsFragment = new SpotDetailsFragment();
 
+        //getLastMeteoData();
         //showSplashScreen();
-        showFragment(R.id.nav_profile);
+        //showFragment(R.id.nav_profile);
         int spotId = 0;
         Bundle extras = getIntent().getExtras();
         if (extras != null) // se SpotID è valorizzato questa activity è chiamata dalla playalarm activity e deve visualizzare subito la spotdetailactivity
@@ -370,12 +358,8 @@ public class MainActivity extends AppCompatActivity implements
                 //panelFragment.showSpotDetail(spotId);
             }
         }
-
         silentSignIn(spotId);
-
-
     }
-
 
     @Override
     protected void onResume() {
@@ -520,26 +504,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // If the drawer is open, hide action items related to the content view
-        //boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-
-        /*menu.findItem(R.id.action_add).setVisible(false);
-        menu.findItem(R.id.action_remove).setVisible(false);
-        menu.findItem(R.id.action_clear).setVisible(false);
-        menu.findItem(R.id.action_settings).setVisible(false);
-        menu.findItem(R.id.options_refresh).setVisible(false);*/
-
-        /*if (mPosition == POSITION_PROGRAMLIST) {
-            menu.findItem(R.id.action_add).setVisible(!drawerOpen);
-        }
-        if (mPosition == POSITION_LOG)
-            menu.findItem(R.id.action_clear).setVisible(!drawerOpen);
-*/
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
@@ -559,17 +523,8 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }
 
-    private void showSplashScreen() {
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.replace(R.id.content_frame, splashFragment);
-        ft.addToBackStack(null);
-        ft.commit();
-    }
-
     private void showFragment(int mPosition) {
 
-        //Bundle data = new Bundle();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
 
@@ -583,7 +538,7 @@ public class MainActivity extends AppCompatActivity implements
             profileFragment.setProfile(mProfile);
         } else {
 
-            if (mPosition == R.id.nav_favorites) {
+            if (mPosition == R.id.nav_favorites && panelFragment != null) {
                 ft.replace(R.id.content_frame, panelFragment);
                 refreshFab.setVisibility(View.VISIBLE);
             } else if (mPosition == R.id.nav_program) {
@@ -607,7 +562,6 @@ public class MainActivity extends AppCompatActivity implements
         String syncConnPref = sharedPref.getString(QuickstartPreferences.KEY_PREF_SERVERURL, this.getResources().getString(R.string.pref_serverURL_default));
         return syncConnPref;
     }
-
 
     private void getSpotListFromServer() {
 
@@ -669,44 +623,44 @@ public class MainActivity extends AppCompatActivity implements
         alertDialog.show();
     }
 
-    public static String getSpotName(long id) {
+    public String getSpotName(long id) {
 
         if (spotList == null)
             return null;
 
         for (int i = 0; i < spotList.size(); i++) {
             if (spotList.get(i).id == id)
-                return spotList.get(i).name;
+                return spotList.get(i).spotName;
         }
         return null;
     }
 
-    public static Spot getSpotFromId(long id) {
+    public Spot getSpotFromId(long id) {
 
         if (spotList == null)
             return null;
 
         for (int i = 0; i < spotList.size(); i++) {
-            if (spotList.get(i).id == id)
-                return spotList.get(i);
+            if (spotList.get(i).id == id) {
+
+                return (Spot) spotList.get(i);
+            }
         }
         return null;
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            /*case R.id.sign_in_button:
-                signIn();
-                break;
-            case R.id.sign_out_button:
-                signOut();
-                break;
-            case R.id.disconnect_button:
-                revokeAccess();
-                break;*/
-            // ...
+    public MeteoStationData getMeteodataFromId(long spotId) {
+
+        if (meteoDataList == null)
+            return null;
+
+        Iterator iterator = meteoDataList.iterator();
+        while (iterator.hasNext()) {
+            MeteoStationData md = (MeteoStationData) iterator.next();
+            if (md.spotID == spotId)
+                return md;
         }
+        return null;
     }
 
     private void signIn() {
@@ -774,10 +728,7 @@ public class MainActivity extends AppCompatActivity implements
                         unregister();
                     }
                 });
-
-
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -837,12 +788,9 @@ public class MainActivity extends AppCompatActivity implements
 
             }
 
-            showFragment(R.id.nav_favorites);
-
-            /*if (nextFragment != -1) {
-                showFragment(nextFragment);
-                nextFragment = -1;
-            }*/
+            getLastMeteoData();
+            //showFragment(R.id.nav_favorites);
+            //panelFragment.refreshMeteoData(meteoDataList);
 
         } else {
 
@@ -853,77 +801,13 @@ public class MainActivity extends AppCompatActivity implements
             if (profileFragment != null) {
                 profileFragment.setProfile(mProfile);
             }
-
             unregisterReceiver();
-
-
         }
     }
     private void unregister() {
         AlarmPreferences.deleteRegId(this);
         AlarmPreferences.deletePersonId(this);
     }
-
-    /*
-    private void registerUser(String personId, String personName, String personEmail, Uri personPhoto, String authCode) {
-
-        new registertask(MainActivity.getInstance(), new AsyncRegisterResponse() {
-
-            @Override
-            public void processFinish(String jsonStr, boolean error, String errorMessage) {
-
-                try {
-                    JSONObject json = new JSONObject(jsonStr);
-                    if (json.has("id")) {
-                        int userId = json.getInt("id");
-
-                    }
-                    if (json.has("personid")) {
-                        String personId = json.getString("personid");
-                        AlarmPreferences.setPersonId(getContext(), personId);
-
-
-                        mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
-                        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-                            @Override
-                            public void onReceive(Context context, Intent intent) {
-                                mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
-                                SharedPreferences sharedPreferences =
-                                        PreferenceManager.getDefaultSharedPreferences(context);
-                                boolean sentToken = sharedPreferences
-                                        .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
-                                if (sentToken) {
-                                    mInformationTextView.setText(getString(R.string.gcm_send_message));
-                                    mInformationTextView.setVisibility(ProgressBar.GONE);
-                                } else {
-                                    mInformationTextView.setText(getString(R.string.token_error_message));
-                                }
-                            }
-                        };
-                        mInformationTextView = (TextView) findViewById(R.id.informationTextView);
-                        // Registering BroadcastReceiver
-                        registerReceiver();
-                        if (checkPlayServices()) {
-                            // Start IntentService to register this application with GCM.
-                            Intent intent = new Intent(MainActivity.getContext(), RegistrationIntentService.class);
-                            startService(intent);
-
-
-                        }
-                    }
-
-
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-
-            }
-        }, registertask.POST_REGISTERUSER).execute(personId, personName, personEmail, personPhoto, authCode);
-    }
-    */
 
     private void showNoUser() {
         mUserNameTextView.setText("no user");
@@ -955,6 +839,25 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onDisconnectClick() {
         revokeAccess();
+    }
+
+    @Override
+    public void onSpotClick(long spotId) {
+
+        getHistoryMeteoData(spotId);
+
+        spotDetailsFragment.setMeteoData(getMeteodataFromId(spotId));
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.content_frame, spotDetailsFragment);
+        ft.addToBackStack(null);
+        ft.commit();
+
+    }
+
+    @Override
+    public void onClick(View view) {
+
     }
 
 
@@ -1041,18 +944,61 @@ public class MainActivity extends AppCompatActivity implements
         return circuleBitmap;
     }
 
-    /*public static String getIMEI() {
-        TelephonyManager mngr = (TelephonyManager) MainActivity.getContext().getSystemService(MainActivity.getContext().TELEPHONY_SERVICE);
-        String imei = mngr.getDeviceId();
-        return imei;
-    }*/
-    public static int getDeviceId() {
+    public void getLastMeteoData() {
 
-        return deviceId;
+        Set<String> favorites = AlarmPreferences.getSpotListFavorites();
+        if (favorites.size() == 0)
+            return;
+
+        String spotList = "";
+        Iterator iter = favorites.iterator();
+        while (iter.hasNext()) {
+            long id = Long.valueOf((String) iter.next());
+            spotList += id;
+            if (iter.hasNext())
+                spotList += ",";
+        }
+
+        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_LASTMETEODATA).execute(spotList);
     }
 
-    public static void setDeviceId(int id) {
-        deviceId = id;
+    public void getHistoryMeteoData(long spotId) {
+
+        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_HISTORYMETEODATA).execute("" + spotId);
+    }
+
+    private class requestDataResponse implements AsyncRequestMeteoDataResponse {
+
+        @Override
+        public void processFinish(List<Object> list, boolean error, String errorMessage) {
+
+            if (panelFragment == null) {
+                panelFragment = new PanelFragment();
+                showFragment(R.id.nav_favorites);
+            }
+            Iterator iterator = list.iterator();
+            while (iterator.hasNext()) {
+                MeteoStationData md = (MeteoStationData) iterator.next();
+                meteoDataList.add(md);
+            }
+            panelFragment.setMeteoDataList(meteoDataList);
+
+
+            panelFragment.refreshMeteoData();
+            //meteoDataList = list;
+        }
+
+        @Override
+        public void processFinishHistory(List<Object> list, boolean error, String errorMessage) {
+
+
+            spotDetailsFragment.updateChartData(list);
+            }
+
+        @Override
+        public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
+
+        }
     }
 
 }

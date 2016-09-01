@@ -360,7 +360,7 @@ public class ProgramListFragment extends Fragment implements
                 days += "D";
             else
                 days += " ";
-            String spotname = MainActivity.getSpotName(alarm.spotId);
+            String spotname = ((MainActivity)getActivity()).getSpotName(alarm.spotId);
             if (spotname == null)
                 spotname = "<empty>";
             card.setSpotName(spotname);

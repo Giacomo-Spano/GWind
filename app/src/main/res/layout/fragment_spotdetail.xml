@@ -1,38 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.view.ViewPager
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 
     <android.support.design.widget.TabLayout
+        android:id="@+id/tablayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:id="@+id/tablayout" >
+            android:icon="@drawable/logo"
+            android:text="prova1" />
 
-            <android.support.design.widget.TabItem
-                android:icon="@drawable/logo"
-                android:text="prova1"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content" />
+<!--        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/logo"
+            android:text="prova2" />
 
-            <android.support.design.widget.TabItem
-                android:icon="@drawable/logo"
-                android:text="prova2"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content" />
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/logo"
+            android:text="prova3" />
+-->
 
-        </android.support.design.widget.TabLayout>
-
-                <!--<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fillViewport="true">
-
-                    <include layout="@layout/fragment_spotdetailcontent" />
-
-
-                </ScrollView> -->
+    </android.support.design.widget.TabLayout>
 
 </android.support.v4.view.ViewPager>

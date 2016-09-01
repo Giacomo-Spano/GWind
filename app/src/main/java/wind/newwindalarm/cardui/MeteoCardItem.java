@@ -16,10 +16,7 @@ public class MeteoCardItem {
     public MeteoCard card;
     MeteoCardListener listener;
 
-
-
     public MeteoCardItem(MeteoCardListener ml, final Activity activity, LinearLayout container) {
-
 
         listener = ml;
         card = (MeteoCard) activity.getLayoutInflater().inflate(R.layout.card_meteo, container, false);
@@ -32,8 +29,11 @@ public class MeteoCardItem {
                 // Create new fragment and transaction
             }
         });
-
         card.init();
+    }
+
+    public void setTitle(String title) {
+        card.setTitle(title);
     }
 
     public void update(MeteoStationData data) {

@@ -1,4 +1,4 @@
-package wind.newwindalarm;
+package wind.newwindalarm.fragment;
 
 
 import android.app.AlertDialog;
@@ -18,13 +18,20 @@ import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
 
 import java.util.List;
-import wind.newwindalarm.chart.HistoryChart;
 
-public class ChartFragment extends Fragment {
+import wind.newwindalarm.AsyncRequestMeteoDataResponse;
+import wind.newwindalarm.FullChartActivity;
+import wind.newwindalarm.MeteoStationData;
+import wind.newwindalarm.R;
+import wind.newwindalarm.chart.HistoryChart;
+import wind.newwindalarm.requestMeteoDataTask;
+
+public class SpotDetailsChartFragment extends Fragment {
 
     private LineChart mWindChart, mTrendChar, mTemperatureChart;
     private long spotID;
     MeteoStationData meteoData;
+    List<Object> meteoDataList;
     HistoryChart hc;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -38,31 +45,8 @@ public class ChartFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    public void setMeteoData(MeteoStationData data) {
-        meteoData = data;
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-
-        MenuItem mm = menu.findItem(R.id.options_refresh);
-        if (mm != null) {
-
-            menu.findItem(R.id.options_refresh).setVisible(true);
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.options_refresh:
-                // Do Fragment menu item stuff here
-                refreshData();
-                return true;
-            default:
-                break;
-        }
-        return false;
+    public void setMeteoData(List<Object> list) {
+        meteoDataList = list;
     }
 
     @Override
@@ -80,6 +64,10 @@ public class ChartFragment extends Fragment {
         mWindChart = (LineChart) v.findViewById(R.id.chartWind);
         mTrendChar = (LineChart) v.findViewById(R.id.chartTrend);
         mTemperatureChart = (LineChart) v.findViewById(R.id.chartTemperature);
+
+        hc = new HistoryChart(getActivity(), mWindChart, mTrendChar, mTemperatureChart);
+        hc.updateChart(meteoDataList);
+
 
         mWindChart.setOnChartGestureListener(new OnChartGestureListener() {
             @Override
@@ -126,15 +114,17 @@ public class ChartFragment extends Fragment {
         });
 
 
-        spotID = getArguments().getLong("spotID");
-        getHistoryData(spotID);
+        //spotID = getArguments().getLong("spotID");
+        //getHistoryData(spotID);
         return v;
     }
 
-    private void refreshData() {
+    public void refreshData() {
 
-        //new DownloadImageTask(mWebcamImageView).execute(meteoData.webcamurl);
-        getHistoryData(spotID);
+        //hc = new HistoryChart(getActivity(), mWindChart, mTrendChar, mTemperatureChart);
+        if (hc != null)
+            hc.updateChart(meteoDataList);
+        //getHistoryData(spotID);
     }
 
     public void onBackPressed() {
@@ -145,8 +135,8 @@ public class ChartFragment extends Fragment {
     public void getHistoryData(final long spot) {
 
         hc = new HistoryChart(getActivity(), mWindChart, mTrendChar, mTemperatureChart);
-
         new requestMeteoDataTask(getActivity(), hc, requestMeteoDataTask.REQUEST_HISTORYMETEODATA).execute("" + spot);
+
 
     }
 
@@ -201,9 +191,7 @@ public class ChartFragment extends Fragment {
                         return;
 
 
-                    //DownloadImageTask downloadImageTask = (DownloadImageTask) new DownloadImageTask(mWebcamImageView)
-                    //        .execute(md.webcamurl);
-                    refreshData();
+                    //refreshData();
 
 
                 }

@@ -23,7 +23,7 @@ public class MeteoStationData /*extends Object*/ {
     public Double rainrate = null;
     public String sampledatetime;
     public String spotName;
-    public Long spotID;
+    public long spotID;
     public Double trend = 0.0;
     public String webcamurl = "";
     public boolean offline = false;

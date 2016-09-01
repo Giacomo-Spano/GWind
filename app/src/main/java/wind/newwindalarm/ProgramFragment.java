@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,10 +18,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
-
-import com.google.gson.Gson;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -217,7 +213,7 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
 
         for (int i = 0; i < mSpotList.size(); i++) {
 
-            list.add(mSpotList.get(i).name);
+            list.add(mSpotList.get(i).spotName);
             spotIdList.add(i, mSpotList.get(i).id);
 
         }

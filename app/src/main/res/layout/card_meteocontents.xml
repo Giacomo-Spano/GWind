@@ -14,13 +14,6 @@
         android:background="#999999"
         android:padding="5dp">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </LinearLayout>
-
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -177,7 +170,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/textmisure_color"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="24,5"
+                        android:text="00,0"
                         android:id="@+id/temperatureTextView"
                         android:layout_gravity="center_horizontal|top" />
 
@@ -220,7 +213,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="1000"
+                        android:text="0000"
                         android:textColor="@color/textmisure_color"
                         android:id="@+id/pressureTextView"
                         android:layout_gravity="center_horizontal|top" />
@@ -315,7 +308,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="99"
+                        android:text="00"
                         android:textColor="@color/textmisure_color"
                         android:id="@+id/humidityTextView"
                         android:layout_gravity="center_horizontal|top" />
@@ -365,7 +358,7 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/textmisure_color"
                             android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:text="23.5"
+                            android:text="00.0"
                         android:layout_gravity="center_horizontal|top" />
 
                     <TextView
@@ -431,7 +424,7 @@
                         android:layout_height="match_parent"
                         android:textColor="@color/textmisure_color"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="25,1"
+                        android:text="00.0"
                         android:id="@+id/avspeedTextView"
                         android:layout_gravity="center_horizontal|top" />
 

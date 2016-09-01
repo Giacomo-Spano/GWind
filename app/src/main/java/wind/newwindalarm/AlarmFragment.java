@@ -105,7 +105,7 @@ public class AlarmFragment extends Fragment implements
         tv = (TextView) v.findViewById(R.id.curdateTextView);
         tv.setText("data: " + mcurdate.toString());
         tv = (TextView) v.findViewById(R.id.spotTextView);
-        tv.setText("spot: " + MainActivity.getSpotName(mspotid));
+        tv.setText("spot: " + ((MainActivity)getActivity()).getSpotName(mspotid));
 
         return v;
     }

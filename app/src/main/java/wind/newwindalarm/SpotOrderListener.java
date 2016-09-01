@@ -35,7 +35,7 @@ public interface SpotOrderListener {
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View rowView = inflater.inflate(R.layout.spotorderrowlayout, parent, false);
             TextView textView = (TextView) rowView.findViewById(R.id.spotNameTextView);
-            textView.setText(getItem(position).name);
+            textView.setText(getItem(position).spotName);
             TextView idView = (TextView) rowView.findViewById(R.id.spotIdTextView);
             idView.setText("" + getItem(position).id);
 
