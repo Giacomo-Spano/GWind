@@ -15,26 +15,31 @@
             android:layout_height="@dimen/meteodata_icon_height"
             android:layout_alignParentRight="false"
             android:layout_gravity="center_horizontal"
-            android:layout_alignParentLeft="true" />
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="false"
+            android:layout_centerVertical="true" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Velocità vento"
             android:id="@+id/textView24"
-            android:layout_alignParentTop="false"
+            android:textColor="@color/textmisure_color"
             android:layout_alignParentStart="false"
+            android:layout_alignParentTop="false"
             android:layout_toEndOf="@id/windcontrol"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="32dp" />
+            android:layout_marginLeft="@dimen/marginleft"
+            android:layout_marginTop="@dimen/margintop"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Large Text"
-            android:id="@+id/textView28"
+            android:id="@+id/speedTextView"
+            android:textColor="@color/textmisure_color"
             android:layout_alignParentTop="false"
             android:layout_alignParentEnd="false"
             android:layout_alignParentRight="true"
@@ -48,31 +53,262 @@
         <ImageView
             android:layout_width="@dimen/meteodata_icon_width"
             android:layout_height="@dimen/meteodata_icon_height"
-            android:id="@+id/imageView11"
-            android:src="@drawable/temperature" />
+            android:id="@+id/speedImageView"
+            android:src="@drawable/wind"
+            android:layout_centerVertical="true" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Temperatura"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Velocità media"
             android:id="@+id/textView23"
+            android:textColor="@color/textmisure_color"
             android:layout_alignParentTop="false"
             android:layout_alignParentStart="false"
-            android:layout_toEndOf="@id/imageView11"
+            android:layout_toEndOf="@id/speedImageView"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="32dp" />
+            android:layout_marginLeft="@dimen/marginleft"
+            android:layout_marginTop="@dimen/margintop"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Large Text"
-            android:id="@+id/textView27"
+            android:id="@+id/avspeedTextView"
+            android:textColor="@color/textmisure_color"
             android:layout_alignParentTop="false"
             android:layout_alignParentEnd="false"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true" />
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="@dimen/meteodata_icon_width"
+            android:layout_height="@dimen/meteodata_icon_height"
+            android:id="@+id/temperatureImageView"
+            android:src="@drawable/temperature"
+            android:layout_centerVertical="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Temperatura"
+            android:id="@+id/temperatureTitleTextView"
+            android:textColor="@color/textmisure_color"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentStart="false"
+            android:layout_toEndOf="@id/temperatureImageView"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/marginleft"
+            android:layout_marginTop="@dimen/margintop"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Large Text"
+            android:id="@+id/temperatureTextView"
+            android:textColor="@color/textmisure_color"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="@dimen/meteodata_icon_width"
+            android:layout_height="@dimen/meteodata_icon_height"
+            android:id="@+id/pressureImageView"
+            android:src="@drawable/pressione"
+            android:layout_centerVertical="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Pressione"
+            android:id="@+id/pressureTitleTextView"
+            android:textColor="@color/textmisure_color"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentStart="false"
+            android:layout_toEndOf="@id/pressureImageView"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/marginleft"
+            android:layout_marginTop="@dimen/margintop"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Large Text"
+            android:id="@+id/pressureTextView"
+            android:textColor="@color/textmisure_color"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="@dimen/meteodata_icon_width"
+            android:layout_height="@dimen/meteodata_icon_height"
+            android:id="@+id/humidityImageView"
+            android:src="@drawable/humidity"
+            android:layout_centerVertical="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Umidità"
+            android:id="@+id/humidityTitleTextView"
+            android:textColor="@color/textmisure_color"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentStart="false"
+            android:layout_toEndOf="@id/humidityImageView"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/marginleft"
+            android:layout_marginTop="@dimen/margintop"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Large Text"
+            android:id="@+id/humidityTextView"
+            android:textColor="@color/textmisure_color"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="@dimen/meteodata_icon_width"
+            android:layout_height="@dimen/meteodata_icon_height"
+            android:id="@+id/rainRateImageView"
+            android:src="@drawable/rainrate2"
+            android:layout_centerVertical="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Rainrate"
+            android:id="@+id/rainrateTitleTextView"
+            android:textColor="@color/textmisure_color"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentStart="false"
+            android:layout_toEndOf="@id/rainRateImageView"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/marginleft"
+            android:layout_marginTop="@dimen/margintop"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Large Text"
+            android:id="@+id/rainrateTextView"
+            android:textColor="@color/textmisure_color"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="@dimen/meteodata_icon_width"
+            android:layout_height="@dimen/meteodata_icon_height"
+            android:id="@+id/lastupdateImageView"
+            android:src="@drawable/temperature"
+            android:layout_centerVertical="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Ultimo aggiornamento"
+            android:id="@+id/lastupdateTitleTextView"
+            android:textColor="@color/textmisure_color"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentStart="false"
+            android:layout_toEndOf="@id/lastupdateImageView"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/marginleft"
+            android:layout_marginTop="@dimen/margintop"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Large Text"
+            android:id="@+id/lastupdateTextView"
+            android:textColor="@color/textmisure_color"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="@dimen/meteodata_icon_width"
+            android:layout_height="@dimen/meteodata_icon_height"
+            android:id="@+id/sourceImageView"
+            android:src="@drawable/temperature"
+            android:layout_centerVertical="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Sorgente"
+            android:id="@+id/sourceTitleTextView"
+            android:textColor="@color/textmisure_color"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentStart="false"
+            android:layout_toEndOf="@id/sourceImageView"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/marginleft"
+            android:layout_marginTop="@dimen/margintop"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Large Text"
+            android:id="@+id/urlTextView"
+            android:textColor="@color/textmisure_color"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
 </LinearLayout>

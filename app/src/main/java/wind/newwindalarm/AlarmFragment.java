@@ -25,6 +25,7 @@ public class AlarmFragment extends Fragment implements
     double mcurspeed, mcuravspeed;
     String mcurdate;
     int mspotid;
+    String mspotName;
 
     private Ringtone ringtone;
     private TextView timerTextView;
@@ -77,6 +78,7 @@ public class AlarmFragment extends Fragment implements
             mcuravspeed = getArguments().getDouble("curavspeed");
             mcurdate = getArguments().getString("curdate");
             mspotid = getArguments().getInt("spotid");
+            mspotName = getArguments().getString("spotName");
         }
 
         View v;
@@ -105,7 +107,7 @@ public class AlarmFragment extends Fragment implements
         tv = (TextView) v.findViewById(R.id.curdateTextView);
         tv.setText("data: " + mcurdate.toString());
         tv = (TextView) v.findViewById(R.id.spotTextView);
-        tv.setText("spot: " + ((MainActivity)getActivity()).getSpotName(mspotid));
+        tv.setText("spot: " + mspotName);
 
         return v;
     }

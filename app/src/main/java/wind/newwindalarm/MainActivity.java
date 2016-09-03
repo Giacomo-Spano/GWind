@@ -63,6 +63,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -149,8 +150,9 @@ public class MainActivity extends AppCompatActivity implements
     ProfileFragment profileFragment;
     SpotMeteoListFragment spotMeteoListFragment;
     SpotDetailsFragment spotDetailsFragment;
-    SplashScreenFragment splashFragment;
+    //SplashScreenFragment splashFragment;
 
+    HistoricalMetoData historicalMeteoData = new HistoricalMetoData();
     // google properties
     TextView mUserNameTextView;
     TextView memailTextView;
@@ -182,30 +184,13 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //if (savedInstanceState != null) {
 
-        //  return;
-        //}
-        Log.i("PROVA", "MESSAGGIO");
-
-        //sendLogToMail();
         Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
-
-        String hh = null;
-        //hh.toString();
 
         instance = this;
 
-
-
-
-
-
-
-
         registerReceiver(mHandleMessageReceiver, new IntentFilter(
                 wind.newwindalarm.CommonUtilities.DISPLAY_MESSAGE_ACTION));
-
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -261,33 +246,6 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        /*mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
-                SharedPreferences sharedPreferences =
-                        PreferenceManager.getDefaultSharedPreferences(context);
-                boolean sentToken = sharedPreferences
-                        .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
-                if (sentToken) {
-                    mInformationTextView.setText(getString(R.string.gcm_send_message));
-                    mInformationTextView.setVisibility(ProgressBar.GONE);
-                } else {
-                    mInformationTextView.setText(getString(R.string.token_error_message));
-                }
-            }
-        };
-        mInformationTextView = (TextView) findViewById(R.id.informationTextView);*/
-
-        // Registering BroadcastReceiver
-        //registerReceiver();
-        /*if (checkPlayServices()) {
-            // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
-        }*/
-
         // carica la spot list per la combo dei programmmi
         getSpotListFromServer();
 
@@ -338,12 +296,12 @@ public class MainActivity extends AppCompatActivity implements
         //panelFragment = new PanelFragment();
         programFragment = new ProgramFragment();
         programListFragment = new ProgramListFragment();
-        splashFragment = new SplashScreenFragment();
+        //splashFragment = new SplashScreenFragment();
         settingsFragment = new SettingsFragment();
         settingsFragment.setSettings(mSettings);
         profileFragment = new ProfileFragment();
         spotMeteoListFragment = new SpotMeteoListFragment();
-        spotDetailsFragment = new SpotDetailsFragment();
+        //spotDetailsFragment = new SpotDetailsFragment();
 
         //getLastMeteoData();
         //showSplashScreen();
@@ -380,33 +338,21 @@ public class MainActivity extends AppCompatActivity implements
         super.onPause();
     }
 
+    // TODO ma questo a cosa serve?????
     private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
             String newMessage = intent.getExtras().getString(CommonUtilities.EXTRA_MESSAGE/*EXTRA_MESSAGE*/);
-
-            // Waking up mobile if it is sleeping
-            //WakeLocker.acquire(getApplicationContext());
-
             /**
              * Take appropriate action on this message
              * depending upon your app requirement
              * For now i am just displaying it on the screen
              * */
             Toast.makeText(getApplicationContext(), "New Message: " + newMessage, Toast.LENGTH_LONG).show();
-
             String title = intent.getExtras().getString("title");
-
             Time today = new Time(Time.getCurrentTimezone());
             today.setToNow();
-            newMessage = today.format("%d.%m.%Y %H:%M:%S") + title + " - " + newMessage + "\n";
-
-
-            //messageFragment.appendMessage(newMessage/* + "\n"*/);
-
-            // Releasing wake lock
-            //WakeLocker.release();
         }
     };
 
@@ -571,7 +517,7 @@ public class MainActivity extends AppCompatActivity implements
             public void processFinish(List<Object> list, boolean error, String errorMessage) {
             }
             @Override
-            public void processFinishHistory(List<Object> list, boolean error, String errorMessage) {
+            public void processFinishHistory(List<MeteoStationData> list, boolean error, String errorMessage) {
             }
             @Override
             public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
@@ -784,8 +730,6 @@ public class MainActivity extends AppCompatActivity implements
                 // Start IntentService to register this application with GCM.
                 Intent intent = new Intent(MainActivity.getContext(), RegistrationIntentService.class);
                 startService(intent);
-
-
             }
 
             getLastMeteoData();
@@ -844,8 +788,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onSpotClick(long spotId) {
 
-        getHistoryMeteoData(spotId);
-
+        spotDetailsFragment = new SpotDetailsFragment();
         spotDetailsFragment.setMeteoData(getMeteodataFromId(spotId));
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -853,6 +796,13 @@ public class MainActivity extends AppCompatActivity implements
         ft.addToBackStack(null);
         ft.commit();
 
+        List<MeteoStationData> list = historicalMeteoData.getFromId(spotId);
+        if (list != null) {
+            spotDetailsFragment.setHistoryMeteoData(list);
+        } else {
+
+            getHistoryMeteoData(spotId);
+        }
     }
 
     @Override
@@ -964,7 +914,13 @@ public class MainActivity extends AppCompatActivity implements
 
     public void getHistoryMeteoData(long spotId) {
 
-        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_HISTORYMETEODATA).execute("" + spotId);
+        Date end = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(end);
+        cal.add(Calendar.HOUR_OF_DAY, - 2); //minus number would decrement the hours
+        Date start = cal.getTime();
+
+        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_HISTORYMETEODATA).execute(spotId,start,end);
     }
 
     private class requestDataResponse implements AsyncRequestMeteoDataResponse {
@@ -982,17 +938,14 @@ public class MainActivity extends AppCompatActivity implements
                 meteoDataList.add(md);
             }
             panelFragment.setMeteoDataList(meteoDataList);
-
-
             panelFragment.refreshMeteoData();
-            //meteoDataList = list;
         }
 
         @Override
-        public void processFinishHistory(List<Object> list, boolean error, String errorMessage) {
+        public void processFinishHistory(List<MeteoStationData> list, boolean error, String errorMessage) {
 
-
-            spotDetailsFragment.updateChartData(list);
+            if (spotDetailsFragment != null)
+                spotDetailsFragment.setHistoryMeteoData(list);
             }
 
         @Override
@@ -1000,5 +953,4 @@ public class MainActivity extends AppCompatActivity implements
 
         }
     }
-
 }

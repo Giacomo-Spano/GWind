@@ -34,7 +34,7 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
     private boolean viewCreated = false;
     OnSpotClickListener mCallback;
     private LinearLayout mcontainer;
-    private List<MeteoCardItem> meteoList = new ArrayList<MeteoCardItem>();
+    //private List<MeteoCardItem> meteoList = new ArrayList<MeteoCardItem>();
     private Menu mMenu;
     private List<MeteoStationData> meteoDataList;
 
@@ -143,39 +143,30 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
         if (viewCreated == false)
             return;
 
-        // rimuovi tutte le card
-        for (int i = 0; i < meteoList.size(); i++) {
-            mcontainer.removeView(meteoList.get(i).card);
-        }
-        meteoList.clear();
+        mcontainer.removeAllViews();
 
         Set<String> favorites = null;
         favorites = AlarmPreferences.getSpotListFavorites();
 
         Iterator iter = favorites.iterator();
-        int i = 1;
-        Spot spot;
         while (iter.hasNext()) {
             long id = Long.valueOf((String) iter.next());
 
             MeteoCardItem carditem = new MeteoCardItem(this, getActivity(), mcontainer);
-            mcontainer.addView(carditem.card);
-            meteoList.add(carditem);
-
-            spot = null;
-            spot = ((MainActivity)getActivity()).getSpotFromId(id);
+            mcontainer.addView(carditem.getCard());
+            Spot spot = ((MainActivity)getActivity()).getSpotFromId(id);
             if (spot != null) {
 
-                carditem.card.setSourceUrl(spot.sourceUrl);
-                carditem.card.setTitle(spot.spotName + i++);
+                carditem.setSourceUrl(spot.sourceUrl);
+                carditem.setTitle(spot.spotName);
                             /*if (md.offline) {
                                 carditem.card.setTitle("offline");
                             }*/
             }
             MeteoStationData md = getMeteoDataFromId(id);
-            //carditem.update(md);
+            carditem.update(md);
 
-            carditem.spotID = id;
+            carditem.setSpotId(id);
         }
         mcontainer.invalidate();
     }

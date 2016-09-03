@@ -11,9 +11,9 @@ import wind.newwindalarm.R;
 
 public class MeteoCardItem {
 
-    public long spotID;
-    public MeteoStationData meteoStationData;
-    public MeteoCard card;
+    private long spotID;
+    private MeteoStationData meteoStationData;
+    private MeteoCard card;
     MeteoCardListener listener;
 
     public MeteoCardItem(MeteoCardListener ml, final Activity activity, LinearLayout container) {
@@ -34,6 +34,18 @@ public class MeteoCardItem {
 
     public void setTitle(String title) {
         card.setTitle(title);
+    }
+
+    public void setSourceUrl(String url) {
+        card.setSourceUrl(url);
+    }
+
+    public MeteoCard getCard() {
+        return card;
+    }
+
+    public void setSpotId(long id) {
+        spotID = id;
     }
 
     public void update(MeteoStationData data) {

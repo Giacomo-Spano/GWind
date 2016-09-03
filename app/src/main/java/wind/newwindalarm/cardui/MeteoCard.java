@@ -25,6 +25,7 @@ public class MeteoCard extends LinearLayout {
     private RelativeLayout mDetailsLinearLayout;
     private Space mBottomSpace;
     private TextView mSourceUrl;
+    private TextView mSpotName;
 
     public MeteoCard(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -34,13 +35,14 @@ public class MeteoCard extends LinearLayout {
 
         mDetailsLinearLayout = (RelativeLayout) findViewById(R.id.detailView);
         mBottomSpace = (Space) findViewById(R.id.bottomspace);
-        mTitle = (TextView) findViewById(R.id.title);
-        mTitle.setOnClickListener(new OnClickListener() {
+        //mTitle = (TextView) findViewById(R.id.spotNameTextView);
+        mSpotName = (TextView) findViewById(R.id.spotNameTextView);
+        /*mSpotName.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 openclose();
             }
-        });
+        });*/
 
         mDetailsImage = (ImageView) findViewById(R.id.opencloseImageView);
         mDetailsImage.setOnClickListener(new OnClickListener() {
@@ -51,6 +53,7 @@ public class MeteoCard extends LinearLayout {
         });
 
         mSourceUrl = (TextView) findViewById(R.id.sourceTextView);
+
     }
 
     private void openclose() {
@@ -68,10 +71,10 @@ public class MeteoCard extends LinearLayout {
         }
     }
 
-    public void setTitle(String title) {
+    public void setTitle(String name) {
 
-        if (title == null) return;
-        mTitle.setText(title);
+        if (name == null) return;
+        mSpotName.setText(name);
     }
 
     public void setSourceUrl(String url) {

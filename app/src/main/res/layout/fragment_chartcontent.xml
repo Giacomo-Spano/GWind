@@ -5,6 +5,10 @@
     android:orientation="vertical"
     >
 
+    <include
+        android:id="@+id/windcard"
+        layout="@layout/card_chart"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

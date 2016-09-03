@@ -13,9 +13,11 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import com.github.mikephil.charting.formatter.AxisValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,7 +32,7 @@ import wind.newwindalarm.MeteoStationData;
 /**
  * Created by Giacomo Spanò on 26/06/2016.
  */
-public class HistoryChart implements AsyncRequestMeteoDataResponse {
+public class HistoryChart {
 
     Context mContext;
     private LineChart mWindChart;
@@ -52,44 +54,10 @@ public class HistoryChart implements AsyncRequestMeteoDataResponse {
         return windData;
     }
 
-    @Override
-    public void processFinish(List<Object> list, boolean error, String errorMessage) {
-    }
+    public void drawChart(List<MeteoStationData> meteoDataList) {
 
-    @Override
-    public void processFinishHistory(List<Object> list, boolean error, String errorMessage) {
-        if (error) {
-
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
-
-            alertDialogBuilder.setTitle("Errore");
-            alertDialogBuilder
-                    .setMessage(errorMessage)
-                    .setCancelable(false);
-            alertDialogBuilder
-                    .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // if this button is clicked, just close
-                            // the dialog box and do nothing
-                            dialog.cancel();
-                        }
-                    });
-            AlertDialog alertDialog;
-            alertDialog = alertDialogBuilder.create();
-            alertDialog.show();
-
-        } else {
-
-            //mTitleTextView.setText(MainActivity.getSpotName(spot));
-
-            updateChart(list);
-
-            //mWindChart.setVisibleXRange(40); // allow 20 values to be displayed at once on the x-axis, not more
-            //mWindChart.moveViewToX(xVals.size()-40); // set the left edge of the chart to x-index 10
-        }
-    }
-
-    public void updateChart(List<Object> meteoDataList) {
+        if (meteoDataList == null)
+            return;
         List<Entry> valsCompSpeed = new ArrayList<Entry>();
         List<Entry> valsCompAvSpeed = new ArrayList<Entry>();
         List<Entry> valsCompDirection = new ArrayList<Entry>();
@@ -186,7 +154,11 @@ public class HistoryChart implements AsyncRequestMeteoDataResponse {
         trendDataSets.add(setCompTrend);
         temperatureDataSets.add(setCompTemperature);
 
-        mWindChart.setDescription("Km/h");
+        setCompDirection.setValueFormatter(new DirectionValueFormatter());
+
+
+        mWindChart.setDescription("");
+        //mWindChart.setDescriptionPosition(0,);
 
         XAxis xAxis = mWindChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -229,25 +201,7 @@ public class HistoryChart implements AsyncRequestMeteoDataResponse {
         yRightAxis.setGranularity(22.5f); // one minute in millis
         yRightAxis.setInverted(true);
         yRightAxis.setGridColor(Color.GREEN);
-        yRightAxis.setValueFormatter(new AxisValueFormatter() {
-
-            private final String[] directionSymbols = {
-                    "E", "E-NE", "NE", "NE-N",
-                    "N", "N-NO", "NO", "NO-O",
-                    "O", "O-SO", "SO", "SO-S",
-                    "S", "S-SE", "SE", "SE-E"};
-
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                if (value > 22.5 * 15 || value < 0) return "" + value + "N/A";
-                return ""+/*value+ " " +*/ directionSymbols[(int) (value / 22.5)];
-            }
-
-            @Override
-            public int getDecimalDigits() {
-                return 1;
-            }
-        });
+        yRightAxis.setValueFormatter(new DirectionAxisValueFormatter());
 
         windData = new LineData(windDataSets);
         mWindChart.setData(windData);
@@ -275,8 +229,32 @@ public class HistoryChart implements AsyncRequestMeteoDataResponse {
         mTrendChart.invalidate(); // refresh
     }
 
-    @Override
-    public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
+    private final String[] directionSymbols = {
+            "E", "E-NE", "NE", "NE-N",
+            "N", "N-NO", "NO", "NO-O",
+            "O", "O-SO", "SO", "SO-S",
+            "S", "S-SE", "SE", "SE-E"};
 
+    private class DirectionAxisValueFormatter implements AxisValueFormatter {
+
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            if (value > 22.5 * 15 || value < 0) return "" + value + "N/A";
+            return ""+/*value+ " " +*/ directionSymbols[(int) (value / 22.5)];
+        }
+
+        @Override
+        public int getDecimalDigits() {
+            return 1;
+        }
     }
+    private class DirectionValueFormatter implements ValueFormatter {
+
+        @Override
+        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+            if (value > 22.5 * 15 || value < 0) return "" + value + "N/A";
+            return ""+/*value+ " " +*/ directionSymbols[(int) (value / 22.5)];
+        }
+    }
+
 }

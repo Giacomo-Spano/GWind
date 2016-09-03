@@ -51,7 +51,7 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
             }
 
             @Override
-            public void processFinishHistory(List<Object> list, boolean error, String errorMessage) {
+            public void processFinishHistory(List<MeteoStationData> list, boolean error, String errorMessage) {
 
             }
 

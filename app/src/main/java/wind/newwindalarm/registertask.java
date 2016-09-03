@@ -97,7 +97,7 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
                         URLEncoder.encode("true", "UTF-8") + "&" +
                         URLEncoder.encode("regId", "UTF-8") + "=" +
                         URLEncoder.encode(regId, "UTF-8") + "&" +
-                        URLEncoder.encode("spotName", "UTF-8") + "=" +
+                        URLEncoder.encode("name", "UTF-8") + "=" +
                         URLEncoder.encode(name, "UTF-8") + "&" +
                         URLEncoder.encode("personId", "UTF-8") + "=" +
                         URLEncoder.encode(personId, "UTF-8") + "&" +

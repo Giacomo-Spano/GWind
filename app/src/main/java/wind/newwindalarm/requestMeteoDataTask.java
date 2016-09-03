@@ -48,7 +48,7 @@ public class requestMeteoDataTask extends
     private Activity activity;
     private boolean error = false;
     private String errorMessage = "";
-    private String mSpot;
+    //private long mSpot;
     int requestType;
     ProgressBar progressBar;
     int contentSize;
@@ -74,29 +74,25 @@ public class requestMeteoDataTask extends
             String path = "/meteo?";
 
             if (requestType == REQUEST_LASTMETEODATA) {
-                mSpot = (String) params[0]; //lista di spot separata da virgola
+                String spotList = (String) params[0]; //lista di spot separata da virgola
 
                 path += "lastdata=true";
                 path += "&history=false";
                 path += "&requestspotlist=false";
                 path += "&fullinfo=false";
-                path += "&spot="+mSpot;
+                path += "&spot=" + spotList;
 
             } else if (requestType == REQUEST_HISTORYMETEODATA) {
-                mSpot = (String) params[0]; //lista di spot separata da virgola
+                long spotId = (long) params[0]; // spotID
+                Date start = (Date) params[1];
+                Date end = (Date) params[2];
 
                 path += "lastdata=false";
                 path += "&history=true";
                 path += "&requestspotlist=false";
                 path += "&fullinfo=false";
-                path += "&spot="+mSpot;
-
-                Date end = new Date();
+                path += "&spot=" + spotId;
                 SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy-HH:mm:ss");
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(end);
-                cal.add(Calendar.HOUR_OF_DAY, -6); //minus number would decrement the hours
-                Date start = cal.getTime();
                 path += "&start=" + df.format(start);
                 path += "&end=" + df.format(end);
 
@@ -120,9 +116,6 @@ public class requestMeteoDataTask extends
             url = new URL(serverUrl + path);
 
             Log.d("url=", url.toString());
-
-
-
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             if (MainActivity.getAcct() != null)
                 conn.setRequestProperty("user",MainActivity.getAcct().getServerAuthCode());
@@ -131,8 +124,6 @@ public class requestMeteoDataTask extends
             conn.setInstanceFollowRedirects(true);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Content-Type", "application/json");
-
-
 
             try {
                 BufferedInputStream in = new BufferedInputStream(
@@ -180,17 +171,12 @@ public class requestMeteoDataTask extends
             e.printStackTrace();
             errorMessage = e.toString();
         }
-
-        /*if (dialog.isShowing()) {
-            dialog.dismiss();
-        }*/
         return list;
     }
 
     protected void onPreExecute() {
 
         //progressBar.setProgress(10);
-
         String message = "attendere prego...";
         if (requestType == REQUEST_SPOTLIST)
             message = "Richiesta lista spot...";
@@ -203,9 +189,7 @@ public class requestMeteoDataTask extends
 
         //this.dialog.setMessage(message);
         //this.dialog.show();
-
     }
-
 
     @Override
     protected void onProgressUpdate(Long... values) {
@@ -220,9 +204,13 @@ public class requestMeteoDataTask extends
 
         if (requestType == REQUEST_SPOTLIST || requestType == REQUEST_SPOTLIST_FULLINFO)
             delegate.processFinishSpotList(list, error, errorMessage);
-        else if (requestType == REQUEST_HISTORYMETEODATA)
-            delegate.processFinishHistory(list, error, errorMessage);
-        else if (requestType == REQUEST_LASTMETEODATA)
+        else if (requestType == REQUEST_HISTORYMETEODATA) {
+            List<MeteoStationData> data = new ArrayList<>();
+            for(Object obj : list) {
+                data.add(new MeteoStationData((MeteoStationData)obj));
+            }
+            delegate.processFinishHistory(data, error, errorMessage);
+        } else if (requestType == REQUEST_LASTMETEODATA)
             delegate.processFinish(list, error, errorMessage);
 
         progressBar.setVisibility(View.GONE);
@@ -253,4 +241,3 @@ public class requestMeteoDataTask extends
         return sb.toString();
     }
 }
-

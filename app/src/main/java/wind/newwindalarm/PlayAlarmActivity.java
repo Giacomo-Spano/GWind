@@ -26,6 +26,7 @@ public class PlayAlarmActivity extends AppCompatActivity implements AlarmFragmen
     private static AlarmFragment lastActiveAlarmFragment = null;
     AlarmFragment mAlarmFragment;
     int spotId;
+    String spotName;
     int alarmId;
     double curspeed;
     double curavspeed;
@@ -100,6 +101,7 @@ public class PlayAlarmActivity extends AppCompatActivity implements AlarmFragmen
 
         Bundle bundle = getIntent().getExtras();
         spotId = Integer.valueOf(bundle.getString("spotid"));
+        spotName = bundle.getString("spotName");
         alarmId = Integer.valueOf(bundle.getString("alarmid"));
         curspeed = Double.valueOf(bundle.getString("curspeed"));
         curavspeed = Double.valueOf(bundle.getString("curavspeed"));
@@ -107,6 +109,7 @@ public class PlayAlarmActivity extends AppCompatActivity implements AlarmFragmen
 
         Bundle b = new Bundle();
         b.putInt("spotid", spotId);
+        b.putString("spotName", spotName);
         b.putInt("alarmid", alarmId);
         b.putDouble("curavspeed", curavspeed);
         b.putDouble("curspeed", curspeed);

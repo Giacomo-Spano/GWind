@@ -14,4 +14,7 @@
     <dimen name="icon_bigheight">64dp</dimen>
     <dimen name="meteodata_icon_width">32dp</dimen>
     <dimen name="meteodata_icon_height">32dp</dimen>
+
+    <dimen name="margintop">32dp</dimen>
+    <dimen name="marginleft">32dp</dimen>
 </resources>
