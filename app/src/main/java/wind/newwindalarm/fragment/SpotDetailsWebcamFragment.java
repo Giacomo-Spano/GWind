@@ -28,15 +28,22 @@ import java.util.List;
 import wind.newwindalarm.AsyncRequestMeteoDataResponse;
 import wind.newwindalarm.MeteoStationData;
 import wind.newwindalarm.R;
+import wind.newwindalarm.cardui.ChartCard;
+import wind.newwindalarm.cardui.WebcamCard;
 import wind.newwindalarm.controls.TouchImageView;
 import wind.newwindalarm.requestMeteoDataTask;
 
 public class SpotDetailsWebcamFragment extends Fragment {
 
-    private LineChart mLineChart;
-    private long spotID;
-    private TouchImageView mWebcamImageView;
+    private WebcamCard mWebcamCard1;
+    private ImageView mImageView1;
+    private WebcamCard mWebcamCard2;
+    private ImageView mImageView2;
+    private WebcamCard mWebcamCard3;
+    private ImageView mImageView3;
+
     private MeteoStationData meteoData;
+    private long spotID;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,46 +66,54 @@ public class SpotDetailsWebcamFragment extends Fragment {
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-
-        MenuItem mm = menu.findItem(R.id.options_refresh);
-        if (mm != null) {
-            menu.findItem(R.id.options_refresh).setVisible(true);
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.options_refresh:
-                // Do Fragment menu item stuff here
-                refreshData();
-                return true;
-            default:
-                break;
-        }
-        return false;
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v;
         v = inflater.inflate(R.layout.fragment_webcam, container, false);
-        mWebcamImageView = (TouchImageView) v.findViewById(R.id.imageView7);
+
+        mWebcamCard1 = (WebcamCard) v.findViewById(R.id.webcamcard1);
+        mWebcamCard1.init();
+        mImageView1 = mWebcamCard1.getImageView();
+
+        mWebcamCard2 = (WebcamCard) v.findViewById(R.id.webcamcard2);
+        mWebcamCard2.init();
+        mImageView2 = mWebcamCard2.getImageView();
+
+        mWebcamCard3 = (WebcamCard) v.findViewById(R.id.webcamcard3);
+        mWebcamCard3.init();
+        mImageView3 = mWebcamCard3.getImageView();
+
         refreshData();
+
         return v;
     }
 
     public void refreshData() {
 
+        if (meteoData != null && mWebcamCard1 != null && mWebcamCard2 != null && mWebcamCard2 != null ) {
+            //if (mWebcamImageView != null && meteoData.webcamurl != null)
+            //    new DownloadImageTask(mWebcamImageView).execute(meteoData.webcamurl);
 
-        if (meteoData != null)
-        {
+            if (mImageView1 != null && meteoData.webcamurl != null) {
+                new DownloadImageTask(mImageView1).execute(meteoData.webcamurl);
+                mWebcamCard1.setVisibility(View.VISIBLE);
+            } else {
+                mWebcamCard1.setVisibility(View.GONE);
+            }
 
-            if (mWebcamImageView != null && meteoData.webcamurl != null)
-                new DownloadImageTask(mWebcamImageView).execute(meteoData.webcamurl);
+            if (mImageView2 != null && meteoData.webcamurl2 != null) {
+                new DownloadImageTask(mImageView2).execute(meteoData.webcamurl2);
+                mWebcamCard2.setVisibility(View.VISIBLE);
+            } else {
+                mWebcamCard2.setVisibility(View.GONE);
+            }
 
+            if (mImageView3 != null && meteoData.webcamurl3 != null) {
+                new DownloadImageTask(mImageView3).execute(meteoData.webcamurl3);
+                mWebcamCard3.setVisibility(View.VISIBLE);
+            } else {
+                mWebcamCard3.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -129,7 +144,7 @@ public class SpotDetailsWebcamFragment extends Fragment {
             int bmWidth = result.getWidth();
             int bmHeight = result.getHeight();
 
-            View parent = (View) mWebcamImageView.getParent();
+            View parent = (View) /*mWebcamImageView*/mWebcamCard1.getParent();
             int ivWidth = parent.getWidth();
             //int ivWidth = bmImage.getWidth();
             int new_width = ivWidth;

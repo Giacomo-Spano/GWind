@@ -314,14 +314,14 @@ public class MainActivity extends AppCompatActivity implements
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        showFragment(id);
+        showFragment(id,true);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    private void showFragment(int mPosition) {
+    private void showFragment(int mPosition, boolean addToBackStack) {
 
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -351,7 +351,8 @@ public class MainActivity extends AppCompatActivity implements
                 profileFragment.setProfile(mProfile);
             }
         }
-        //ft.addToBackStack(null);
+        if (addToBackStack)
+            ft.addToBackStack(null);
         ft.commit();
     }
 
@@ -563,8 +564,7 @@ public class MainActivity extends AppCompatActivity implements
     public void getLastMeteoData() {
 
 
-        progressBar.setProgress(20);
-        progressBar.setVisibility(View.VISIBLE);
+        startProgressBar();
 
         Set<String> favorites = AlarmPreferences.getSpotListFavorites();
         if (favorites.size() == 0)
@@ -599,16 +599,33 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
+    private void startProgressBar() {
+        progressBar.setProgress(10);
+        progressBar.setVisibility(View.VISIBLE);
+        countDownTimer = new CountDownTimer(50000, 1000){
+
+            private int progress = 10;
+            public void onTick(long millisUntilFinished) {
+                //mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
+                progress += 10;
+                progressBar.setProgress(progress);
+            }
+
+            public void onFinish() {
+                //mTextField.setText("done!");
+            }
+        }.start();
+    }
+
     public void getHistoryMeteoData(long spotId) {
 
         Date end = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(end);
-        cal.add(Calendar.HOUR_OF_DAY, - 6); //minus number would decrement the hours
+        cal.add(Calendar.HOUR_OF_DAY, - 10); //minus number would decrement the hours
         Date start = cal.getTime();
 
-        progressBar.setProgress(20);
-        progressBar.setVisibility(View.VISIBLE);
+        startProgressBar();
 
         new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_LOGMETEODATA).execute(spotId,start,end);
     }
@@ -641,7 +658,7 @@ public class MainActivity extends AppCompatActivity implements
 
             if (panelFragment == null) {
                 panelFragment = new PanelFragment();
-                showFragment(R.id.nav_favorites);
+                showFragment(R.id.nav_favorites,false);
             }
             Iterator iterator = list.iterator();
             while (iterator.hasNext()) {

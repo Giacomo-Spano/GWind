@@ -91,8 +91,8 @@ public class SplashActivity extends AppCompatActivity implements
         instance = this;
         Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
 
-        /*initGoogleSignin();
-        silentSignIn();*/
+        //initGoogleSignin();
+        //silentSignIn();
 
         if (!sendLogToMail()) {
 

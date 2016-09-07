@@ -129,6 +129,8 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
     }
 
     MeteoStationData getMeteoDataFromId(long id) {
+        if (meteoDataList == null)
+            return null;
         Iterator iterator = meteoDataList.iterator();
         while (iterator.hasNext()) {
             MeteoStationData md = (MeteoStationData) iterator.next();
@@ -164,7 +166,8 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
                             }*/
             }
             MeteoStationData md = getMeteoDataFromId(id);
-            carditem.update(md);
+            if (md != null)
+                carditem.update(md);
 
             carditem.setSpotId(id);
         }

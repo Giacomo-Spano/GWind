@@ -34,6 +34,7 @@ public class SpotDetailsFragment extends Fragment {
     private SpotDetailsChartFragment chartFragment;
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
+    private long spotId;
 
     public SpotDetailsFragment() {
         meteodataFragment = new SpotDetailsMeteodataFragment();
@@ -52,6 +53,10 @@ public class SpotDetailsFragment extends Fragment {
         /*chartFragment.setMeteoData(data);
         webcamFragment.setMeteoData(data);*/
         meteodataFragment.setMeteoData(data);
+    }
+
+    public void setSpotId(long spotId) {
+        this.spotId = spotId;
     }
 
     public void setHistoryMeteoData(List<MeteoStationData> meteoDataList) {
@@ -113,7 +118,7 @@ public class SpotDetailsFragment extends Fragment {
 
             if (position == 0 ) {
 
-                meteodataFragment.setSpotId(meteoData.spotID);
+                meteodataFragment.setSpotId(spotId);
                 meteodataFragment.setMeteoData(meteoData);
                 meteodataFragment.refreshData();
                 return  meteodataFragment;
@@ -127,7 +132,7 @@ public class SpotDetailsFragment extends Fragment {
 
             }  else if (position == 2 ) {
 
-                chartFragment.setSpotId(meteoData.spotID);
+                chartFragment.setSpotId(spotId);
                 chartFragment.setMeteoData(meteoData);
                 chartFragment.refreshData();
                 return chartFragment;

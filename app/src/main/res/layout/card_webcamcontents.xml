@@ -6,31 +6,23 @@
     android:orientation="vertical"
     android:id="@+id/chartcarditem">
 
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/progressBar"
-        android:visibility="gone" />
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text=""
-            android:id="@+id/textView20"
+            android:id="@+id/titleTextView"
             android:layout_alignParentTop="true" />
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/chart"
+        <wind.newwindalarm.controls.TouchImageView
+            android:id="@+id/imageView"
+            android:layout_gravity="center_horizontal"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_below="@+id/textView20" />
+            android:layout_height="wrap_content" />
 
     </RelativeLayout>
 

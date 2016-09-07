@@ -186,18 +186,31 @@ public class requestMeteoDataTask extends
                                 md.date = df.parse(dates[i]);
                             } catch (ParseException e) {
                                 e.printStackTrace();
+                                continue;
                             }
+                        } else {
+                            continue;
                         }
                         if (speeds[i] != null)
                             md.speed = Double.valueOf(speeds[i]);
+                        else
+                            continue;
                         if (avspeeds[i] != null)
                             md.averagespeed = Double.valueOf(avspeeds[i]);
+                        else
+                            continue;
                         if (directions[i] != null)
                             md.directionangle = Double.valueOf(directions[i]);
+                        else
+                            continue;
                         if (trends[i] != null)
                             md.trend = Double.valueOf(trends[i]);
+                        else
+                            continue;
                         if (temperatures[i] != null)
                             md.temperature = Double.valueOf(temperatures[i]);
+                        else
+                            continue;
 
                         list.add(md);
                     }
