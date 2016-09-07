@@ -3,6 +3,7 @@ package wind.newwindalarm.cardui;
 import android.app.Activity;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.github.mikephil.charting.charts.LineChart;
 
@@ -34,6 +35,10 @@ public class ChartCardItem {
 
     public LineChart getChart() {
         return card.getChart();
+    }
+
+    public ProgressBar getProgressBar() {
+        return card.getProgressBar();
     }
 
     public void setTitle(String title) {

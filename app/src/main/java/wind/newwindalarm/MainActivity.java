@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,13 +20,11 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -41,20 +38,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.Scopes;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.common.api.Status;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -72,15 +55,15 @@ import wind.newwindalarm.fragment.PanelFragment;
 import wind.newwindalarm.fragment.SpotDetailsFragment;
 
 public class MainActivity extends AppCompatActivity implements
-        GoogleApiClient.OnConnectionFailedListener,
+        //GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
         ProfileFragment.OnSignInClickListener,
         PanelFragment.OnSpotClickListener {
 
-    private static MainActivity instance;
-    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private static int deviceId = -1;
     private List<MeteoStationData> meteoDataList = new ArrayList<>();
+
+    CountDownTimer countDownTimer;
+    ProgressBar progressBar;
 
     @Override
     protected void onDestroy() {
@@ -129,17 +112,8 @@ public class MainActivity extends AppCompatActivity implements
         startActivity(Intent.createChooser(emailIntent , "Send email..."));*/
     }
 
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
-    private ProgressBar mRegistrationProgressBar;
     private TextView mInformationTextView;
-    private boolean isReceiverRegistered;
-
     private static final String TAG = "SignInActivity";
-    private static final int RC_SIGN_IN = 9001;
-    private GoogleApiClient mGoogleApiClient;
-    protected static GoogleSignInAccount acct;
-    public static final String GO_DIRECTLY_TO_SPOT_DETAILS = "GoDirectlyToSpotDetails";
-
     public List<Spot> spotList;
     private Settings mSettings;
 
@@ -150,54 +124,32 @@ public class MainActivity extends AppCompatActivity implements
     ProfileFragment profileFragment;
     SpotMeteoListFragment spotMeteoListFragment;
     SpotDetailsFragment spotDetailsFragment;
-    //SplashScreenFragment splashFragment;
-
     HistoricalMetoData historicalMeteoData = new HistoricalMetoData();
     // google properties
     TextView mUserNameTextView;
     TextView memailTextView;
     ImageView mUserImageImageView;
 
-    ProgressBar progressBar;
-    public ProgressBar getProgressBar() {
-        return progressBar;
-    }
-
     FloatingActionButton addFab;
     FloatingActionButton refreshFab;
 
     private UserProfile mProfile = null;
-    private long spotId = -1;
     static boolean signedIn = false;
     static int nextFragment = -1;
-
-    public static AlarmPreferences preferences = new AlarmPreferences();
-
-    public static MainActivity getInstance() {
-        return instance;
-    }
-
-    public static Context getContext() {
-        return instance.getApplicationContext();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
+        //Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
+        //instance = this;
 
-        instance = this;
-
-        registerReceiver(mHandleMessageReceiver, new IntentFilter(
-                wind.newwindalarm.CommonUtilities.DISPLAY_MESSAGE_ACTION));
+        Intent intent = getIntent();
+        mProfile = (UserProfile) intent.getSerializableExtra("userProfile");
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
-        mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
 
         addFab = (FloatingActionButton) findViewById(R.id.addFab);
         addFab.setOnClickListener(new View.OnClickListener() {
@@ -208,17 +160,13 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-
         refreshFab = (FloatingActionButton) findViewById(R.id.refreshFab);
         refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getLastMeteoData();
-                //panelFragment.getMeteoData();
             }
         });
-
-        progressBar = (ProgressBar) findViewById(R.id.mainProgressBar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -232,6 +180,8 @@ public class MainActivity extends AppCompatActivity implements
         mUserNameTextView = (TextView) header.findViewById(R.id.UserNameTextView);
         memailTextView = (TextView) header.findViewById(R.id.UserEmailTextView);
         mUserImageImageView = (ImageView) header.findViewById(R.id.imageView);
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         mSettings = new Settings(this);
         mSettings.setListener(new Settings.SettingsListener() {
@@ -249,93 +199,25 @@ public class MainActivity extends AppCompatActivity implements
         // carica la spot list per la combo dei programmmi
         getSpotListFromServer();
 
-        // [START configure_signin]
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        /*GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();*/
-
-        // Configure sign-in to request offline access to the user's ID, basic
-        // profile, and Google Drive. The first time you request a code you will
-        // be able to exchange it for an access token and refresh token, which
-        // you should store. In subsequent calls, the code will only result in
-        // an access token. By asking for profile access (through
-        // DEFAULT_SIGN_IN) you will also get an ID Token as a result of the
-        // code exchange.
-        String serverClientId = "931700652688-vlqjc9s8klmjeti70p52ssnj4orgsdel.apps.googleusercontent.com";//getString(R.string.server_client_id);
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestScopes(new Scope(Scopes.DRIVE_APPFOLDER))
-                .requestServerAuthCode(serverClientId, false)
-                .build();
-
-        // [END configure_signin]
-
-        // [START build_client]
-        // Build a GoogleApiClient with access to the Google Sign-In API and the
-        // options specified by gso.
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-        // [END build_client]
-
-        // [START customize_button]
-        // Customize sign-in button. The sign-in button can be displayed in
-        // multiple sizes and color schemes. It can also be contextually
-        // rendered based on the requested scopes. For example. a red button may
-        // be displayed when Google+ scopes are requested, but a white button
-        // may be displayed when only basic profile is requested. Try adding the
-        // Scopes.PLUS_LOGIN scope to the GoogleSignInOptions to see the
-        // difference.
-        //SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
-        //signInButton.setSize(SignInButton.SIZE_STANDARD);
-        //signInButton.setScopes(gso.getScopeArray());
-        // [END customize_button]
-
-        //panelFragment = new PanelFragment();
         programFragment = new ProgramFragment();
         programListFragment = new ProgramListFragment();
-        //splashFragment = new SplashScreenFragment();
         settingsFragment = new SettingsFragment();
         settingsFragment.setSettings(mSettings);
         profileFragment = new ProfileFragment();
         spotMeteoListFragment = new SpotMeteoListFragment();
-        //spotDetailsFragment = new SpotDetailsFragment();
 
-        //getLastMeteoData();
-        //showSplashScreen();
-        //showFragment(R.id.nav_profile);
-        int spotId = 0;
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) // se SpotID è valorizzato questa activity è chiamata dalla playalarm activity e deve visualizzare subito la spotdetailactivity
-        {
-            if (extras.getBoolean(GO_DIRECTLY_TO_SPOT_DETAILS) == true) {
-                spotId = extras.getInt("spotId");
-                //int alarmId = extras.getInt("alarmId");
-                //panelFragment.showSpotDetail(spotId);
-            }
-        }
-        silentSignIn(spotId);
+        init();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (signedIn)
-            registerReceiver();
     }
 
     @Override
     protected void onPause() {
-        unregisterReceiver();
-    }
-
-    private void unregisterReceiver() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-        isReceiverRegistered = false;
         super.onPause();
+        //unregisterReceiver();
     }
 
     // TODO ma questo a cosa serve?????
@@ -355,36 +237,6 @@ public class MainActivity extends AppCompatActivity implements
             today.setToNow();
         }
     };
-
-    private void registerReceiver() {
-        if (!isReceiverRegistered) {
-            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                    new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
-
-            isReceiverRegistered = true;
-        }
-    }
-
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
-    private boolean checkPlayServices() {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                        .show();
-            } else {
-                Log.i(TAG, "This device is not supported.");
-                finish();
-            }
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public void onBackPressed() {
@@ -499,7 +351,7 @@ public class MainActivity extends AppCompatActivity implements
                 profileFragment.setProfile(mProfile);
             }
         }
-        ft.addToBackStack(null);
+        //ft.addToBackStack(null);
         ft.commit();
     }
 
@@ -609,108 +461,22 @@ public class MainActivity extends AppCompatActivity implements
         return null;
     }
 
-    private void signIn() {
-
-        mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    private void signOut() {
-
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        // ...
-                        mProfile = null;
-                        showNoUser();
-                        signedIn = false;
-                        unregister();
-                    }
-                });
-    }
-
-    private void silentSignIn(final int spotId) {
-
-        OptionalPendingResult<GoogleSignInResult> pendingResult =
-                Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-        if (pendingResult.isDone()) {
-            // There's immediate result available.
-            //updateButtonsAndStatusFromSignInResult(pendingResult.get());
-        } else {
-            // There's no immediate result ready, displays some progress indicator and waits for the
-            // async callback.
-            //showProgressIndicator();
-            pendingResult.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-                @Override
-                public void onResult(@NonNull GoogleSignInResult result) {
-                    //updateButtonsAndStatusFromSignInResult(result);
-                    //hideProgressIndicator();
-
-                    handleSignInResult(result);
-
-                    if (signedIn) {
-                        showFragment(R.id.nav_favorites);
-                        //if (spotId != 0)
-                        //    panelFragment.showSpotDetail(spotId, meteoStationData);
-                    } else {
-                        showFragment(R.id.nav_profile);
-                    }
-                }
-            });
-        }
-    }
-
-    private void revokeAccess() {
-        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        // ...
-                        mProfile = null;
-                        showNoUser();
-                        signedIn = false;
-                        unregister();
-                    }
-                });
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
-        }
-    }
-
-    public static GoogleSignInAccount getAcct() {
+    /*public static GoogleSignInAccount getAcct() {
         return acct;
-    }
+    }*/
 
-    private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
-        if (result.isSuccess()) {
+    private void init(/*GoogleSignInAccount acc*/) {
 
             signedIn = true;
 
-            // Signed in successfully, show authenticated UI.
-            /*GoogleSignInAccount*/
-            acct = result.getSignInAccount();
-
-            new LoadImagefromUrl().execute(/*mUserImageImageView, acct.getPhotoUrl().toString(),mProfile.userImage*/);
-            //GoogleSignInAccount acct = result.getSignInAccount();
+            new LoadImagefromUrl().execute();
             //authCode = acct.getServerAuthCode();
 
-            ///
             //mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
-            mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            /*mRegistrationBroadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
+                    //mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
                     SharedPreferences sharedPreferences =
                             PreferenceManager.getDefaultSharedPreferences(context);
                     boolean sentToken = sharedPreferences
@@ -722,32 +488,28 @@ public class MainActivity extends AppCompatActivity implements
                         mInformationTextView.setText(getString(R.string.token_error_message));
                     }
                 }
-            };
+            };*/
             mInformationTextView = (TextView) findViewById(R.id.informationTextView);
+
+
             // Registering BroadcastReceiver
-            registerReceiver();
+            /*registerReceiver();
             if (checkPlayServices()) {
                 // Start IntentService to register this application with GCM.
                 Intent intent = new Intent(MainActivity.getContext(), RegistrationIntentService.class);
                 startService(intent);
-            }
+            }*/
 
             getLastMeteoData();
             //showFragment(R.id.nav_favorites);
             //panelFragment.refreshMeteoData(meteoDataList);
 
-        } else {
 
-            Log.d(TAG, "handleSignInResult:" + result.toString());
-            signedIn = false;
-            mProfile = null;
-            showNoUser();
-            if (profileFragment != null) {
-                profileFragment.setProfile(mProfile);
-            }
-            unregisterReceiver();
-        }
+            //unregisterReceiver();
+
     }
+
+
     private void unregister() {
         AlarmPreferences.deleteRegId(this);
         AlarmPreferences.deletePersonId(this);
@@ -764,26 +526,12 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
+    /*@Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
-    }
+    }*/
 
-    @Override
-    public void onSignInClick() {
-        signIn();
 
-    }
-
-    @Override
-    public void onSignOutClick() {
-        signOut();
-    }
-
-    @Override
-    public void onDisconnectClick() {
-        revokeAccess();
-    }
 
     @Override
     public void onSpotClick(long spotId) {
@@ -811,29 +559,140 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
+
+    public void getLastMeteoData() {
+
+
+        progressBar.setProgress(20);
+        progressBar.setVisibility(View.VISIBLE);
+
+        Set<String> favorites = AlarmPreferences.getSpotListFavorites();
+        if (favorites.size() == 0)
+            return;
+
+        String spotList = "";
+        Iterator iter = favorites.iterator();
+        while (iter.hasNext()) {
+            long id = Long.valueOf((String) iter.next());
+            spotList += id;
+            if (iter.hasNext())
+                spotList += ",";
+        }
+
+        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_LASTMETEODATA).execute(spotList);
+
+
+        /*countDownTimer = new CountDownTimer(50000, 3000){
+
+            private int progress = 10;
+            public void onTick(long millisUntilFinished) {
+                //mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
+                progressBar.setProgress(progress);
+                progress += 10;
+            }
+
+            public void onFinish() {
+                //mTextField.setText("done!");
+            }
+
+        }.start();*/
+
+    }
+
+    public void getHistoryMeteoData(long spotId) {
+
+        Date end = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(end);
+        cal.add(Calendar.HOUR_OF_DAY, - 6); //minus number would decrement the hours
+        Date start = cal.getTime();
+
+        progressBar.setProgress(20);
+        progressBar.setVisibility(View.VISIBLE);
+
+        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_LOGMETEODATA).execute(spotId,start,end);
+    }
+
+    @Override
+    public void onSignInClick() {
+
+    }
+
+    @Override
+    public void onSignOutClick() {
+        unregister();
+        //unregisterReceiver();
+        setResult(SplashActivity.RESULT_SIGN_OUT);
+        finish();
+    }
+
+    @Override
+    public void onDisconnectClick() {
+        unregister();
+        //unregisterReceiver();
+        setResult(SplashActivity.RESULT_DISCONNECT);
+        finish();
+    }
+
+    private class requestDataResponse implements AsyncRequestMeteoDataResponse {
+
+        @Override
+        public void processFinish(List<Object> list, boolean error, String errorMessage) {
+
+            if (panelFragment == null) {
+                panelFragment = new PanelFragment();
+                showFragment(R.id.nav_favorites);
+            }
+            Iterator iterator = list.iterator();
+            while (iterator.hasNext()) {
+                MeteoStationData md = (MeteoStationData) iterator.next();
+                meteoDataList.add(md);
+            }
+            panelFragment.setMeteoDataList(meteoDataList);
+            panelFragment.refreshMeteoData();
+
+            //countDownTimer.cancel();
+            progressBar.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void processFinishHistory(List<MeteoStationData> list, boolean error, String errorMessage) {
+
+            if (spotDetailsFragment != null)
+                spotDetailsFragment.setHistoryMeteoData(list);
+
+            progressBar.setVisibility(View.GONE);
+            }
+
+        @Override
+        public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
+
+            progressBar.setVisibility(View.GONE);
+
+        }
+    }
     private class LoadImagefromUrl extends AsyncTask<Object, Void, Bitmap> {
 
         @Override
         protected Bitmap doInBackground(Object... params) {
 
-            if(acct.getPhotoUrl() != null) {
+            if (mProfile.photoUrl != null) {
 
-                String url = acct.getPhotoUrl().toString();
+                String url = mProfile.photoUrl.toString();
                 return loadBitmapFromUrl(url);
             } else {
                 return null;
             }
-
         }
 
         @Override
         protected void onPostExecute(Bitmap resultBitmap) {
             super.onPostExecute(resultBitmap);
 
-            mProfile = new UserProfile();
-            mProfile.userName = acct.getDisplayName();
-            mProfile.email = acct.getEmail();
-            mProfile.personId = acct.getId();
+            //mProfile = new UserProfile();
+            /*mProfile.userName = mProfile.userName;
+            mProfile.email = mProfile.email;
+            mProfile.personId = acct.getId();*/
             mUserNameTextView.setText(mProfile.userName);
             memailTextView.setText(mProfile.email);
 
@@ -892,65 +751,5 @@ public class MainActivity extends AppCompatActivity implements
         bitmap.recycle();
 
         return circuleBitmap;
-    }
-
-    public void getLastMeteoData() {
-
-        Set<String> favorites = AlarmPreferences.getSpotListFavorites();
-        if (favorites.size() == 0)
-            return;
-
-        String spotList = "";
-        Iterator iter = favorites.iterator();
-        while (iter.hasNext()) {
-            long id = Long.valueOf((String) iter.next());
-            spotList += id;
-            if (iter.hasNext())
-                spotList += ",";
-        }
-
-        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_LASTMETEODATA).execute(spotList);
-    }
-
-    public void getHistoryMeteoData(long spotId) {
-
-        Date end = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(end);
-        cal.add(Calendar.HOUR_OF_DAY, - 2); //minus number would decrement the hours
-        Date start = cal.getTime();
-
-        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_HISTORYMETEODATA).execute(spotId,start,end);
-    }
-
-    private class requestDataResponse implements AsyncRequestMeteoDataResponse {
-
-        @Override
-        public void processFinish(List<Object> list, boolean error, String errorMessage) {
-
-            if (panelFragment == null) {
-                panelFragment = new PanelFragment();
-                showFragment(R.id.nav_favorites);
-            }
-            Iterator iterator = list.iterator();
-            while (iterator.hasNext()) {
-                MeteoStationData md = (MeteoStationData) iterator.next();
-                meteoDataList.add(md);
-            }
-            panelFragment.setMeteoDataList(meteoDataList);
-            panelFragment.refreshMeteoData();
-        }
-
-        @Override
-        public void processFinishHistory(List<MeteoStationData> list, boolean error, String errorMessage) {
-
-            if (spotDetailsFragment != null)
-                spotDetailsFragment.setHistoryMeteoData(list);
-            }
-
-        @Override
-        public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
-
-        }
     }
 }

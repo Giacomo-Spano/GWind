@@ -48,7 +48,7 @@ public class ProfileFragment extends Fragment {
             mCallback = (OnSignInClickListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement OnAlarmListener");
+                    + " must implement OnSignInClickListener");
         }
     }
 
@@ -60,7 +60,7 @@ public class ProfileFragment extends Fragment {
                 mCallback = (OnSignInClickListener) activity;
             } catch (ClassCastException e) {
                 throw new ClassCastException(activity.toString()
-                        + " must implement OnAlarmListener");
+                        + " must implement OnSignInClickListener");
             }
         }
     }
@@ -122,7 +122,7 @@ public class ProfileFragment extends Fragment {
         tv =  (TextView) v.findViewById(R.id.versionNameTextView);
         tv.setText("Versione "+versionName);
         tv =  (TextView) v.findViewById(R.id.deviceTextView);
-        tv.setText("Device "+AlarmPreferences.getDeviceId(MainActivity.getContext()));
+        tv.setText("Device "+AlarmPreferences.getDeviceId(SplashActivity.getContext()));
 
 
         return v;

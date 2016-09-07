@@ -28,13 +28,14 @@ import java.util.List;
 import wind.newwindalarm.AsyncRequestMeteoDataResponse;
 import wind.newwindalarm.MeteoStationData;
 import wind.newwindalarm.R;
+import wind.newwindalarm.controls.TouchImageView;
 import wind.newwindalarm.requestMeteoDataTask;
 
 public class SpotDetailsWebcamFragment extends Fragment {
 
     private LineChart mLineChart;
     private long spotID;
-    private ImageView mWebcamImageView;
+    private TouchImageView mWebcamImageView;
     private MeteoStationData meteoData;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,7 @@ public class SpotDetailsWebcamFragment extends Fragment {
         this.meteoData = meteoData;
         refreshData();
     }
+
     public void setSpotId(long id) {
         spotID = id;
     }
@@ -83,15 +85,21 @@ public class SpotDetailsWebcamFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v;
         v = inflater.inflate(R.layout.fragment_webcam, container, false);
-        mWebcamImageView = (ImageView) v.findViewById(R.id.imageView7);
+        mWebcamImageView = (TouchImageView) v.findViewById(R.id.imageView7);
         refreshData();
         return v;
     }
 
     public void refreshData() {
 
-        if (mWebcamImageView != null)
-            new DownloadImageTask(mWebcamImageView).execute(meteoData.webcamurl);
+
+        if (meteoData != null)
+        {
+
+            if (mWebcamImageView != null && meteoData.webcamurl != null)
+                new DownloadImageTask(mWebcamImageView).execute(meteoData.webcamurl);
+
+        }
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {

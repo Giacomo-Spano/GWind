@@ -23,6 +23,18 @@ public class AlarmPreferences {
         return url;
     }
 
+    public static Boolean getHighWindNotification(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        Boolean option = sharedPreferences.getBoolean(QuickstartPreferences.KEY_PREF_NOTIFICATIONHIGHWIND, true);
+        return option;
+    }
+
+    public static Boolean getWindIncreaseNotification(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        Boolean option = sharedPreferences.getBoolean(QuickstartPreferences.KEY_PREF_NOTIFICATIONWINDINCREASE, true);
+        return option;
+    }
+
     public static String getRegId(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String regId = sharedPreferences.getString(QuickstartPreferences.REGISTRATION_ID, "");
@@ -61,7 +73,7 @@ public class AlarmPreferences {
     }
 
     public static Set<String> getSpotListFavorites() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.getContext());
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(SplashActivity.getContext());
         //String regId = sharedPreferences.getString(QuickstartPreferences.KEY_SPOTLISTFAVORITES, "");
         Set<String> stringSet = sharedPreferences.getStringSet(QuickstartPreferences.KEY_SPOTLISTFAVORITES, new HashSet<String>(Arrays.asList("0", "12","2","1")));
 

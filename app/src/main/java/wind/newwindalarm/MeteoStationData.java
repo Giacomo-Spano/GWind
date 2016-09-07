@@ -4,6 +4,10 @@ package wind.newwindalarm;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by giacomo on 07/06/2015.
  */
@@ -16,20 +20,27 @@ public class MeteoStationData /*extends Object*/ {
     public Double averagespeed = null;
     public String direction;
     public Double directionangle = null;
-    public String date;
+    public Date date;
     public Double temperature = null;
     public Double pressure = null;
     public Double humidity = null;
     public Double rainrate = null;
-    public String sampledatetime;
+    public Date sampledatetime;
     public String spotName;
     public long spotID;
     public Double trend = 0.0;
-    public String webcamurl = "";
+    public String webcamurl = null;
+    public String webcamurl2 = null;
+    public String webcamurl3 = null;
     public boolean offline = false;
+
+    public MeteoStationData() {
+    }
 
     public MeteoStationData(MeteoStationData md) {
 
+        if (md == null)
+            return;
         speed = md.speed;
         averagespeed = md.averagespeed;
         direction = md.direction;
@@ -44,6 +55,8 @@ public class MeteoStationData /*extends Object*/ {
         spotID = md.spotID;;
         trend = md.trend;
         webcamurl = md.webcamurl;
+        webcamurl2 = md.webcamurl2;
+        webcamurl3 = md.webcamurl3;
         offline  = md.offline;
     }
 
@@ -57,8 +70,16 @@ public class MeteoStationData /*extends Object*/ {
             direction = jObject.getString("direction");
         if (!jObject.isNull("directionangle"))
             directionangle = jObject.getDouble("directionangle");
-        if (!jObject.isNull("datetime"))
-            date = jObject.getString("datetime");
+        if (!jObject.isNull("datetime")) {
+            String strDate;
+            strDate = jObject.getString("datetime");
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy-HH:mm:ss");
+            try {
+                date = df.parse(strDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
         if (!jObject.isNull("temperature"))
             temperature = jObject.getDouble("temperature");
         if (!jObject.isNull("pressure"))
@@ -67,8 +88,16 @@ public class MeteoStationData /*extends Object*/ {
             humidity = jObject.getDouble("humidity");
         if (!jObject.isNull("rainrate"))
             rainrate = jObject.getDouble("rainrate");
-        if (!jObject.isNull("sampledatetime"))
-            sampledatetime = jObject.getString("sampledatetime");
+        if (!jObject.isNull("sampledatetime")) {
+            String strDate;
+            strDate = jObject.getString("sampledatetime");
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy-HH:mm:ss");
+            try {
+                sampledatetime = df.parse(strDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
         if (!jObject.isNull("spotname"))
             spotName = jObject.getString("spotname");
         if (!jObject.isNull("trend"))
@@ -77,6 +106,10 @@ public class MeteoStationData /*extends Object*/ {
             spotID = jObject.getLong("spotid");
         if (!jObject.isNull("webcamurl"))
             webcamurl = jObject.getString("webcamurl");
+        if (!jObject.isNull("webcamurl2"))
+            webcamurl2 = jObject.getString("webcamurl2");
+        if (!jObject.isNull("webcamurl3"))
+            webcamurl3 = jObject.getString("webcamurl3");
         if (!jObject.isNull("offline"))
             offline = jObject.getBoolean("offline");
     }

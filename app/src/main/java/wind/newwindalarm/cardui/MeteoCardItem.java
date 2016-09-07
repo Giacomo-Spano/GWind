@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import java.text.SimpleDateFormat;
+
 import wind.newwindalarm.MeteoStationData;
 import wind.newwindalarm.R;
 
@@ -91,6 +93,9 @@ public class MeteoCardItem {
         } else {
             card.setRainRate("--");
         }
-        card.setDate(data.date/* + " " + data.time*/);
+        if (data.date != null) {
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            card.setDate(df.format(data.date));
+        }
     }
 }

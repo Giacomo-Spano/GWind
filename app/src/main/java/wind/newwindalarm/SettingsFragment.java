@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -51,6 +52,36 @@ public class SettingsFragment extends PreferenceFragment {
                 return true;
             }
         });
+
+
+        CheckBoxPreference pLight = (CheckBoxPreference)getPreferenceManager().findPreference(QuickstartPreferences.KEY_PREF_NOTIFICATIONWINDINCREASE);
+        pLight.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                boolean myValue = (Boolean) newValue;
+
+                if(myValue){
+                }
+                return true;
+            }
+        });
+
+        pLight = (CheckBoxPreference)getPreferenceManager().findPreference(QuickstartPreferences.KEY_PREF_NOTIFICATIONHIGHWIND);
+        pLight.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                boolean myValue = (Boolean) newValue;
+
+                if(myValue){
+                }
+                return true;
+            }
+        });
+
 
         /*pref = findPreference(KEY_PREF_SPOTLIST);
         String newValue = mSettings.getListString();

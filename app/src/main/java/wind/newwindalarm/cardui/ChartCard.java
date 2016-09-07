@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Space;
 import android.widget.TextView;
@@ -23,7 +24,7 @@ public class ChartCard extends LinearLayout {
 
     private TextView mTitle;
     private LineChart chart;
-
+    private ProgressBar progress;
 
     public ChartCard(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -31,10 +32,15 @@ public class ChartCard extends LinearLayout {
 
     public void init() {
         chart = (LineChart) findViewById(R.id.chart);
+        progress = (ProgressBar) findViewById(R.id.progressBar);
     }
 
     public LineChart getChart() {
         return chart;
+    }
+
+    public ProgressBar getProgressBar() {
+        return progress;
     }
 
     public void setTitle(String name) {

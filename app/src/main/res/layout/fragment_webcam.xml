@@ -5,11 +5,18 @@
     android:orientation="vertical"
     >
 
-    <ImageView
+    <!--<ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/imageView7"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/webcam" />
+        android:src="@drawable/webcam" />-->
+
+    <wind.newwindalarm.controls.TouchImageView
+        android:id="@+id/imageView7"
+        android:src="@drawable/webcam"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

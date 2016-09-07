@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="notification_windincrease"
+        android:title="@string/notification_windincrease"
+        android:summary="@string/notification_windincrease_summ"
+        android:defaultValue="true" />
+    <CheckBoxPreference
+        android:key="notification_highwind"
+        android:title="@string/notification_highwind"
+        android:summary="@string/notification_highwind_sum"
+        android:defaultValue="true" />
+
     <CheckBoxPreference
         android:key="pref_sync"
         android:title="@string/pref_sync"

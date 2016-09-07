@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,6 +41,7 @@ public class requestMeteoDataTask extends
     public static final int REQUEST_HISTORYMETEODATA = 2;
     public static final int REQUEST_SPOTLIST = 3;
     public static final int REQUEST_SPOTLIST_FULLINFO = 4;
+    public static final int REQUEST_LOGMETEODATA = 5;
 
     static public String Spot_All = "all";
 
@@ -50,7 +52,7 @@ public class requestMeteoDataTask extends
     private String errorMessage = "";
     //private long mSpot;
     int requestType;
-    ProgressBar progressBar;
+    //ProgressBar progressBar;
     int contentSize;
 
     public requestMeteoDataTask(Activity activity, AsyncRequestMeteoDataResponse asyncResponse, int type) {
@@ -59,9 +61,7 @@ public class requestMeteoDataTask extends
         delegate = asyncResponse;//Assigning call back interfacethrough constructor
         requestType = type;
 
-        progressBar = ((MainActivity)activity).getProgressBar();
-        progressBar.setProgress(0);
-        progressBar.setVisibility(View.VISIBLE);
+
     }
 
     protected List<Object> doInBackground(Object... params) {
@@ -96,6 +96,20 @@ public class requestMeteoDataTask extends
                 path += "&start=" + df.format(start);
                 path += "&end=" + df.format(end);
 
+            } else if (requestType == REQUEST_LOGMETEODATA) {
+                long spotId = (long) params[0]; // spotID
+                Date start = (Date) params[1];
+                Date end = (Date) params[2];
+
+                path += "lastdata=false";
+                path += "&log=true";
+                path += "&requestspotlist=false";
+                path += "&fullinfo=false";
+                path += "&spot=" + spotId;
+                SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy-HH:mm:ss");
+                path += "&start=" + df.format(start);
+                path += "&end=" + df.format(end);
+
             } else if (requestType == REQUEST_SPOTLIST) {
                 path += "lastdata=false";
                 path += "&history=false";
@@ -117,8 +131,8 @@ public class requestMeteoDataTask extends
 
             Log.d("url=", url.toString());
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            if (MainActivity.getAcct() != null)
-                conn.setRequestProperty("user",MainActivity.getAcct().getServerAuthCode());
+            if (SplashActivity.getAcct() != null)
+                conn.setRequestProperty("user",SplashActivity.getAcct().getServerAuthCode());
             conn.setConnectTimeout(5000); //set timeout to 5 seconds
             conn.setAllowUserInteraction(false);
             conn.setInstanceFollowRedirects(true);
@@ -147,6 +161,44 @@ public class requestMeteoDataTask extends
                     for (int i = 0; i < jArray.length(); i++) {
                         JSONObject jObject2 = jArray.getJSONObject(i);
                         MeteoStationData md = new MeteoStationData(jObject2);
+                        list.add(md);
+                    }
+                } else if (requestType == REQUEST_LOGMETEODATA) {
+                    JSONObject jObject = new JSONObject(json);
+                    String date = jObject.getString("date");
+                    String speed = jObject.getString("speed");
+                    String avspeed = jObject.getString("avspeed");
+                    String temperature = jObject.getString("temperature");
+                    String direction = jObject.getString("direction");
+                    String trend = jObject.getString("trend");
+
+                    String[] dates = date.split(";");
+                    String[] speeds = speed.split(";");
+                    String[] avspeeds = avspeed.split(";");
+                    String[] temperatures = temperature.split(";");
+                    String[] directions = direction.split(";");
+                    String[] trends = trend.split(";");
+                    for (int i = 0; i < dates.length; i++) {
+                        MeteoStationData md = new MeteoStationData();
+                        if (dates[i] != null) {
+                            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy-HH:mm:ss");
+                            try {
+                                md.date = df.parse(dates[i]);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        if (speeds[i] != null)
+                            md.speed = Double.valueOf(speeds[i]);
+                        if (avspeeds[i] != null)
+                            md.averagespeed = Double.valueOf(avspeeds[i]);
+                        if (directions[i] != null)
+                            md.directionangle = Double.valueOf(directions[i]);
+                        if (trends[i] != null)
+                            md.trend = Double.valueOf(trends[i]);
+                        if (temperatures[i] != null)
+                            md.temperature = Double.valueOf(temperatures[i]);
+
                         list.add(md);
                     }
                 }
@@ -193,7 +245,7 @@ public class requestMeteoDataTask extends
 
     @Override
     protected void onProgressUpdate(Long... values) {
-        progressBar.setProgress(values[0].intValue());
+        //progressBar.setProgress(values[0].intValue());
     }
 
     protected void onPostExecute(List<Object> list) {
@@ -210,10 +262,17 @@ public class requestMeteoDataTask extends
                 data.add(new MeteoStationData((MeteoStationData)obj));
             }
             delegate.processFinishHistory(data, error, errorMessage);
+        } else if (requestType == REQUEST_LOGMETEODATA) {
+            List<MeteoStationData> data = new ArrayList<>();
+            for(Object obj : list) {
+
+                data.add(new MeteoStationData((MeteoStationData)obj));
+            }
+            delegate.processFinishHistory(data, error, errorMessage);
         } else if (requestType == REQUEST_LASTMETEODATA)
             delegate.processFinish(list, error, errorMessage);
 
-        progressBar.setVisibility(View.GONE);
+        //progressBar.setVisibility(View.GONE);
     }
     private String convertStreamToString(InputStream is) {
 

@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Google Inc. All Rights Reserved.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -75,15 +75,23 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
 
             String spotId = data.getString("spotID");
             if (spotId != null) {
-                if (!AlarmPreferences.isSpotFavorite(MainActivity.getContext(),Integer.valueOf(spotId)))
-                    return;
-            }
+                if (!AlarmPreferences.getHighWindNotification(SplashActivity.getContext())
+                        || !AlarmPreferences.getWindIncreaseNotification(SplashActivity.getContext())) {
 
-            String title = data.getString("title");
-            message = data.getString("message");
-            //CommonUtilities.sendMessageToMainActivity(getApplicationContext(), title, "messagetext", notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
-            generateUINotification(getApplicationContext(), message, title); // questo genera la notifica nella barra notifica
+                    return;
+                }
+                if (!AlarmPreferences.isSpotFavorite(SplashActivity.getContext(), Integer.valueOf(spotId)))
+                    return;
+
+
+                String title = data.getString("title");
+                message = data.getString("message");
+                //CommonUtilities.sendMessageToMainActivity(getApplicationContext(), title, "messagetext", notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
+                generateUINotification(getApplicationContext(), message, title); // questo genera la notifica nella barra notifica
+
+            }
         }
+
 
         /**
          * In some cases it may be useful to show a notification indicating to the user
@@ -135,9 +143,9 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
         b.putString("spotid", spotId);
         b.putString("spotName", spotName);
         b.putString("alarmid", alarmId);
-        b.putString("curspeed",curspeed);
-        b.putString("curavspeed",curavspeed);
-        b.putString("curdate",curDate);
+        b.putString("curspeed", curspeed);
+        b.putString("curavspeed", curavspeed);
+        b.putString("curdate", curDate);
         resultIntent.putExtras(b); //Put your id to your next Intent
 
         // The stack builder object will contain an artificial back stack for the
@@ -160,11 +168,10 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
         getApplication().startActivity(resultIntent);
 
         generateUINotification(getApplicationContext(), curDate.toString()
-                                + "\nSveglia vento attivata"
-                                + "\nIntensità vento " + curspeed
-                                + "\nIntensità media " + curavspeed, "" + spotName);
+                + "\nSveglia vento attivata"
+                + "\nIntensità vento " + curspeed
+                + "\nIntensità media " + curavspeed, "" + spotName);
         //sendMessageToMainActivity(getApplicationContext(), "title", "messagetext", notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
-
 
 
     }

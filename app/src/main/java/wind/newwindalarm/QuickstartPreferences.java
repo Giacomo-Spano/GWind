@@ -26,6 +26,9 @@ public class QuickstartPreferences {
     public static final String PERSON_ID = "personId";
     public static final String KEY_SPOTLISTFAVORITES = "Favorites";
 
+    public static final String KEY_PREF_NOTIFICATIONWINDINCREASE = "notification_windincrease";
+    public static final String KEY_PREF_NOTIFICATIONHIGHWIND = "notification_highwind";
+
 
 
 }

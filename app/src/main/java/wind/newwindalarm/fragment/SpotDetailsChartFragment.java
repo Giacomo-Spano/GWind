@@ -10,6 +10,8 @@ import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
@@ -24,12 +26,13 @@ import wind.newwindalarm.chart.HistoryChart;
 
 public class SpotDetailsChartFragment extends Fragment {
 
-    private LineChart mWindChart, mTrendChar, mTemperatureChart;
+    private LineChart mWindChart, mTrendChart, mTemperatureChart;
     private long spotID;
     MeteoStationData meteoData;
     List<MeteoStationData> meteoDataList;
     HistoryChart hc;
-    private ChartCard mWindCard;
+    private ChartCard mWindCard, mTrendCard, mTemperatureCard;
+    private ProgressBar mWindProgressBar;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,12 +74,19 @@ public class SpotDetailsChartFragment extends Fragment {
         mWindCard = (ChartCard) v.findViewById(R.id.windcard);
         mWindCard.init();
         mWindChart = mWindCard.getChart();
+        mWindProgressBar = mWindCard.getProgressBar();
 
-        //mWindChart = (LineChart) v.findViewById(R.id.chartWind);
-        mTrendChar = (LineChart) v.findViewById(R.id.chartTrend);
-        mTemperatureChart = (LineChart) v.findViewById(R.id.chartTemperature);
+        mTemperatureCard = (ChartCard) v.findViewById(R.id.temperaturecard);
+        mTemperatureCard.init();
+        mTemperatureChart = mTemperatureCard.getChart();
+        //mWindProgressBar = mWindCard.getProgressBar();
 
-        hc = new HistoryChart(getActivity(), mWindChart, mTrendChar, mTemperatureChart);
+        mTrendCard = (ChartCard) v.findViewById(R.id.trendcard);
+        mTrendCard.init();
+        mTrendChart = mTrendCard.getChart();
+        //mWindProgressBar = mWindCard.getProgressBar();
+
+        hc = new HistoryChart(getActivity(), mWindChart, mTrendChart, mTemperatureChart);
         if (meteoDataList != null)
             hc.drawChart(meteoDataList);
 

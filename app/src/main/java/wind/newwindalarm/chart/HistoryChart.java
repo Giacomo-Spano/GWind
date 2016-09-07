@@ -43,6 +43,9 @@ public class HistoryChart {
     LineData trendData;
     LineData temperatureData;
 
+    private long startTimeMilliseconds;
+    private long endTimeMilliseconds;
+
     public HistoryChart(Context context, LineChart windChart, LineChart trendChart, LineChart temperatureChart) {
         mContext = context;
         mWindChart = windChart;
@@ -56,7 +59,7 @@ public class HistoryChart {
 
     public void drawChart(List<MeteoStationData> meteoDataList) {
 
-        if (meteoDataList == null)
+        if (meteoDataList == null )
             return;
         List<Entry> valsCompSpeed = new ArrayList<Entry>();
         List<Entry> valsCompAvSpeed = new ArrayList<Entry>();
@@ -64,56 +67,76 @@ public class HistoryChart {
         List<Entry> valsCompTrend = new ArrayList<Entry>();
         List<Entry> valsCompTemperature = new ArrayList<Entry>();
 
-        String lastTime = "";
+        Date lastTime = null;
         float x = 0f;
+        startTimeMilliseconds = meteoDataList.get(0).date.getTime();
+        endTimeMilliseconds = meteoDataList.get(meteoDataList.size()-1).date.getTime();
+
         for (int i = 0; i < meteoDataList.size(); i++) {
 
-            MeteoStationData md = (MeteoStationData) meteoDataList.get(i);
+            MeteoStationData md = meteoDataList.get(i);
+            Date date = null;
+            if (md.date == null) {
+                int k = 0;
+                k++;
+                continue;
+            }
+            date = md.date;
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(date.getTime());
 
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                Date date = null;
-                if (md.date == null)
-                    continue;
-                date = sdf.parse(md.date);
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(date.getTime());
+            if (!md.date.equals(lastTime)) {
 
-                if (!md.date.equals(lastTime)) {
+                //x = date.getTime();
+                x = date.getTime() - startTimeMilliseconds;
 
-                    x = date.getTime();
-                    if (md.speed != null) {
-                        Entry speedEntry = new Entry(x,Float.valueOf(String.valueOf(md.speed))); // 0 == quarter 1
-                        valsCompSpeed.add(speedEntry);
-                    }
+                Float y;
+                Entry entry;
 
-                    if (md.averagespeed != null) {
-                        Entry avspeedEntry = new Entry(x,Float.valueOf(String.valueOf(md.averagespeed))); // 0 == quarter 1
-                        valsCompAvSpeed.add(avspeedEntry);
-                    }
+                if (md.speed != null)
+                    y = Float.valueOf(String.valueOf(md.speed));
+                else
+                    y = 0.0F;
+                entry = new Entry(x, y);
+                valsCompSpeed.add(entry);
 
-                    if (md.directionangle != null) {
-                        Entry direction = new Entry(x,Float.valueOf(String.valueOf(md.directionangle)));
-                        valsCompDirection.add(direction);
-                    }
+                if (md.averagespeed != null)
+                    y = Float.valueOf(String.valueOf(md.averagespeed));
+                else
+                    y = 0.0F;
+                entry = new Entry(x, y);
+                valsCompAvSpeed.add(entry);
 
-                    if (md.trend != null) {
-                        Entry trend = new Entry(x,Float.valueOf(String.valueOf(md.trend)));
-                        valsCompTrend.add(trend);
-                    }
+                if (md.directionangle != null)
+                    y = Float.valueOf(String.valueOf(md.directionangle));
+                else
+                    y = 0.0F;
+                entry = new Entry(x, y);
+                valsCompDirection.add(entry);
 
-                    if (md.temperature != null) {
-                        Entry temperature = new Entry(x,Float.valueOf(String.valueOf(md.temperature)));
-                        valsCompTemperature.add(temperature);
-                    }
-                    lastTime = md.date;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
+                if (md.trend != null)
+                    y = Float.valueOf(String.valueOf(md.trend));
+                else
+                    y = 0.0F;
+                entry = new Entry(x, y);
+                valsCompTrend.add(entry);
+
+                if (md.temperature != null)
+                    y = Float.valueOf(String.valueOf(md.temperature));
+                else
+                    y = 0.0F;
+                entry = new Entry(x, y);
+                valsCompTemperature.add(entry);
+
+                lastTime = md.date;
+            } else {
+                int k = 0;
+                k++;
+                continue;
             }
         }
 
-        LineDataSet setCompSpeed = new LineDataSet(valsCompSpeed, "Velocità");
+        LineDataSet setCompSpeed = new LineDataSet(valsCompSpeed, "Velocità vento");
         setCompSpeed.setAxisDependency(YAxis.AxisDependency.LEFT);
         setCompSpeed.setColor(Color.RED);
         setCompSpeed.setDrawCircles(true);
@@ -130,6 +153,7 @@ public class HistoryChart {
         setCompDirection.setColor(Color.BLACK);
         setCompDirection.setDrawCircles(true);
         setCompDirection.setCircleColor(Color.BLACK);
+        setCompDirection.enableDashedLine(10f,10f,10f);
 
         LineDataSet setCompTrend = new LineDataSet(valsCompTrend, "Trend");
         setCompTrend.setAxisDependency(YAxis.AxisDependency.LEFT);
@@ -166,13 +190,28 @@ public class HistoryChart {
         xAxis.setDrawGridLines(true);
         xAxis.setTextColor(Color.BLACK);
         xAxis.setGranularity(60000L * 5f); // one minute in millis
+
+        // now modify viewport
+        //mWindChart.setVisibleXRangeMaximum(20); // allow 20 values to be displayed at once on the x-axis, not more
+        //mWindChart.moveViewToX(valsCompSpeed.size() - 20); // set the left edge of the chart to x-index 10
+        // moveViewToX(...) also calls invalidate()
+
+        long start = (endTimeMilliseconds - startTimeMilliseconds) / 2;
+        //xAxis.setAxisMinValue(0); // start at zero
+        //xAxis.setAxisMaxValue(endTimeMilliseconds - startTimeMilliseconds); // the axis maximum is 100*/
+
         xAxis.setValueFormatter(new AxisValueFormatter() {
 
-            private SimpleDateFormat mFormat = new SimpleDateFormat("HH:mm");
+            private SimpleDateFormat mFormat = new SimpleDateFormat("HH:mm:ss");
 
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return mFormat.format(new Date((long) value));
+
+                Float f = value;
+                long milliseconds = f.longValue();
+                return mFormat.format(new Date(startTimeMilliseconds + milliseconds));
+
+                //return mFormat.format(new Date(milliseconds));
             }
 
             @Override
@@ -187,6 +226,7 @@ public class HistoryChart {
         yLeftAxis.setDrawGridLines(true);
         yLeftAxis.setAxisMinValue(0f); // start at zero
         yLeftAxis.setAxisMaxValue(35f); // the axis maximum is 100
+        yLeftAxis.setGranularity(5f);
         yLeftAxis.setLabelCount(10);
         //yLeftAxis.setGranularity(22.5f); // one minute in millis
         //yLeftAxis.setInverted(true);
@@ -198,7 +238,7 @@ public class HistoryChart {
         yRightAxis.setAxisMinValue(0f); // start at zero
         yRightAxis.setAxisMaxValue(337.50f); // the axis maximum is 100
         yRightAxis.setLabelCount(16);
-        yRightAxis.setGranularity(22.5f); // one minute in millis
+        yRightAxis.setGranularity(22.5f);
         yRightAxis.setInverted(true);
         yRightAxis.setGridColor(Color.GREEN);
         yRightAxis.setValueFormatter(new DirectionAxisValueFormatter());
@@ -211,6 +251,7 @@ public class HistoryChart {
         mTemperatureChart.setData(temperatureData);
 
 
+
         //mWindChart.getLegend().setEnabled(true);
         Legend legend = mWindChart.getLegend();
         legend.setFormSize(10f); // set the size of the legend forms/shapes
@@ -219,10 +260,15 @@ public class HistoryChart {
         //l.setTypeface(...);
         legend.setTextSize(12f);
         legend.setTextColor(Color.BLACK);
-        legend.setXEntrySpace(5f); // set the space between the legend entries on the x-axis
+        legend.setXEntrySpace(20f); // set the space between the legend entries on the x-axis
         legend.setYEntrySpace(5f); // set the space between the legend entries on the y-axis
         legend.setEnabled(true);
 
+        //mWindChart.setVisibleXRangeMinimum((endTimeMilliseconds-startTimeMilliseconds)/2);
+       // mWindChart.setVisibleXRangeMaximum(endTimeMilliseconds-startTimeMilliseconds);
+        //mWindChart.moveViewToX ((endTimeMilliseconds-startTimeMilliseconds)/2);
+        mWindChart.zoom(4f,1f,3*(endTimeMilliseconds-startTimeMilliseconds)/4,35/4);
+        mWindChart.moveViewToX (3*(endTimeMilliseconds-startTimeMilliseconds)/4);
 
         mWindChart.invalidate(); // refresh
         mTemperatureChart.invalidate(); // refresh
@@ -240,7 +286,7 @@ public class HistoryChart {
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
             if (value > 22.5 * 15 || value < 0) return "" + value + "N/A";
-            return ""+/*value+ " " +*/ directionSymbols[(int) (value / 22.5)];
+            return "" +/*value+ " " +*/ directionSymbols[(int) (value / 22.5)];
         }
 
         @Override
@@ -248,12 +294,13 @@ public class HistoryChart {
             return 1;
         }
     }
+
     private class DirectionValueFormatter implements ValueFormatter {
 
         @Override
         public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
             if (value > 22.5 * 15 || value < 0) return "" + value + "N/A";
-            return ""+/*value+ " " +*/ directionSymbols[(int) (value / 22.5)];
+            return "" +/*value+ " " +*/ directionSymbols[(int) (value / 22.5)];
         }
     }
 

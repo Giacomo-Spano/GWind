@@ -94,7 +94,7 @@ public class RegistrationIntentService extends IntentService {
             // [END get_token]
 
 
-            AlarmPreferences.setRegId(MainActivity.getContext(), token);
+            AlarmPreferences.setRegId(SplashActivity.getContext(), token);
 
             Log.i(TAG, "GCM Registration Token: " + token);
 
@@ -116,11 +116,11 @@ public class RegistrationIntentService extends IntentService {
                 //Log.i(TAG, "deviceId=" + deviceId);
                 //String personId = AlarmPreferences.getPersonId(MainActivity.getContext());
 
-                String personId = MainActivity.getAcct().getId();
-                String personName = MainActivity.getAcct().getDisplayName();
-                String personEmail = MainActivity.getAcct().getEmail();
-                Uri personPhoto = MainActivity.getAcct().getPhotoUrl();
-                String authCode = MainActivity.getAcct().getServerAuthCode();
+                String personId = SplashActivity.getAcct().getId();
+                String personName = SplashActivity.getAcct().getDisplayName();
+                String personEmail = SplashActivity.getAcct().getEmail();
+                Uri personPhoto = SplashActivity.getAcct().getPhotoUrl();
+                String authCode = SplashActivity.getAcct().getServerAuthCode();
 
                 sendRegistrationToServer(personId, personName, personEmail, personPhoto,authCode);
                 //ServerUtilities.registerDevice(token);
@@ -171,7 +171,7 @@ public class RegistrationIntentService extends IntentService {
         //ServerUtilities.register(token, serverURL);
         String model = Build.MODEL;
 
-        new registertask(MainActivity.getInstance(), new AsyncRegisterResponse() {
+        new registertask(SplashActivity.getInstance(), new AsyncRegisterResponse() {
 
             @Override
             public void processFinish(String jsonStr, boolean error, String errorMessage) {
@@ -181,7 +181,7 @@ public class RegistrationIntentService extends IntentService {
                     JSONObject json = new JSONObject(jsonStr);
                     if (json.has("deviceid")) {
                         int deviceId = json.getInt("deviceid");
-                        AlarmPreferences.setDeviceId(MainActivity.getContext(),deviceId);
+                        AlarmPreferences.setDeviceId(SplashActivity.getContext(),deviceId);
                     }
                     /*if (json.has("userid")) {
                         int deviceId = json.getInt("userid");

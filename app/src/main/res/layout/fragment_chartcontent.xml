@@ -9,41 +9,12 @@
         android:id="@+id/windcard"
         layout="@layout/card_chart"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="DIAGRAMMA DEL VENTO"
-        android:id="@+id/textView20" />
+    <include
+        android:id="@+id/temperaturecard"
+        layout="@layout/card_chart"/>
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chartWind"
-        android:layout_width="match_parent"
-        android:layout_height="300dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="DIAGRAMMA TENDENZA VENTO"
-        android:id="@+id/textView17" />
-
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chartTrend"
-        android:layout_width="match_parent"
-        android:layout_height="300dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="DIAGRAMMA TEMPERATURA"
-        android:id="@+id/textView21" />
-
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chartTemperature"
-        android:layout_width="match_parent"
-        android:layout_height="300dp" />
-
+    <include
+        android:id="@+id/trendcard"
+        layout="@layout/card_chart"/>
 
 </LinearLayout>

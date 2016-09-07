@@ -65,8 +65,8 @@ public final class ServerUtilities {
         params.put("unregister", "true");
 
         //post(serverUrl, params);
-        AlarmPreferences.setRegId(MainActivity.getContext(), regId);
-        AlarmPreferences.deleteRegId(MainActivity.getContext());
+        AlarmPreferences.setRegId(SplashActivity.getContext(), regId);
+        AlarmPreferences.deleteRegId(SplashActivity.getContext());
 
     }
 
