@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
+    <!--<item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
@@ -11,13 +11,13 @@
         android:icon="@drawable/refreshbutton"
         android:showAsAction="ifRoom"
         android:title="@string/options_refresh">
-    </item>
+    </item>-->
     <item
         android:id="@+id/options_diagfile"
         android:title="@string/options_diagfile">
     </item>
 
-    <item
+    <!--<item
         android:id="@+id/options_register"
         android:title="@string/options_register">
     </item>
@@ -42,6 +42,6 @@
         android:orderInCategory="100"
         android:showAsAction="ifRoom"
         android:title="@string/action_clear">
-    </item>
+    </item>-->
 
 </menu>

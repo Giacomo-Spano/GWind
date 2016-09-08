@@ -80,7 +80,11 @@ public class SplashActivity extends AppCompatActivity implements
     }
 
     public static Context getContext() {
-        return instance.getApplicationContext();
+
+        if (instance != null)
+            return instance.getApplicationContext();
+        else
+            return null;
     }
 
 
@@ -94,14 +98,19 @@ public class SplashActivity extends AppCompatActivity implements
         //initGoogleSignin();
         //silentSignIn();
 
-        if (!sendLogToMail()) {
+        /*if (!sendLogToMail()) {
 
-            initGoogleSignin();
-            silentSignIn();
+            //initGoogleSignin();
+            //silentSignIn();
 
         } else {
             finish();
-        }
+        }*/
+
+        sendLogToMail();
+
+        initGoogleSignin();
+        silentSignIn();
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -230,7 +239,8 @@ public class SplashActivity extends AppCompatActivity implements
                 trace += line + "\n";
             }
 
-            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+
+            String address = "giaggi70@gmail.com";
             String subject = "Error report";
             String body =
                     "Giacomo, l'applicazione si è bloccata in questo punto: \n" +
@@ -239,14 +249,7 @@ public class SplashActivity extends AppCompatActivity implements
                             trace +
                             "\n";
 
-            sendIntent.putExtra(Intent.EXTRA_EMAIL,
-                    new String[]{"giaggi70@gmail.com"});
-            sendIntent.putExtra(Intent.EXTRA_TEXT, body);
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-            sendIntent.setType("message/rfc822");
-
-            SplashActivity.this.startActivity(
-                    Intent.createChooser(sendIntent, "Title:"));
+            sendMail(address, subject, body);
 
             SplashActivity.this.deleteFile("stack.trace");
 
@@ -261,6 +264,20 @@ public class SplashActivity extends AppCompatActivity implements
         }
 
         return true;
+    }
+
+    public void sendMail(String address, String subject, String body) {
+        Intent sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_EMAIL,
+                new String[]{address});
+        sendIntent.putExtra(Intent.EXTRA_TEXT, body);
+        sendIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        sendIntent.setType("message/rfc822");
+
+        //getApplicationContext().startActivity(Intent.createChooser(sendIntent, "Title:"));
+
+        SplashActivity.this.startActivity(
+                Intent.createChooser(sendIntent, "Title:"));
     }
 
     @Override

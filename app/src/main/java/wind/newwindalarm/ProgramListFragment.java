@@ -1,7 +1,8 @@
 package wind.newwindalarm;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
+//import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,12 +20,9 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
-
 import com.google.gson.Gson;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import wind.newwindalarm.cardui.AlarmCard;
 import wind.newwindalarm.cardui.AlarmCardSubitem;
 
@@ -40,25 +38,26 @@ public class ProgramListFragment extends Fragment implements
 
     private boolean offline = false;
 
-    //int position;
     View programListView;
     LinearLayout mcontainer;
     LinearLayout mErrorLayout;
     private List<Spot> mSpotList;
-
     List<AlarmCardItem> alarmList = new ArrayList<AlarmCardItem>();
+    private long spotId = -1;
 
     public void setServerSpotList(List<Spot> list) {
 
         mSpotList = list;
     }
 
+    public void setSpotId(long spotId) {
+        this.spotId = spotId;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        //position = getArguments().getInt("position");
-        String[] items = getResources().getStringArray(R.array.opzioni);
         programListView = inflater.inflate(R.layout.fragment_programlist, container, false);
 
         mcontainer = (LinearLayout) programListView.findViewById(R.id.programlist);
@@ -74,13 +73,17 @@ public class ProgramListFragment extends Fragment implements
             }
         });
 
-        // Updating the action bar title
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(/*items[position]*/"Sveglie");
-
-
-
-
-
+        if (spotId != -1) {
+            MainActivity a = (MainActivity) getActivity();
+            //setServerSpotList(a.getServerSpotList());
+            Spot spot = a.getSpotFromId(spotId);
+            List<Spot> list = new ArrayList<Spot>();
+            list.add(spot);
+            setServerSpotList(list);
+        } else {
+            // Updating the action bar title
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Sveglie");
+        }
 
         return programListView;
     }
@@ -127,20 +130,10 @@ public class ProgramListFragment extends Fragment implements
                     offline = false;
                 }
             }
-        }, AlarmPreferences.getDeviceId(getActivity())/*MainActivity.getDeviceId()*/).execute();
+        }, AlarmPreferences.getDeviceId(getActivity()),spotId).execute();
     }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // TODO Add your menu entries here
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
 
     public void createProgram() {
-
-        //if (mSpotList == null)
-        //    return;
 
         WindAlarmProgram program = new WindAlarmProgram();
         if (alarmList.size() == 0)

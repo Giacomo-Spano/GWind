@@ -1,9 +1,9 @@
 package wind.newwindalarm.fragment;
 
 
-import android.app.Fragment;
+//import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
-
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
@@ -15,14 +15,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-
-import com.github.mikephil.charting.charts.LineChart;
-
 import java.util.List;
-
 import wind.newwindalarm.MainActivity;
 import wind.newwindalarm.MeteoStationData;
+import wind.newwindalarm.ProgramListFragment;
 import wind.newwindalarm.R;
 import wind.newwindalarm.ScreenSlidePageFragment;
 
@@ -32,6 +28,7 @@ public class SpotDetailsFragment extends Fragment {
     private SpotDetailsMeteodataFragment meteodataFragment;
     private SpotDetailsWebcamFragment webcamFragment;
     private SpotDetailsChartFragment chartFragment;
+    private ProgramListFragment programListFragment;
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
     private long spotId;
@@ -40,6 +37,7 @@ public class SpotDetailsFragment extends Fragment {
         meteodataFragment = new SpotDetailsMeteodataFragment();
         webcamFragment = new SpotDetailsWebcamFragment();
         chartFragment = new SpotDetailsChartFragment();
+        programListFragment = new ProgramListFragment();
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -68,7 +66,7 @@ public class SpotDetailsFragment extends Fragment {
         return chartFragment.getLastHistoryMeteoData();
     }
 
-    @Override
+    /*@Override
     public void onPrepareOptionsMenu(Menu menu) {
 
         MenuItem mm = menu.findItem(R.id.options_refresh);
@@ -76,7 +74,7 @@ public class SpotDetailsFragment extends Fragment {
 
             menu.findItem(R.id.options_refresh).setVisible(true);
         }
-    }
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -94,6 +92,7 @@ public class SpotDetailsFragment extends Fragment {
         tabLayout.getTabAt(0).setIcon(R.drawable.logo);
         tabLayout.getTabAt(1).setIcon(R.drawable.webcamicon);
         tabLayout.getTabAt(2).setIcon(R.drawable.graphicon);
+        tabLayout.getTabAt(3).setIcon(R.drawable.graphicon);
 
         // Updating the action bar title
         if (meteoData != null) {
@@ -107,7 +106,7 @@ public class SpotDetailsFragment extends Fragment {
 
     private class SpotDetailPagerAdapter extends FragmentStatePagerAdapter {
 
-        private static final int NUM_PAGES = 3;
+        private static final int NUM_PAGES = 4;
 
         public SpotDetailPagerAdapter(android.support.v4.app.FragmentManager fm) {
             super(fm);
@@ -137,7 +136,14 @@ public class SpotDetailsFragment extends Fragment {
                 chartFragment.refreshData();
                 return chartFragment;
 
-            }  else{
+            }  else if (position == 3 ) {
+
+                programListFragment.setSpotId(spotId);
+                //programListFragment.setMeteoData(meteoData);
+                //programListFragment.refreshData();
+                return programListFragment;
+
+            } else {
                 return new ScreenSlidePageFragment();
             }
         }
@@ -151,6 +157,8 @@ public class SpotDetailsFragment extends Fragment {
                 return  "Webcam";
             } else if (position == 2 ) {
                 return  "Grafico";
+            } else if (position == 3 ) {
+                return  "Sveglie";
             }
             return titolo;
         }

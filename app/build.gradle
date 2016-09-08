@@ -15,8 +15,8 @@ android {
         applicationId "wind.newwindalarm"
         minSdkVersion 18
         targetSdkVersion 24
-        versionCode 22
-        versionName "0.9 Build 22"
+        versionCode 25
+        versionName "0.9 Build 25"
     }
     buildTypes {
         release {
@@ -39,6 +39,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:9.2.1'
     compile 'junit:junit:4.12'
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.0-beta1'
+    compile 'com.android.support:preference-v7:24.1.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

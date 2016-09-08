@@ -4,11 +4,19 @@ import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
+//import android.preference.CheckBoxPreference;
+//import android.preference.ListPreference;
+//import android.preference.Preference;
+//import android.preference.PreferenceFragment;
+//import android.support.v4.app.p;
+//import android.preference.PreferenceFragment;
 import android.preference.PreferenceFragment;
+//import android.support.v7.;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.CheckBoxPreference;
+import android.support.v7.preference.ListPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +24,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SettingsFragment extends PreferenceFragment {
+public class SettingsFragment extends PreferenceFragmentCompat {
 
 
     public static final String KEY_PREF_SPOTLIST = "spotList";
@@ -40,7 +48,7 @@ public class SettingsFragment extends PreferenceFragment {
         addPreferencesFromResource(R.xml.preferences);
 
         //String key = getResources().getString(R.string.pref_serverURL);
-        Preference pref = findPreference(QuickstartPreferences.KEY_PREF_SERVERURL);
+        android.support.v7.preference.Preference pref = findPreference(QuickstartPreferences.KEY_PREF_SERVERURL);
         String str = ((ListPreference) pref).getValue();
         pref.setSummary(str/*mSettings.getServerURL()*/);
         pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -104,6 +112,11 @@ public class SettingsFragment extends PreferenceFragment {
                 return true;
             }
         });*/
+    }
+
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+
     }
 
 

@@ -191,6 +191,20 @@ public class HistoryChart {
         xAxis.setTextColor(Color.BLACK);
         xAxis.setGranularity(60000L * 5f); // one minute in millis
 
+        XAxis xTrendAxis = mTrendChart.getXAxis();
+        xTrendAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xTrendAxis.setDrawAxisLine(true);
+        xTrendAxis.setDrawGridLines(true);
+        xTrendAxis.setTextColor(Color.BLACK);
+        xTrendAxis.setGranularity(60000L * 5f); // one minute in millis
+
+        XAxis xTemperatureAxis = mTemperatureChart.getXAxis();
+        xTemperatureAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xTemperatureAxis.setDrawAxisLine(true);
+        xTemperatureAxis.setDrawGridLines(true);
+        xTemperatureAxis.setTextColor(Color.BLACK);
+        xTemperatureAxis.setGranularity(60000L * 5f); // one minute in millis
+
         // now modify viewport
         //mWindChart.setVisibleXRangeMaximum(20); // allow 20 values to be displayed at once on the x-axis, not more
         //mWindChart.moveViewToX(valsCompSpeed.size() - 20); // set the left edge of the chart to x-index 10
@@ -200,9 +214,9 @@ public class HistoryChart {
         //xAxis.setAxisMinValue(0); // start at zero
         //xAxis.setAxisMaxValue(endTimeMilliseconds - startTimeMilliseconds); // the axis maximum is 100*/
 
-        xAxis.setValueFormatter(new AxisValueFormatter() {
+        AxisValueFormatter avf = new AxisValueFormatter() {
 
-            private SimpleDateFormat mFormat = new SimpleDateFormat("HH:mm:ss");
+            private SimpleDateFormat mFormat = new SimpleDateFormat("HH:mm");
 
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -218,7 +232,11 @@ public class HistoryChart {
             public int getDecimalDigits() {
                 return 0;
             }
-        });
+        };
+
+        xAxis.setValueFormatter(avf);
+        xTemperatureAxis.setValueFormatter(avf);
+        xTrendAxis.setValueFormatter(avf);
 
 
         YAxis yLeftAxis = mWindChart.getAxisLeft();
@@ -252,23 +270,48 @@ public class HistoryChart {
 
 
 
-        //mWindChart.getLegend().setEnabled(true);
         Legend legend = mWindChart.getLegend();
         legend.setFormSize(10f); // set the size of the legend forms/shapes
         legend.setForm(Legend.LegendForm.CIRCLE); // set what type of form/shape should be used
         legend.setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);
-        //l.setTypeface(...);
         legend.setTextSize(12f);
         legend.setTextColor(Color.BLACK);
         legend.setXEntrySpace(20f); // set the space between the legend entries on the x-axis
         legend.setYEntrySpace(5f); // set the space between the legend entries on the y-axis
         legend.setEnabled(true);
 
+        legend = mTemperatureChart.getLegend();
+        legend.setFormSize(10f); // set the size of the legend forms/shapes
+        legend.setForm(Legend.LegendForm.CIRCLE); // set what type of form/shape should be used
+        legend.setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);
+        legend.setTextSize(12f);
+        legend.setTextColor(Color.BLACK);
+        legend.setXEntrySpace(20f); // set the space between the legend entries on the x-axis
+        legend.setYEntrySpace(5f); // set the space between the legend entries on the y-axis
+        legend.setEnabled(true);
+
+        legend = mTrendChart.getLegend();
+        legend.setFormSize(10f); // set the size of the legend forms/shapes
+        legend.setForm(Legend.LegendForm.CIRCLE); // set what type of form/shape should be used
+        legend.setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);
+        legend.setTextSize(12f);
+        legend.setTextColor(Color.BLACK);
+        legend.setXEntrySpace(20f); // set the space between the legend entries on the x-axis
+        legend.setYEntrySpace(5f); // set the space between the legend entries on the y-axis
+        legend.setEnabled(true);
+
+
         //mWindChart.setVisibleXRangeMinimum((endTimeMilliseconds-startTimeMilliseconds)/2);
        // mWindChart.setVisibleXRangeMaximum(endTimeMilliseconds-startTimeMilliseconds);
         //mWindChart.moveViewToX ((endTimeMilliseconds-startTimeMilliseconds)/2);
         mWindChart.zoom(4f,1f,3*(endTimeMilliseconds-startTimeMilliseconds)/4,35/4);
         mWindChart.moveViewToX (3*(endTimeMilliseconds-startTimeMilliseconds)/4);
+
+        mTemperatureChart.zoom(4f,1f,3*(endTimeMilliseconds-startTimeMilliseconds)/4,35/4);
+        mTemperatureChart.moveViewToX (3*(endTimeMilliseconds-startTimeMilliseconds)/4);
+
+        mTrendChart.zoom(4f,1f,3*(endTimeMilliseconds-startTimeMilliseconds)/4,35/4);
+        mTrendChart.moveViewToX (3*(endTimeMilliseconds-startTimeMilliseconds)/4);
 
         mWindChart.invalidate(); // refresh
         mTemperatureChart.invalidate(); // refresh

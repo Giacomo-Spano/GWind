@@ -26,6 +26,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
@@ -33,7 +34,7 @@ import static wind.newwindalarm.CommonUtilities.sendMessageToMainActivity;
 
 public class WindAlarmGcmListenerService extends GcmListenerService {
 
-    private static final String TAG = "WindAlarmGcmListenerService";
+    private static final String TAG = "WindAlarmGcmListener";
 
     /**
      * Called when message is received.
@@ -45,9 +46,10 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
     // [START receive_message]
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        String message = "";// = data.getString("message");
-        //Log.d(TAG, "From: " + from);
-        //Log.d(TAG, "Message: " + message);
+        Log.i(TAG, "onMessageReceived");
+        String message = data.getString("message");
+        Log.i(TAG, "From: " + from);
+        Log.i(TAG, "Message: " + message);
 
         if (from.startsWith("/topics/")) {
             // message received from some topic.
@@ -67,6 +69,7 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
         // notifies user
         if (notificationType.equals("Alarm")) {
 
+            Log.i(TAG, "Alarm received");
             playAlarm(getApplicationContext(), data);
 
             return;
@@ -75,13 +78,16 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
 
             String spotId = data.getString("spotID");
             if (spotId != null) {
-                if (!AlarmPreferences.getHighWindNotification(SplashActivity.getContext())
-                        || !AlarmPreferences.getWindIncreaseNotification(SplashActivity.getContext())) {
+                if (!AlarmPreferences.getHighWindNotification(getApplicationContext())
+                        || !AlarmPreferences.getWindIncreaseNotification(getApplicationContext())) {
 
+                    Log.i(TAG, "Notification disabled");
                     return;
                 }
-                if (!AlarmPreferences.isSpotFavorite(SplashActivity.getContext(), Integer.valueOf(spotId)))
+                if (!AlarmPreferences.isSpotFavorite(getApplicationContext(), Integer.valueOf(spotId))) {
+                    Log.i(TAG, "spot is not favorites");
                     return;
+                }
 
 
                 String title = data.getString("title");

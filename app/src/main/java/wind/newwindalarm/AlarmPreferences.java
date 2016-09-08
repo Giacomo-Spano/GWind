@@ -116,7 +116,7 @@ public class AlarmPreferences {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Set<String> favorites = getSpotListFavorites();
-        if (!favorites.contains("" + spotId))
+        if (favorites.contains("" + spotId))
             return true;
         return false;
     }

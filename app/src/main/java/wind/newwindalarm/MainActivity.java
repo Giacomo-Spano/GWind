@@ -38,6 +38,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -52,6 +53,7 @@ import java.util.List;
 import java.util.Set;
 
 import wind.newwindalarm.fragment.PanelFragment;
+import wind.newwindalarm.fragment.ProgramFragment;
 import wind.newwindalarm.fragment.SpotDetailsFragment;
 
 public class MainActivity extends AppCompatActivity implements
@@ -264,18 +266,15 @@ public class MainActivity extends AppCompatActivity implements
          * Typically, an application registers automatically, so options below
 		 * are disabled. Uncomment them if you want to manually register or
 		 * unregister the device (you will also need to uncomment the equivalent
-		 * options on options_menu.xml).
-		 */
-            case R.id.options_refresh:
-                //requestWebduinoUpdate();
-                return false;
+		 * options on options_menu.xml).*/
+
             case R.id.options_diagfile:
                 startSendLogActivity();
                 return false;
             /*case R.id.action_settings:
                 openSettings();
                 return true;*/
-            case R.id.action_add:
+            /*case R.id.action_add:
 
                 programListFragment.createProgram();
                 ;
@@ -283,10 +282,7 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.action_unregister:
                 //ServerUtilities.unregister(AlarmPreferences.getRegId(this), AlarmPreferences.getServerUrl(this));
                 unregister();
-
-
-
-                return true;
+                return true;*/
             /*case R.id.action_clear:
                 deleteFile(messageFragment.messageFileName);
                 //new File(messageFragment.messageFileName).delete();
@@ -314,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        showFragment(id,true);
+        showFragment(id, true);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -323,43 +319,52 @@ public class MainActivity extends AppCompatActivity implements
 
     private void showFragment(int mPosition, boolean addToBackStack) {
 
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
+        try {
+            android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+            android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
 
-        refreshFab.setVisibility(View.GONE);
-        addFab.setVisibility(View.GONE);
+            refreshFab.setVisibility(View.GONE);
+            addFab.setVisibility(View.GONE);
 
 
-        if (!signedIn && mPosition != R.id.nav_settings) {
-            nextFragment = mPosition;
-            ft.replace(R.id.content_frame, profileFragment);
-            profileFragment.setProfile(mProfile);
-        } else {
-
-            if (mPosition == R.id.nav_favorites && panelFragment != null) {
-                ft.replace(R.id.content_frame, panelFragment);
-                refreshFab.setVisibility(View.VISIBLE);
-            } else if (mPosition == R.id.nav_program) {
-                ft.replace(R.id.content_frame, programListFragment);
-                addFab.setVisibility(View.VISIBLE);
-            } else if (mPosition == R.id.nav_meteostation) {
-                ft.replace(R.id.content_frame, spotMeteoListFragment);
-            } else if (mPosition == R.id.nav_settings) {
-                ft.replace(R.id.content_frame, settingsFragment);
-            } else if (mPosition == R.id.nav_profile) {
+            if (!signedIn && mPosition != R.id.nav_settings) {
+                nextFragment = mPosition;
                 ft.replace(R.id.content_frame, profileFragment);
                 profileFragment.setProfile(mProfile);
+            } else {
+
+                if (mPosition == R.id.nav_favorites && panelFragment != null) {
+                    ft.replace(R.id.content_frame, panelFragment);
+                    refreshFab.setVisibility(View.VISIBLE);
+                } else if (mPosition == R.id.nav_program) {
+                    ft.replace(R.id.content_frame, programListFragment);
+                    addFab.setVisibility(View.VISIBLE);
+                } else if (mPosition == R.id.nav_meteostation) {
+                    ft.replace(R.id.content_frame, spotMeteoListFragment);
+                } else if (mPosition == R.id.nav_settings) {
+                    ft.replace(R.id.content_frame, settingsFragment);
+                } else if (mPosition == R.id.nav_profile) {
+                    ft.replace(R.id.content_frame, profileFragment);
+                    profileFragment.setProfile(mProfile);
+                }
             }
+            if (addToBackStack)
+                ft.addToBackStack(null);
+            ft.commit();
+        } catch (IllegalStateException ignored) {
+            // There's no way to avoid getting this if saveInstanceState has already been called.
         }
-        if (addToBackStack)
-            ft.addToBackStack(null);
-        ft.commit();
     }
 
     String getServerURL() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String syncConnPref = sharedPref.getString(QuickstartPreferences.KEY_PREF_SERVERURL, this.getResources().getString(R.string.pref_serverURL_default));
         return syncConnPref;
+    }
+
+    public List<Spot> getServerSpotList() { // TODO Eliminare . usata soloda programFragmentspotlist
+
+        return spotList;
     }
 
     private void getSpotListFromServer() {
@@ -369,9 +374,11 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void processFinish(List<Object> list, boolean error, String errorMessage) {
             }
+
             @Override
             public void processFinishHistory(List<MeteoStationData> list, boolean error, String errorMessage) {
             }
+
             @Override
             public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
 
@@ -389,7 +396,7 @@ public class MainActivity extends AppCompatActivity implements
                 programListFragment.setServerSpotList(spotList);
                 //spotMeteoListFragment.setSpotList(spotList);
             }
-        },requestMeteoDataTask.REQUEST_SPOTLIST).execute();
+        }, requestMeteoDataTask.REQUEST_SPOTLIST).execute();
 
     }
 
@@ -468,12 +475,12 @@ public class MainActivity extends AppCompatActivity implements
 
     private void init(/*GoogleSignInAccount acc*/) {
 
-            signedIn = true;
+        signedIn = true;
 
-            new LoadImagefromUrl().execute();
-            //authCode = acct.getServerAuthCode();
+        new LoadImagefromUrl().execute();
+        //authCode = acct.getServerAuthCode();
 
-            //mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
+        //mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
             /*mRegistrationBroadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
@@ -490,10 +497,10 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 }
             };*/
-            mInformationTextView = (TextView) findViewById(R.id.informationTextView);
+        mInformationTextView = (TextView) findViewById(R.id.informationTextView);
 
 
-            // Registering BroadcastReceiver
+        // Registering BroadcastReceiver
             /*registerReceiver();
             if (checkPlayServices()) {
                 // Start IntentService to register this application with GCM.
@@ -501,12 +508,12 @@ public class MainActivity extends AppCompatActivity implements
                 startService(intent);
             }*/
 
-            getLastMeteoData();
-            //showFragment(R.id.nav_favorites);
-            //panelFragment.refreshMeteoData(meteoDataList);
+        getLastMeteoData();
+        //showFragment(R.id.nav_favorites);
+        //panelFragment.refreshMeteoData(meteoDataList);
 
 
-            //unregisterReceiver();
+        //unregisterReceiver();
 
     }
 
@@ -533,17 +540,22 @@ public class MainActivity extends AppCompatActivity implements
     }*/
 
 
-
     @Override
     public void onSpotClick(long spotId) {
 
         spotDetailsFragment = new SpotDetailsFragment();
         spotDetailsFragment.setMeteoData(getMeteodataFromId(spotId));
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.replace(R.id.content_frame, spotDetailsFragment);
-        ft.addToBackStack(null);
-        ft.commit();
+        spotDetailsFragment.setSpotId(spotId);
+        try {
+            android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+            android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
+
+            ft.replace(R.id.content_frame, spotDetailsFragment);
+            ft.addToBackStack(null);
+            ft.commit();
+        } catch (IllegalStateException ignored) {
+            // There's no way to avoid getting this if saveInstanceState has already been called.
+        }
 
         List<MeteoStationData> list = historicalMeteoData.getFromId(spotId);
         if (list != null) {
@@ -558,7 +570,6 @@ public class MainActivity extends AppCompatActivity implements
     public void onClick(View view) {
 
     }
-
 
 
     public void getLastMeteoData() {
@@ -602,9 +613,10 @@ public class MainActivity extends AppCompatActivity implements
     private void startProgressBar() {
         progressBar.setProgress(10);
         progressBar.setVisibility(View.VISIBLE);
-        countDownTimer = new CountDownTimer(50000, 1000){
+        countDownTimer = new CountDownTimer(50000, 1000) {
 
             private int progress = 10;
+
             public void onTick(long millisUntilFinished) {
                 //mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
                 progress += 10;
@@ -622,12 +634,12 @@ public class MainActivity extends AppCompatActivity implements
         Date end = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(end);
-        cal.add(Calendar.HOUR_OF_DAY, - 10); //minus number would decrement the hours
+        cal.add(Calendar.HOUR_OF_DAY, -10); //minus number would decrement the hours
         Date start = cal.getTime();
 
         startProgressBar();
 
-        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_LOGMETEODATA).execute(spotId,start,end);
+        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_LOGMETEODATA).execute(spotId, start, end);
     }
 
     @Override
@@ -658,7 +670,7 @@ public class MainActivity extends AppCompatActivity implements
 
             if (panelFragment == null) {
                 panelFragment = new PanelFragment();
-                showFragment(R.id.nav_favorites,false);
+                showFragment(R.id.nav_favorites, false);
             }
             Iterator iterator = list.iterator();
             while (iterator.hasNext()) {
@@ -679,7 +691,7 @@ public class MainActivity extends AppCompatActivity implements
                 spotDetailsFragment.setHistoryMeteoData(list);
 
             progressBar.setVisibility(View.GONE);
-            }
+        }
 
         @Override
         public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
@@ -688,6 +700,7 @@ public class MainActivity extends AppCompatActivity implements
 
         }
     }
+
     private class LoadImagefromUrl extends AsyncTask<Object, Void, Bitmap> {
 
         @Override

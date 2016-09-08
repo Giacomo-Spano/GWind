@@ -1,8 +1,9 @@
 package wind.newwindalarm;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
-import android.app.ListFragment;
+//import android.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
+//import android.app.ListFragment;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -116,7 +117,11 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
         //data.putString("meteodata", meteoStationData.toJson());
         spotDetail.setArguments(data);
 
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        //FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        android.support.v4.app.FragmentManager fragmentManager = ((MainActivity)getActivity()).getSupportFragmentManager();
+        android.support.v4.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+
         transaction.replace(R.id.content_frame, spotDetail);
         transaction.addToBackStack(null);
         transaction.commit();

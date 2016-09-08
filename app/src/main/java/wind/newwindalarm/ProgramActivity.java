@@ -16,8 +16,8 @@ import com.google.gson.Gson;
 
 import wind.newwindalarm.controls.DatePickerDialogFragment;
 import wind.newwindalarm.controls.SpeedDialogFragment;
-import wind.newwindalarm.controls.TemperatureDialogFragment;
 import wind.newwindalarm.controls.TimePickerDialogFragment;
+import wind.newwindalarm.fragment.ProgramFragment;
 
 public class ProgramActivity extends AppCompatActivity {
 

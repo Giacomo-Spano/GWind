@@ -2,7 +2,8 @@ package wind.newwindalarm.fragment;
 
 
 import android.app.Activity;
-import android.app.Fragment;
+//import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -87,11 +88,11 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
         mMenu = menu;//.getItem(R.id.options_refresh);
     }
 
-    @Override
+    /*@Override
     public void onPrepareOptionsMenu(Menu menu) {
 
         menu.findItem(R.id.options_refresh).setVisible(true);
-    }
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

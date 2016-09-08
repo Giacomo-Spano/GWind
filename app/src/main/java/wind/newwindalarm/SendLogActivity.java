@@ -275,6 +275,10 @@ public class SendLogActivity extends Activity
                 mSendIntent.putExtra(Intent.EXTRA_TEXT, log.toString());
                 //startActivity(Intent.createChooser(mSendIntent, getString(R.string.chooser_title)));
                 //sendmail(log.toString());
+                String address = "giaggi70@gmail.com";
+                String subject = "Error report";
+                //((SplashActivity)SplashActivity.getContext()).sendMail(address,subject,log.toString());
+
                 createDiagFile(log.toString());
                 dismissProgressDialog();
                 dismissMainDialog();
