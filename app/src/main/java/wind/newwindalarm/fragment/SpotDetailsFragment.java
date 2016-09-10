@@ -2,6 +2,7 @@ package wind.newwindalarm.fragment;
 
 
 //import android.app.Fragment;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -10,19 +11,15 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import java.util.List;
 import wind.newwindalarm.MainActivity;
 import wind.newwindalarm.MeteoStationData;
-import wind.newwindalarm.ProgramListFragment;
 import wind.newwindalarm.R;
 import wind.newwindalarm.ScreenSlidePageFragment;
 
-public class SpotDetailsFragment extends Fragment {
+public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodataFragment.OnClickListener {
 
     private MeteoStationData meteoData;
     private SpotDetailsMeteodataFragment meteodataFragment;
@@ -33,8 +30,19 @@ public class SpotDetailsFragment extends Fragment {
     private PagerAdapter mPagerAdapter;
     private long spotId;
 
+    OnClickListener mCallback;
+    // Container Activity must implement this interface
+    public interface OnClickListener {
+        void onRefreshClick();
+    }
+
+    public void setListener(OnClickListener listener) {
+        mCallback = listener;
+    }
+
     public SpotDetailsFragment() {
         meteodataFragment = new SpotDetailsMeteodataFragment();
+        meteodataFragment.setListener(this);
         webcamFragment = new SpotDetailsWebcamFragment();
         chartFragment = new SpotDetailsChartFragment();
         programListFragment = new ProgramListFragment();
@@ -104,6 +112,11 @@ public class SpotDetailsFragment extends Fragment {
         return v;
     }
 
+    @Override
+    public void onRefreshClick() {
+        mCallback.onRefreshClick();
+    }
+
     private class SpotDetailPagerAdapter extends FragmentStatePagerAdapter {
 
         private static final int NUM_PAGES = 4;
@@ -124,7 +137,7 @@ public class SpotDetailsFragment extends Fragment {
 
             }  else if (position == 1 ) {
 
-                webcamFragment.setSpotId(meteoData.spotID);
+                webcamFragment.setSpotId(spotId);
                 webcamFragment.setMeteoData(meteoData);
                 webcamFragment.refreshData();
                 return  webcamFragment;

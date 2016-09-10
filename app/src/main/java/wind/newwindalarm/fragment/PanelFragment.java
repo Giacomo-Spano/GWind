@@ -3,6 +3,7 @@ package wind.newwindalarm.fragment;
 
 import android.app.Activity;
 //import android.app.Fragment;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.Build;
@@ -17,7 +18,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.LinearLayout;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -35,13 +35,29 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
     private boolean viewCreated = false;
     OnSpotClickListener mCallback;
     private LinearLayout mcontainer;
-    //private List<MeteoCardItem> meteoList = new ArrayList<MeteoCardItem>();
     private Menu mMenu;
     private List<MeteoStationData> meteoDataList;
+    private FloatingActionButton refreshFab;
+
 
     // Container Activity must implement this interface
     public interface OnSpotClickListener {
         void onSpotClick(long spotId);
+        void onRefreshClick();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        refreshFab.setImageResource(R.drawable.refreshbutton);
+        //refreshFab.setVisibility(View.GONE);
+        refreshFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCallback.onRefreshClick();
+            }
+        });
     }
 
     public void setMeteoDataList(List<MeteoStationData> list) {
@@ -88,12 +104,6 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
         mMenu = menu;//.getItem(R.id.options_refresh);
     }
 
-    /*@Override
-    public void onPrepareOptionsMenu(Menu menu) {
-
-        menu.findItem(R.id.options_refresh).setVisible(true);
-    }*/
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -102,6 +112,10 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
         v = inflater.inflate(R.layout.fragment_controlpanel, container, false);
 
         mcontainer = (LinearLayout) v.findViewById(R.id.meteolist);
+
+        refreshFab = (FloatingActionButton) getActivity().findViewById(R.id.fabButton);
+
+
         //mErrorLayout = (LinearLayout) v.findViewById(R.id.errorLayout);
         //mProgress = (ProgressBar) v.findViewById(R.id.progressBar);
 
@@ -149,7 +163,7 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
         mcontainer.removeAllViews();
 
         Set<String> favorites = null;
-        favorites = AlarmPreferences.getSpotListFavorites();
+        favorites = AlarmPreferences.getSpotListFavorites(getContext());
 
         Iterator iter = favorites.iterator();
         while (iter.hasNext()) {

@@ -72,8 +72,8 @@ public class AlarmPreferences {
 
     }
 
-    public static Set<String> getSpotListFavorites() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(SplashActivity.getContext());
+    public static Set<String> getSpotListFavorites(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         //String regId = sharedPreferences.getString(QuickstartPreferences.KEY_SPOTLISTFAVORITES, "");
         Set<String> stringSet = sharedPreferences.getStringSet(QuickstartPreferences.KEY_SPOTLISTFAVORITES, new HashSet<String>(Arrays.asList("0", "12","2","1")));
 
@@ -90,24 +90,24 @@ public class AlarmPreferences {
     public static void addToSpotListFavorites(Context context, long spotId) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        Set<String> favorites = getSpotListFavorites();
+        Set<String> favorites = getSpotListFavorites(context);
         if (!favorites.contains("" + spotId))
             favorites.add("" + spotId);
-        editor.clear();
+        //editor.clear();
         editor.putStringSet(QuickstartPreferences.KEY_SPOTLISTFAVORITES, favorites);  // Saving string
-        editor.commit(); // commit changes*/
+        //editor.commit(); // commit changes*/
     }
 
     public static void deleteFromSpotListFavorites(Context context, long spotId) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        Set<String> favorites = getSpotListFavorites();
+        Set<String> favorites = getSpotListFavorites(context);
         for (int i = 0; i < favorites.size(); i++) {
             if (favorites.toArray()[i].equals("" + spotId)) {
                 favorites.remove("" + spotId);
             }
         }
-        editor.clear();
+        //editor.clear();
         editor.putStringSet(QuickstartPreferences.KEY_SPOTLISTFAVORITES, favorites);  // Saving string
         editor.commit(); // commit changes*/
     }
@@ -115,7 +115,7 @@ public class AlarmPreferences {
     public static boolean isSpotFavorite(Context context, long spotId) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        Set<String> favorites = getSpotListFavorites();
+        Set<String> favorites = getSpotListFavorites(context);
         if (favorites.contains("" + spotId))
             return true;
         return false;

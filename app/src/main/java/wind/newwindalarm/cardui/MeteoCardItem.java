@@ -34,6 +34,7 @@ public class MeteoCardItem {
         card.init();
     }
 
+
     public void setTitle(String title) {
         card.setTitle(title);
     }

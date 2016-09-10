@@ -1,4 +1,4 @@
-package wind.newwindalarm;
+package wind.newwindalarm.fragment;
 
 import android.app.AlertDialog;
 import android.support.v4.app.Fragment;
@@ -7,11 +7,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.widget.Space;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -19,12 +18,25 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
+
+import wind.newwindalarm.AlarmPreferences;
+import wind.newwindalarm.AsyncPostProgramResponse;
+import wind.newwindalarm.AsyncRequestProgramResponse;
+import wind.newwindalarm.MainActivity;
+import wind.newwindalarm.ProgramActivity;
+import wind.newwindalarm.R;
+import wind.newwindalarm.Spot;
+import wind.newwindalarm.SpotList;
+import wind.newwindalarm.WindAlarmProgram;
 import wind.newwindalarm.cardui.AlarmCard;
 import wind.newwindalarm.cardui.AlarmCardSubitem;
+import wind.newwindalarm.postprogramtask;
+import wind.newwindalarm.requestprogramtask;
 
 public class ProgramListFragment extends Fragment implements
         OnItemSelectedListener {
@@ -44,6 +56,8 @@ public class ProgramListFragment extends Fragment implements
     private List<Spot> mSpotList;
     List<AlarmCardItem> alarmList = new ArrayList<AlarmCardItem>();
     private long spotId = -1;
+    private FloatingActionButton addProgramFab;
+    private ProgressBar progressBar;
 
     public void setServerSpotList(List<Spot> list) {
 
@@ -60,8 +74,19 @@ public class ProgramListFragment extends Fragment implements
 
         programListView = inflater.inflate(R.layout.fragment_programlist, container, false);
 
+        addProgramFab = (FloatingActionButton) getActivity().findViewById(R.id.fabButton);
+        addProgramFab.setImageResource(R.drawable.add);
+        addProgramFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createProgram();
+            }
+        });
+
         mcontainer = (LinearLayout) programListView.findViewById(R.id.programlist);
         mErrorLayout = (LinearLayout) programListView.findViewById(R.id.errorLayout);
+
+        progressBar = (ProgressBar) programListView.findViewById(R.id.progressBar);
 
         getAlarmListFromServer();
 
@@ -75,7 +100,6 @@ public class ProgramListFragment extends Fragment implements
 
         if (spotId != -1) {
             MainActivity a = (MainActivity) getActivity();
-            //setServerSpotList(a.getServerSpotList());
             Spot spot = a.getSpotFromId(spotId);
             List<Spot> list = new ArrayList<Spot>();
             list.add(spot);
@@ -97,6 +121,7 @@ public class ProgramListFragment extends Fragment implements
             @Override
             public void processFinish(List<WindAlarmProgram> list, boolean error, String errorMessage) {
 
+                progressBar.setVisibility(View.GONE);
                 if (error) {
 
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
@@ -124,9 +149,13 @@ public class ProgramListFragment extends Fragment implements
                 } else {
 
                     mErrorLayout.setVisibility(View.GONE);
-                    for (int i = 0; i < list.size(); i++) {
-                        addProgram(list.get(i));
+
+                    for (WindAlarmProgram program :list) {
+                        addProgram(program);
                     }
+                    LinearLayout space = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.space_layout, mcontainer, false);
+                    mcontainer.addView(space);
+
                     offline = false;
                 }
             }
@@ -147,7 +176,12 @@ public class ProgramListFragment extends Fragment implements
 
     private void addProgram(WindAlarmProgram program) {
 
+        if (getActivity() == null)
+            return;// TODO  qualche volta è null????
         final AlarmCardItem carditem = new AlarmCardItem();
+        carditem.card = (AlarmCard) getActivity().getLayoutInflater().inflate(R.layout.card_alarm, mcontainer, false);
+        carditem.init();
+
         carditem.alarm = program;
 
         //LinearLayout container = (LinearLayout) programListView.findViewById(R.id.programlist);
@@ -175,7 +209,7 @@ public class ProgramListFragment extends Fragment implements
         sl.list = mSpotList;
         String myJson = gson.toJson(sl);
         resultIntent.putExtra("spotlist", myJson);
-        resultIntent.putExtra("serverurl", ((MainActivity) getActivity()).getServerURL());
+        resultIntent.putExtra("serverurl", (AlarmPreferences.getServerUrl(getActivity())));
 
 
         startActivityForResult(resultIntent, request);
@@ -275,10 +309,11 @@ public class ProgramListFragment extends Fragment implements
         Switch alarmSwitch;
 
         AlarmCardItem() {
-            card = (AlarmCard) getActivity().getLayoutInflater().inflate(R.layout.card_alarm, mcontainer, false);
+            //card = (AlarmCard) getActivity().getLayoutInflater().inflate(R.layout.card_alarm, mcontainer, false);
 
 
-
+        }
+        public void init() {
             card.addSeparator();
             minSpeedSubitem = card.addSubItem("Velocita minima vento: ");
             minAvSpeedSubitem = card.addSubItem("Velocita media minima:");
@@ -395,7 +430,7 @@ public class ProgramListFragment extends Fragment implements
                 }
             }
 
-        }, postprogramtask.POST_ALARM).execute(_program, ((MainActivity) getActivity()).getServerURL());
+        }, postprogramtask.POST_ALARM).execute(_program, (AlarmPreferences.getServerUrl(getActivity())));
     }
 
 }

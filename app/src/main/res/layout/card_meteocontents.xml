@@ -23,7 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="s"
+                android:text="--------"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="false"
                 android:layout_alignParentEnd="false"
@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="15,5"
+                android:text="--,-"
                 android:layout_alignParentTop="false"
                 android:layout_alignParentRight="false"
                 android:layout_alignParentEnd="false"
@@ -169,7 +169,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/textmisure_color"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="00,0"
+                        android:text="--,-"
                         android:id="@+id/temperatureTextView"
                         android:layout_gravity="center_horizontal|top" />
 
@@ -212,7 +212,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="0000"
+                        android:text="----"
                         android:textColor="@color/textmisure_color"
                         android:id="@+id/pressureTextView"
                         android:layout_gravity="center_horizontal|top" />
@@ -262,7 +262,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="0.0 "
+                        android:text="-.- "
                         android:textColor="@color/textmisure_color"
                         android:id="@+id/rainrateTextView"
                         android:layout_gravity="center_horizontal|top" />
@@ -307,7 +307,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="00"
+                        android:text="--"
                         android:textColor="@color/textmisure_color"
                         android:id="@+id/humidityTextView"
                         android:layout_gravity="center_horizontal|top" />
@@ -357,7 +357,7 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/textmisure_color"
                             android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:text="00.0"
+                            android:text="--.-"
                         android:layout_gravity="center_horizontal|top" />
 
                     <TextView
@@ -423,7 +423,7 @@
                         android:layout_height="match_parent"
                         android:textColor="@color/textmisure_color"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="00.0"
+                        android:text="--.-"
                         android:id="@+id/avspeedTextView"
                         android:layout_gravity="center_horizontal|top" />
 

@@ -15,7 +15,7 @@ import wind.newwindalarm.controls.TouchImageView;
 
 public class WebcamCardItem {
 
-    private WebcamCard card;
+    public WebcamCard card;
     WebcamCardListener listener;
 
     public interface WebcamCardListener {
@@ -38,8 +38,18 @@ public class WebcamCardItem {
         card.init();
     }
 
+    public WebcamCardItem(WebcamCardListener ml) {
+
+        listener = ml;
+        //card.init();
+    }
+
     public ImageView getImageView() {
         return card.getImageView();
+    }
+
+    public ProgressBar getProgressBar() {
+        return card.getProgressBar();
     }
 
     public void setTitle(String title) {

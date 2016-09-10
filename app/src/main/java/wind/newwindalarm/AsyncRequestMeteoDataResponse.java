@@ -10,5 +10,5 @@ public interface AsyncRequestMeteoDataResponse {
     void processFinish(List<Object> list/*, long spotID*/, boolean error, String errorMessage);
     void processFinishHistory(List<MeteoStationData> list, /*long spotID, */boolean error, String errorMessage);
     void processFinishSpotList(List<Object> list, boolean error, String errorMessage);
-
+    void processFinishFavorites(boolean error, String errorMessage);
 }

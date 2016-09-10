@@ -1,8 +1,6 @@
 package wind.newwindalarm;
 
 import android.app.AlertDialog;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -54,13 +52,16 @@ import java.util.Set;
 
 import wind.newwindalarm.fragment.PanelFragment;
 import wind.newwindalarm.fragment.ProgramFragment;
+import wind.newwindalarm.fragment.ProgramListFragment;
+import wind.newwindalarm.fragment.SearchSpotFragment;
 import wind.newwindalarm.fragment.SpotDetailsFragment;
 
 public class MainActivity extends AppCompatActivity implements
         //GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
         ProfileFragment.OnSignInClickListener,
-        PanelFragment.OnSpotClickListener {
+        PanelFragment.OnSpotClickListener,
+        SpotDetailsFragment.OnClickListener {
 
     private List<MeteoStationData> meteoDataList = new ArrayList<>();
 
@@ -126,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements
     ProfileFragment profileFragment;
     SpotMeteoListFragment spotMeteoListFragment;
     SpotDetailsFragment spotDetailsFragment;
+    SearchSpotFragment searchSpotFragment;
     HistoricalMetoData historicalMeteoData = new HistoricalMetoData();
     // google properties
     TextView mUserNameTextView;
@@ -143,9 +145,6 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
-        //instance = this;
-
         Intent intent = getIntent();
         mProfile = (UserProfile) intent.getSerializableExtra("userProfile");
 
@@ -153,22 +152,22 @@ public class MainActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        addFab = (FloatingActionButton) findViewById(R.id.addFab);
+        /*addFab = (FloatingActionButton) findViewById(R.id.addFab);
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 programListFragment.createProgram();
             }
-        });
+        });*/
 
-        refreshFab = (FloatingActionButton) findViewById(R.id.refreshFab);
+        /*refreshFab = (FloatingActionButton) findViewById(R.id.fabButton);
         refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getLastMeteoData();
             }
-        });
+        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -207,9 +206,23 @@ public class MainActivity extends AppCompatActivity implements
         settingsFragment.setSettings(mSettings);
         profileFragment = new ProfileFragment();
         spotMeteoListFragment = new SpotMeteoListFragment();
+        searchSpotFragment = new SearchSpotFragment();
+
+        mInformationTextView = (TextView) findViewById(R.id.informationTextView);
 
         init();
     }
+
+    private void init() {
+
+        signedIn = true;
+        mInformationTextView.setText("Loading profile");
+        new LoadImagefromUrl().execute();
+
+        mInformationTextView.setText("Loading meteodata");
+        getLastMeteoData();
+    }
+
 
     @Override
     protected void onResume() {
@@ -270,16 +283,26 @@ public class MainActivity extends AppCompatActivity implements
 
             case R.id.options_diagfile:
                 startSendLogActivity();
-                return false;
+                return true;
+            case R.id.options_searchspot:
+
+                android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+                android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
+
+                ft.replace(R.id.content_frame, searchSpotFragment);
+                ft.addToBackStack(null);
+                ft.commit();
+                return true;
+
             /*case R.id.action_settings:
                 openSettings();
                 return true;*/
-            /*case R.id.action_add:
+            case R.id.action_add:
 
                 programListFragment.createProgram();
                 ;
                 return true;
-            case R.id.action_unregister:
+            /*case R.id.action_unregister:
                 //ServerUtilities.unregister(AlarmPreferences.getRegId(this), AlarmPreferences.getServerUrl(this));
                 unregister();
                 return true;*/
@@ -323,8 +346,8 @@ public class MainActivity extends AppCompatActivity implements
             android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
             android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
 
-            refreshFab.setVisibility(View.GONE);
-            addFab.setVisibility(View.GONE);
+            //refreshFab.setVisibility(View.GONE);
+            //addFab.setVisibility(View.GONE);
 
 
             if (!signedIn && mPosition != R.id.nav_settings) {
@@ -335,10 +358,10 @@ public class MainActivity extends AppCompatActivity implements
 
                 if (mPosition == R.id.nav_favorites && panelFragment != null) {
                     ft.replace(R.id.content_frame, panelFragment);
-                    refreshFab.setVisibility(View.VISIBLE);
+                    //refreshFab.setVisibility(View.VISIBLE);
                 } else if (mPosition == R.id.nav_program) {
                     ft.replace(R.id.content_frame, programListFragment);
-                    addFab.setVisibility(View.VISIBLE);
+                    //addFab.setVisibility(View.VISIBLE);
                 } else if (mPosition == R.id.nav_meteostation) {
                     ft.replace(R.id.content_frame, spotMeteoListFragment);
                 } else if (mPosition == R.id.nav_settings) {
@@ -356,11 +379,11 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    String getServerURL() {
+    /*String getServerURL() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String syncConnPref = sharedPref.getString(QuickstartPreferences.KEY_PREF_SERVERURL, this.getResources().getString(R.string.pref_serverURL_default));
         return syncConnPref;
-    }
+    }*/
 
     public List<Spot> getServerSpotList() { // TODO Eliminare . usata soloda programFragmentspotlist
 
@@ -395,6 +418,18 @@ public class MainActivity extends AppCompatActivity implements
                 //settingsFragment.setServerSpotList(spotList);
                 programListFragment.setServerSpotList(spotList);
                 //spotMeteoListFragment.setSpotList(spotList);
+
+                //panelFragment.setMeteoDataList(meteoDataList);
+                if (panelFragment == null) {
+                    panelFragment = new PanelFragment();
+                    showFragment(R.id.nav_favorites, false);
+                }
+                panelFragment.refreshMeteoData();
+            }
+
+            @Override
+            public void processFinishFavorites(boolean error, String errorMessage) {
+
             }
         }, requestMeteoDataTask.REQUEST_SPOTLIST).execute();
 
@@ -469,81 +504,16 @@ public class MainActivity extends AppCompatActivity implements
         return null;
     }
 
-    /*public static GoogleSignInAccount getAcct() {
-        return acct;
-    }*/
-
-    private void init(/*GoogleSignInAccount acc*/) {
-
-        signedIn = true;
-
-        new LoadImagefromUrl().execute();
-        //authCode = acct.getServerAuthCode();
-
-        //mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
-            /*mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    //mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
-                    SharedPreferences sharedPreferences =
-                            PreferenceManager.getDefaultSharedPreferences(context);
-                    boolean sentToken = sharedPreferences
-                            .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
-                    if (sentToken) {
-                        mInformationTextView.setText(getString(R.string.gcm_send_message));
-                        mInformationTextView.setVisibility(ProgressBar.GONE);
-                    } else {
-                        mInformationTextView.setText(getString(R.string.token_error_message));
-                    }
-                }
-            };*/
-        mInformationTextView = (TextView) findViewById(R.id.informationTextView);
-
-
-        // Registering BroadcastReceiver
-            /*registerReceiver();
-            if (checkPlayServices()) {
-                // Start IntentService to register this application with GCM.
-                Intent intent = new Intent(MainActivity.getContext(), RegistrationIntentService.class);
-                startService(intent);
-            }*/
-
-        getLastMeteoData();
-        //showFragment(R.id.nav_favorites);
-        //panelFragment.refreshMeteoData(meteoDataList);
-
-
-        //unregisterReceiver();
-
-    }
-
-
     private void unregister() {
         AlarmPreferences.deleteRegId(this);
         AlarmPreferences.deletePersonId(this);
     }
 
-    private void showNoUser() {
-        mUserNameTextView.setText("no user");
-        memailTextView.setText("no email");
-        mUserImageImageView.setImageResource(R.drawable.user_white);
-
-        if (profileFragment != null) {
-            profileFragment.setProfile(null);
-
-        }
-    }
-
-    /*@Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }*/
-
-
     @Override
     public void onSpotClick(long spotId) {
 
         spotDetailsFragment = new SpotDetailsFragment();
+        spotDetailsFragment.setListener(this);
         spotDetailsFragment.setMeteoData(getMeteodataFromId(spotId));
         spotDetailsFragment.setSpotId(spotId);
         try {
@@ -567,6 +537,11 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onRefreshClick() {
+        getLastMeteoData();
+    }
+
+    @Override
     public void onClick(View view) {
 
     }
@@ -577,7 +552,7 @@ public class MainActivity extends AppCompatActivity implements
 
         startProgressBar();
 
-        Set<String> favorites = AlarmPreferences.getSpotListFavorites();
+        Set<String> favorites = AlarmPreferences.getSpotListFavorites(this);
         if (favorites.size() == 0)
             return;
 
@@ -668,10 +643,10 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void processFinish(List<Object> list, boolean error, String errorMessage) {
 
-            if (panelFragment == null) {
+            /*if (panelFragment == null) {
                 panelFragment = new PanelFragment();
                 showFragment(R.id.nav_favorites, false);
-            }
+            }*/
             Iterator iterator = list.iterator();
             while (iterator.hasNext()) {
                 MeteoStationData md = (MeteoStationData) iterator.next();
@@ -697,6 +672,11 @@ public class MainActivity extends AppCompatActivity implements
         public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
 
             progressBar.setVisibility(View.GONE);
+
+        }
+
+        @Override
+        public void processFinishFavorites(boolean error, String errorMessage) {
 
         }
     }
@@ -781,5 +761,10 @@ public class MainActivity extends AppCompatActivity implements
         bitmap.recycle();
 
         return circuleBitmap;
+    }
+
+    public void updateFavorites(String favorites) {
+        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_POSTFAVORITES).execute(favorites,mProfile.personId);
+
     }
 }

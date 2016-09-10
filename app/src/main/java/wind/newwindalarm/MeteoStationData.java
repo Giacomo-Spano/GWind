@@ -13,9 +13,7 @@ import java.util.Date;
  */
 public class MeteoStationData /*extends Object*/ {
 
-
-    //static public String Spot_All = "all";
-
+    public long id;
     public Double speed = null;
     public Double averagespeed = null;
     public String direction;
@@ -41,6 +39,7 @@ public class MeteoStationData /*extends Object*/ {
 
         if (md == null)
             return;
+        id = md.id;
         speed = md.speed;
         averagespeed = md.averagespeed;
         direction = md.direction;
@@ -62,6 +61,8 @@ public class MeteoStationData /*extends Object*/ {
 
     public MeteoStationData(JSONObject jObject) throws JSONException {
 
+        if (!jObject.isNull("windid"))
+            id = jObject.getLong("windid");
         if (!jObject.isNull("speed"))
             speed = jObject.getDouble("speed");
         if (!jObject.isNull("avspeed"))
@@ -119,11 +120,11 @@ public class MeteoStationData /*extends Object*/ {
         JSONObject obj = new JSONObject();
 
         try {
+            obj.put("speed", id);
             obj.put("speed", speed);
             obj.put("avspeed", averagespeed);
             obj.put("direction", direction);
             obj.put("date", date);
-            //obj.put("time", time);
             obj.put("temperature", temperature);
             obj.put("pressure", pressure);
             obj.put("humidity", humidity);

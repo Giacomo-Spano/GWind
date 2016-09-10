@@ -22,17 +22,21 @@ import wind.newwindalarm.FullChartActivity;
 import wind.newwindalarm.MeteoStationData;
 import wind.newwindalarm.R;
 import wind.newwindalarm.cardui.ChartCard;
+import wind.newwindalarm.cardui.ChartCardItem;
+import wind.newwindalarm.cardui.ChartCardListener;
+import wind.newwindalarm.cardui.WebcamCard;
+import wind.newwindalarm.cardui.WebcamCardItem;
 import wind.newwindalarm.chart.HistoryChart;
 
-public class SpotDetailsChartFragment extends Fragment {
+public class SpotDetailsChartFragment extends Fragment implements ChartCardListener {
 
     private LineChart mWindChart, mTrendChart, mTemperatureChart;
     private long spotID;
     MeteoStationData meteoData;
     List<MeteoStationData> meteoDataList;
     HistoryChart hc;
-    private ChartCard mWindCard, mTrendCard, mTemperatureCard;
-    private ProgressBar mWindProgressBar;
+    private ChartCardItem mWindCard, mTrendCard, mTemperatureCard;
+    //private ProgressBar mWindProgressBar;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,24 +75,29 @@ public class SpotDetailsChartFragment extends Fragment {
         View v;
         v = inflater.inflate(R.layout.fragment_chart, container, false);
 
-        mWindCard = (ChartCard) v.findViewById(R.id.windcard);
-        mWindCard.init();
+        mWindCard = new ChartCardItem(1,this);
+        mWindCard.card = (ChartCard) v.findViewById(R.id.windcard);
+        mWindCard.card.init();
         mWindChart = mWindCard.getChart();
-        mWindProgressBar = mWindCard.getProgressBar();
+        //mWindProgressBar = mWindCard.getProgressBar();
 
-        mTemperatureCard = (ChartCard) v.findViewById(R.id.temperaturecard);
-        mTemperatureCard.init();
+        mTemperatureCard = new ChartCardItem(2,this);
+        mTemperatureCard.card = (ChartCard) v.findViewById(R.id.temperaturecard);
+        mTemperatureCard.card.init();
         mTemperatureChart = mTemperatureCard.getChart();
         //mWindProgressBar = mWindCard.getProgressBar();
 
-        mTrendCard = (ChartCard) v.findViewById(R.id.trendcard);
-        mTrendCard.init();
+        mTrendCard = new ChartCardItem(3,this);
+        mTrendCard.card = (ChartCard) v.findViewById(R.id.trendcard);
+        mTrendCard.card.init();
         mTrendChart = mTrendCard.getChart();
         //mWindProgressBar = mWindCard.getProgressBar();
 
         hc = new HistoryChart(getActivity(), mWindChart, mTrendChart, mTemperatureChart);
-        if (meteoDataList != null)
+        if (meteoDataList != null) {
+
             hc.drawChart(meteoDataList);
+        }
 
 
         mWindChart.setOnChartGestureListener(new OnChartGestureListener() {
@@ -141,8 +150,13 @@ public class SpotDetailsChartFragment extends Fragment {
     public void refreshData() {
 
         //hc = new HistoryChart(getActivity(), mWindChart, mTrendChar, mTemperatureChart);
-        if (hc != null)
+        if (hc != null) {
+            mWindCard.hideProgressBar();
+            mTemperatureCard.hideProgressBar();
+            mTrendCard.hideProgressBar();
+
             hc.drawChart(meteoDataList);
+        }
     }
 
     private void startFullChartActivity() {
@@ -151,5 +165,10 @@ public class SpotDetailsChartFragment extends Fragment {
         Intent resultIntent = new Intent(getActivity(), FullChartActivity.class);
         int request = 0;
         startActivityForResult(resultIntent, request);
+    }
+
+    @Override
+    public void chartCardSelected(long index) {
+
     }
 }

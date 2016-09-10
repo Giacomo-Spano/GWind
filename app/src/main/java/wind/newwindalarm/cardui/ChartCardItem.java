@@ -13,9 +13,9 @@ import wind.newwindalarm.R;
 
 public class ChartCardItem {
 
-    private long spotID;
-    private ChartCard card;
+    public ChartCard card;
     ChartCardListener listener;
+    private int id;
 
     public ChartCardItem(ChartCardListener ml, final Activity activity, LinearLayout container) {
 
@@ -26,12 +26,20 @@ public class ChartCardItem {
             @Override
             public void onClick(View v) {
 
-                listener.chartCardSelected(spotID);
+                listener.chartCardSelected(id);
             }
         });
 
         card.init();
     }
+
+    public ChartCardItem(int id, ChartCardListener ml) {
+
+        this.id = id;
+        listener = ml;
+        //card.init();
+    }
+
 
     public LineChart getChart() {
         return card.getChart();
@@ -41,11 +49,16 @@ public class ChartCardItem {
         return card.getProgressBar();
     }
 
+    public void hideProgressBar() {
+
+        card.hideProgressBar();
+    }
+
     public void setTitle(String title) {
         card.setTitle(title);
     }
 
     public void update(MeteoStationData data) {
-
+        card.invalidate();
    }
 }

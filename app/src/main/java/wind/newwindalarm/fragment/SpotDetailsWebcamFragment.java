@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.github.mikephil.charting.charts.LineChart;
 
@@ -30,16 +31,17 @@ import wind.newwindalarm.MeteoStationData;
 import wind.newwindalarm.R;
 import wind.newwindalarm.cardui.ChartCard;
 import wind.newwindalarm.cardui.WebcamCard;
+import wind.newwindalarm.cardui.WebcamCardItem;
 import wind.newwindalarm.controls.TouchImageView;
 import wind.newwindalarm.requestMeteoDataTask;
 
-public class SpotDetailsWebcamFragment extends Fragment {
+public class SpotDetailsWebcamFragment extends Fragment implements WebcamCardItem.WebcamCardListener {
 
-    private WebcamCard mWebcamCard1;
+    private WebcamCardItem mWebcamCard1;
     private ImageView mImageView1;
-    private WebcamCard mWebcamCard2;
+    private WebcamCardItem mWebcamCard2;
     private ImageView mImageView2;
-    private WebcamCard mWebcamCard3;
+    private WebcamCardItem mWebcamCard3;
     private ImageView mImageView3;
 
     private MeteoStationData meteoData;
@@ -71,16 +73,19 @@ public class SpotDetailsWebcamFragment extends Fragment {
         View v;
         v = inflater.inflate(R.layout.fragment_webcam, container, false);
 
-        mWebcamCard1 = (WebcamCard) v.findViewById(R.id.webcamcard1);
-        mWebcamCard1.init();
+        mWebcamCard1 = new WebcamCardItem(this);
+        mWebcamCard1.card = (WebcamCard) v.findViewById(R.id.webcamcard1);
+        mWebcamCard1.card.init();
         mImageView1 = mWebcamCard1.getImageView();
 
-        mWebcamCard2 = (WebcamCard) v.findViewById(R.id.webcamcard2);
-        mWebcamCard2.init();
+        mWebcamCard2 = new WebcamCardItem(this);
+        mWebcamCard2.card = (WebcamCard) v.findViewById(R.id.webcamcard2);
+        mWebcamCard2.card.init();
         mImageView2 = mWebcamCard2.getImageView();
 
-        mWebcamCard3 = (WebcamCard) v.findViewById(R.id.webcamcard3);
-        mWebcamCard3.init();
+        mWebcamCard3 = new WebcamCardItem(this);
+        mWebcamCard3.card = (WebcamCard) v.findViewById(R.id.webcamcard3);
+        mWebcamCard3.card.init();
         mImageView3 = mWebcamCard3.getImageView();
 
         refreshData();
@@ -95,37 +100,45 @@ public class SpotDetailsWebcamFragment extends Fragment {
             //    new DownloadImageTask(mWebcamImageView).execute(meteoData.webcamurl);
 
             if (mImageView1 != null && meteoData.webcamurl != null) {
-                new DownloadImageTask(mImageView1).execute(meteoData.webcamurl);
-                mWebcamCard1.setVisibility(View.VISIBLE);
+                new DownloadImageTask(mImageView1).execute(meteoData.webcamurl,mWebcamCard1.getProgressBar());
+                mWebcamCard1.card.setVisibility(View.VISIBLE);
             } else {
-                mWebcamCard1.setVisibility(View.GONE);
+                mWebcamCard1.card.setVisibility(View.GONE);
             }
 
             if (mImageView2 != null && meteoData.webcamurl2 != null) {
-                new DownloadImageTask(mImageView2).execute(meteoData.webcamurl2);
-                mWebcamCard2.setVisibility(View.VISIBLE);
+                new DownloadImageTask(mImageView2).execute(meteoData.webcamurl2,mWebcamCard2.getProgressBar());
+                mWebcamCard2.card.setVisibility(View.VISIBLE);
             } else {
-                mWebcamCard2.setVisibility(View.GONE);
+                mWebcamCard2.card.setVisibility(View.GONE);
             }
 
             if (mImageView3 != null && meteoData.webcamurl3 != null) {
-                new DownloadImageTask(mImageView3).execute(meteoData.webcamurl3);
-                mWebcamCard3.setVisibility(View.VISIBLE);
+                new DownloadImageTask(mImageView3).execute(meteoData.webcamurl3,mWebcamCard3.getProgressBar());
+                mWebcamCard3.card.setVisibility(View.VISIBLE);
             } else {
-                mWebcamCard3.setVisibility(View.GONE);
+                mWebcamCard3.card.setVisibility(View.GONE);
             }
         }
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+    @Override
+    public void cardSelected() {
+
+    }
+
+    private class DownloadImageTask extends AsyncTask<Object, Void, Bitmap> {
         ImageView bmImage;
+        ProgressBar progressBar;
 
         public DownloadImageTask(ImageView bmImage) {
+
             this.bmImage = bmImage;
         }
 
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
+        protected Bitmap doInBackground(Object... params) {
+            String urldisplay = (String) params[0];
+            progressBar = (ProgressBar) params[1];
             Bitmap mIcon11 = null;
             try {
                 InputStream in = new java.net.URL(urldisplay).openStream();
@@ -137,14 +150,17 @@ public class SpotDetailsWebcamFragment extends Fragment {
             return mIcon11;
         }
 
+
         protected void onPostExecute(Bitmap result) {
 
-            if (result == null)
+            if (result == null) {
+                progressBar.setVisibility(View.GONE);
                 return;
+            }
             int bmWidth = result.getWidth();
             int bmHeight = result.getHeight();
 
-            View parent = (View) /*mWebcamImageView*/mWebcamCard1.getParent();
+            View parent = (View) mWebcamCard1.card.getParent();
             int ivWidth = parent.getWidth();
             //int ivWidth = bmImage.getWidth();
             int new_width = ivWidth;
@@ -154,6 +170,8 @@ public class SpotDetailsWebcamFragment extends Fragment {
                 Bitmap newbitMap = Bitmap.createScaledBitmap(result, new_width, new_height, true);
                 bmImage.setImageBitmap(newbitMap);
             }
+            progressBar.setVisibility(View.GONE);
+
         }
 
     }

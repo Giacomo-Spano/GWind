@@ -108,10 +108,8 @@ public class requestprogramtask extends
 
     protected void onPreExecute() {
 
-        //android.os.Debug.waitForDebugger();
-
-        this.dialog.setMessage("Reading program...");
-        this.dialog.show();
+        //this.dialog.setMessage("Reading program...");
+        //this.dialog.show();
     }
 
     protected void onProgressUpdate(Integer... progress) {

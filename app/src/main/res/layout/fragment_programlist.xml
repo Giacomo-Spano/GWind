@@ -1,38 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 
 
     <LinearLayout
-        android:orientation="vertical"
+        android:id="@+id/errorLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:id="@+id/errorLayout">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <TextView
+            android:id="@+id/textView8"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_gravity="center_horizontal"
             android:text="Impossibile collegarsi"
-            android:id="@+id/textView8"
-            android:layout_gravity="center_horizontal" />
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Button
+            android:id="@+id/retryButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ricollega"
-            android:id="@+id/retryButton" />
+            android:text="Ricollega" />
     </LinearLayout>
 
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" >
+        android:layout_weight="1">
 
-    <include layout="@layout/fragment_programlistcontent" />
-</ScrollView>
+        <include layout="@layout/fragment_programlistcontent" />
+
+    </ScrollView>
 
 </LinearLayout>

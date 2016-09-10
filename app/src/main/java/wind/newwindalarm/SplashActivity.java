@@ -95,22 +95,19 @@ public class SplashActivity extends AppCompatActivity implements
         instance = this;
         Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
 
-        //initGoogleSignin();
+        initGoogleSignin();
         //silentSignIn();
+        signIn();
 
         /*if (!sendLogToMail()) {
 
-            //initGoogleSignin();
-            //silentSignIn();
+            initGoogleSignin();
+            silentSignIn();
 
         } else {
             finish();
         }*/
 
-        sendLogToMail();
-
-        initGoogleSignin();
-        silentSignIn();
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -344,7 +341,8 @@ public class SplashActivity extends AppCompatActivity implements
             mProfile.userName = acct.getDisplayName();
             mProfile.email = acct.getEmail();
             mProfile.personId = acct.getId();
-            mProfile.photoUrl = acct.getPhotoUrl().toString();
+            if (acct.getPhotoUrl() != null)
+                mProfile.photoUrl = acct.getPhotoUrl().toString();
 
             // Registering BroadcastReceiver
             registerReceiver();

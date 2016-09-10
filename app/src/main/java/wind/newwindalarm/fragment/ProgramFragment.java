@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.FloatingActionButton;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -135,12 +136,16 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
     ArrayList<Long> spotIdList;
 
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View v;
         v = loadProgramFragment(inflater, container/*, items*/);
+
+
 
         return v;
     }

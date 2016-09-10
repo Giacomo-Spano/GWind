@@ -144,6 +144,7 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
         String curDate = alarmData.getString("curDate");
         String curspeed = alarmData.getString("curspeed");
         String curavspeed = alarmData.getString("curavspeed");
+        String windid = alarmData.getString("windid");
 
         Bundle b = new Bundle();
         b.putString("spotid", spotId);
@@ -152,6 +153,7 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
         b.putString("curspeed", curspeed);
         b.putString("curavspeed", curavspeed);
         b.putString("curdate", curDate);
+        b.putString("windid", windid);
         resultIntent.putExtras(b); //Put your id to your next Intent
 
         // The stack builder object will contain an artificial back stack for the
@@ -169,14 +171,14 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
 
-
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         getApplication().startActivity(resultIntent);
-
         generateUINotification(getApplicationContext(), curDate.toString()
                 + "\nSveglia vento attivata"
                 + "\nIntensità vento " + curspeed
-                + "\nIntensità media " + curavspeed, "" + spotName);
+                + "\nIntensità media " + curavspeed
+                + "\nwindid " + windid,
+                "" + spotName);
         //sendMessageToMainActivity(getApplicationContext(), "title", "messagetext", notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
 
 

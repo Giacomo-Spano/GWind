@@ -2,7 +2,9 @@ package wind.newwindalarm.fragment;
 
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,23 +20,52 @@ import java.text.SimpleDateFormat;
 
 import wind.newwindalarm.MeteoStationData;
 import wind.newwindalarm.R;
+import wind.newwindalarm.cardui.InfoCard;
+import wind.newwindalarm.cardui.WebcamCard;
 
 public class SpotDetailsMeteodataFragment extends Fragment {
 
     private long spotID;
     private MeteoStationData meteoData;
-    private TextView speedTextView;
-    private TextView avspeedTextView;
-    private TextView temperatureTextView;
-    private TextView pressureTextView;
-    private TextView humidityTextView;
-    private TextView rainrateTextView;
-    private TextView lastupdateTextView;
-    private TextView sourceTextView;
+
+    private InfoCard speedInfoCard;
+    private InfoCard avspeedInfoCard;
+    private InfoCard temperatureInfoCard;
+    private InfoCard pressureInfoCard;
+    private InfoCard humidityInfoCard;
+    private InfoCard rainrateInfoCard;
+    private InfoCard lastupdateInfoCard;
+    private InfoCard sourceInfoCard;
+    private InfoCard windIdInfoCard;
+
+    OnClickListener mCallback;
+    private FloatingActionButton refreshFab;
+
+    // Container Activity must implement this interface
+    public interface OnClickListener {
+        void onRefreshClick();
+    }
+
+    public void setListener(OnClickListener listener) {
+        mCallback = listener;
+    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        refreshFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.refreshbutton));
+        refreshFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCallback.onRefreshClick();
+            }
+        });
     }
 
     @Override
@@ -49,14 +80,61 @@ public class SpotDetailsMeteodataFragment extends Fragment {
         View v;
         v = inflater.inflate(R.layout.fragment_spotdetails_meteodata, container, false);
 
-        speedTextView = (TextView) v.findViewById(R.id.speedTextView);
-        avspeedTextView = (TextView) v.findViewById(R.id.avspeedTextView);
-        temperatureTextView = (TextView) v.findViewById(R.id.temperatureTextView);
-        pressureTextView = (TextView) v.findViewById(R.id.pressureTextView);
-        humidityTextView = (TextView) v.findViewById(R.id.humidityTextView);
-        rainrateTextView = (TextView) v.findViewById(R.id.rainrateTextView);
-        lastupdateTextView = (TextView) v.findViewById(R.id.lastupdateTextView);
-        sourceTextView = (TextView) v.findViewById(R.id.sourceTextView);
+        refreshFab = (FloatingActionButton) getActivity().findViewById(R.id.fabButton);
+
+        speedInfoCard = (InfoCard) v.findViewById(R.id.speedInfoCard);
+        speedInfoCard.init();
+        speedInfoCard.setImageView(R.drawable.wind);
+        speedInfoCard.setTitle("Velocità vento");
+        speedInfoCard.setDescription ("");
+
+        avspeedInfoCard = (InfoCard) v.findViewById(R.id.avspeedInfoCard);
+        avspeedInfoCard.init();
+        avspeedInfoCard.setImageView(R.drawable.wind);
+        avspeedInfoCard.setTitle("Velocità media vento");
+        avspeedInfoCard.setDescription ("");
+
+        temperatureInfoCard = (InfoCard) v.findViewById(R.id.temperatureInfoCard);
+        temperatureInfoCard.init();
+        temperatureInfoCard.setImageView(R.drawable.temperature);
+        temperatureInfoCard.setTitle("Temperatura");
+        temperatureInfoCard.setDescription ("");
+
+        pressureInfoCard = (InfoCard) v.findViewById(R.id.pressureInfoCard);
+        pressureInfoCard.init();
+        pressureInfoCard.setImageView(R.drawable.pressione);
+        pressureInfoCard.setTitle("Pressione atm.");
+        pressureInfoCard.setDescription ("");
+
+        humidityInfoCard = (InfoCard) v.findViewById(R.id.humidityInfoCard);
+        humidityInfoCard.init();
+        humidityInfoCard.setImageView(R.drawable.humidity);
+        humidityInfoCard.setTitle("Umidità");
+        humidityInfoCard.setDescription ("");
+
+        rainrateInfoCard = (InfoCard) v.findViewById(R.id.rainrateInfoCard);
+        rainrateInfoCard.init();
+        rainrateInfoCard.setImageView(R.drawable.rainrate2);
+        rainrateInfoCard.setTitle("Rain rate")        ;
+        rainrateInfoCard.setDescription ("");
+
+        lastupdateInfoCard = (InfoCard) v.findViewById(R.id.lastupdateInfoCard);
+        lastupdateInfoCard.init();
+        lastupdateInfoCard.setImageView(R.drawable.bell);
+        lastupdateInfoCard.setTitle("Ultimo aggiornamento");
+        lastupdateInfoCard.setDescription ("");
+
+        sourceInfoCard = (InfoCard) v.findViewById(R.id.sourceInfoCard);
+        sourceInfoCard.init();
+        sourceInfoCard.setImageView(R.drawable.bell);
+        sourceInfoCard.setTitle("Fonte dati");
+        sourceInfoCard.setDescription ("");
+
+        windIdInfoCard = (InfoCard) v.findViewById(R.id.windIdInfoCard);
+        windIdInfoCard.init();
+        windIdInfoCard.setImageView(R.drawable.windlogo);
+        windIdInfoCard.setTitle("windid");
+        windIdInfoCard.setDescription ("");
 
         refreshData();
         return v;
@@ -66,23 +144,32 @@ public class SpotDetailsMeteodataFragment extends Fragment {
 
         if (meteoData != null) {
 
+            if (speedInfoCard != null && meteoData.speed != null)
+                speedInfoCard.setValue(meteoData.speed + "Km/h");
+            if (avspeedInfoCard != null && meteoData.averagespeed != null)
+                avspeedInfoCard.setValue(meteoData.averagespeed + "Km/h");
 
-            if (speedTextView != null && meteoData.speed != null)
-                speedTextView.setText(meteoData.speed + "Km/h");
-            if (avspeedTextView != null && meteoData.averagespeed != null)
-                avspeedTextView.setText(meteoData.averagespeed + "Km/h");
-            if (temperatureTextView != null && meteoData.temperature != null)
-                temperatureTextView.setText(meteoData.temperature + "°C");
-            if (pressureTextView != null && meteoData.pressure != null)
-                pressureTextView.setText(meteoData.pressure + "hPa");
-            if (humidityTextView != null && meteoData.humidity != null)
-                humidityTextView.setText(meteoData.humidity + "%");
-            if (rainrateTextView != null && meteoData.rainrate != null)
-                rainrateTextView.setText(meteoData.rainrate + "mm");
-            if (lastupdateTextView != null && meteoData.sampledatetime != null) {
+            if (temperatureInfoCard != null && meteoData.temperature != null)
+                temperatureInfoCard.setValue(meteoData.temperature + "°C");
+            if (pressureInfoCard != null && meteoData.pressure != null)
+                pressureInfoCard.setValue(meteoData.pressure + "hPa");
+            if (humidityInfoCard != null && meteoData.humidity != null)
+                humidityInfoCard.setValue(meteoData.humidity + "%");
+            if (rainrateInfoCard != null && meteoData.rainrate != null)
+                rainrateInfoCard.setValue(meteoData.rainrate + "mm");
+            if (lastupdateInfoCard != null && meteoData.sampledatetime != null) {
                 SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                lastupdateTextView.setText(df.format(meteoData.sampledatetime));
+                lastupdateInfoCard.setDescription(df.format(meteoData.sampledatetime));
+                lastupdateInfoCard.setValue("");
             }
+            if (sourceInfoCard != null) {
+                sourceInfoCard.setDescription("-----");
+                sourceInfoCard.setValue("");
+            }
+            if (windIdInfoCard != null /*&& meteoData.id != null*/) {
+                windIdInfoCard.setValue("" + meteoData.id);
+            }
+
         }
         //if (sourceTextView != null)
         //sourceTextView.setText(meteoData. + "Km/h");

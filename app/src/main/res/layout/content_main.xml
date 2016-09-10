@@ -20,10 +20,10 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!--<TextView android:text="registering_message" android:layout_width="wrap_content"
+        <TextView android:text="registering_message" android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
                  android:id="@+id/informationTextView"
-                 android:textAppearance="?android:attr/textAppearanceMedium" />-->
+                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
 
         <ProgressBar

@@ -1,42 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/chartcarditem"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:id="@+id/chartcarditem">
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/titleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_alignParentTop="true"
             android:text=""
-            android:id="@+id/titleTextView"
-            android:layout_alignParentTop="true" />
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
 
         <wind.newwindalarm.controls.TouchImageView
             android:id="@+id/imageView"
-            android:layout_gravity="center_horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" />
 
     </RelativeLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_gravity="center_vertical"
+        android:layout_centerInParent="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="false"
         android:layout_gravity="right"
         android:gravity="right"
-        android:layout_alignParentBottom="false">
+        android:orientation="horizontal">
 
         <Space
             android:layout_width="wrap_content"
             android:layout_height="10dp" />
+
 
     </LinearLayout>
 

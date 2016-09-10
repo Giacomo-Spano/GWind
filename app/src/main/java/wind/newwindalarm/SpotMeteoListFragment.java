@@ -1,6 +1,8 @@
 package wind.newwindalarm;
 
 //import android.app.Fragment;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 //import android.app.ListFragment;
@@ -43,7 +45,7 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
 
     private void getSpotListFromServer(final SpotMeteoListListener listener) {
 
-        final Set<String> favorites = AlarmPreferences.getSpotListFavorites();
+        final Set<String> favorites = AlarmPreferences.getSpotListFavorites(getContext());
 
         new requestMeteoDataTask(getActivity(), new AsyncRequestMeteoDataResponse() {
 
@@ -82,6 +84,11 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
                 SpotMeteoListArrayAdapter adapter = new SpotMeteoListArrayAdapter(getActivity(), sl, listener);
                 setListAdapter(adapter);
             }
+
+            @Override
+            public void processFinishFavorites(boolean error, String errorMessage) {
+
+            }
         },requestMeteoDataTask.REQUEST_SPOTLIST_FULLINFO).execute();
     }
 
@@ -98,10 +105,32 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
         adapter.getItem(position).enabled = selected;
         long spotId = adapter.getItem(position).id;
 
-        if (selected)
-            AlarmPreferences.addToSpotListFavorites(getActivity(),spotId);
-        else
-            AlarmPreferences.deleteFromSpotListFavorites(getActivity(),spotId);
+
+        //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        //String url = sharedPreferences.getString(QuickstartPreferences.KEY_PREF_SERVERURL, getActivity().getResources().getString(R.string.pref_serverURL_default));
+
+        if (selected) {
+            AlarmPreferences.addToSpotListFavorites(getActivity(), spotId);
+        } else {
+            AlarmPreferences.deleteFromSpotListFavorites(getActivity(), spotId);
+        }
+
+        Set<String> favorites = AlarmPreferences.getSpotListFavorites(getActivity());
+        String list = "";
+        int count = 0;
+        for (String str : favorites) {
+
+            if (count++ != 0)
+                list += ",";
+            list += str;
+        }
+        updateFavorites(list);
+    }
+
+    public void updateFavorites(String favorites) {
+
+        MainActivity a = (MainActivity) getActivity();
+        a.updateFavorites(favorites);
     }
 
     @Override
