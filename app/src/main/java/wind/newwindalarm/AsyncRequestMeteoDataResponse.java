@@ -7,8 +7,9 @@ import java.util.List;
  */
 public interface AsyncRequestMeteoDataResponse {
 
-    void processFinish(List<Object> list/*, long spotID*/, boolean error, String errorMessage);
+    void processFinish(List<MeteoStationData> list, boolean error, String errorMessage);
     void processFinishHistory(List<MeteoStationData> list, /*long spotID, */boolean error, String errorMessage);
-    void processFinishSpotList(List<Object> list, boolean error, String errorMessage);
-    void processFinishFavorites(boolean error, String errorMessage);
+    void processFinishSpotList(List<Spot> list, List<Long> favorites, boolean error, String errorMessage);
+    void processFinishAddFavorite(long spotId,boolean error, String errorMessage);
+    void processFinishRemoveFavorite(long spotId,boolean error, String errorMessage);
 }

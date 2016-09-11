@@ -84,10 +84,11 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
                     Log.i(TAG, "Notification disabled");
                     return;
                 }
-                if (!AlarmPreferences.isSpotFavorite(getApplicationContext(), Integer.valueOf(spotId))) {
+                // TODO riaggiungere controllo notifiche non favorites
+                /*if (!AlarmPreferences.isSpotFavorite(getApplicationContext(), Integer.valueOf(spotId))) {
                     Log.i(TAG, "spot is not favorites");
                     return;
-                }
+                }*/
 
 
                 String title = data.getString("title");

@@ -95,12 +95,12 @@ public class RegistrationIntentService extends IntentService {
 
 
             AlarmPreferences.setRegId(SplashActivity.getContext(), token);
-
             Log.i(TAG, "GCM Registration Token: " + token);
-
             boolean sentToken = sharedPreferences.getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
-
             Log.i(TAG, "sentToken=" + sentToken);
+
+            long deviceId = AlarmPreferences.getDeviceId(SplashActivity.getContext());
+            Log.i(TAG, "deviceid=" + deviceId);
             //String str = MainActivity.getContext().getResources().getString(R.string.pref_serverURL_default);
             //String serverURL = sharedPreferences.getString(QuickstartPreferences.KEY_PREF_SERVERURL, str);
             //String serverURL = AlarmPreferences.getServerUrl(MainActivity.getContext());
@@ -111,7 +111,7 @@ public class RegistrationIntentService extends IntentService {
             //int deviceId = -1; //getDeviceIdFromServer(token,serverURL);
 
 
-            if (!sentToken /*|| deviceId == -1*/) {
+            if (!sentToken || deviceId == -1 || deviceId == 0) {
                 //deviceId = MainActivity.getDeviceId();//MainActivity.getIMEI();
                 //Log.i(TAG, "deviceId=" + deviceId);
                 //String personId = AlarmPreferences.getPersonId(MainActivity.getContext());
@@ -181,12 +181,13 @@ public class RegistrationIntentService extends IntentService {
                     JSONObject json = new JSONObject(jsonStr);
                     if (json.has("deviceid")) {
                         int deviceId = json.getInt("deviceid");
+                        long old_deviceId = AlarmPreferences.getDeviceId(SplashActivity.getContext());
                         AlarmPreferences.setDeviceId(SplashActivity.getContext(),deviceId);
                     }
-                    /*if (json.has("userid")) {
-                        int deviceId = json.getInt("userid");
-                        AlarmPreferences.set(MainActivity.getContext(),deviceId);
-                    }*/
+                    if (json.has("userid")) {
+                        int userId = json.getInt("userid");
+
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

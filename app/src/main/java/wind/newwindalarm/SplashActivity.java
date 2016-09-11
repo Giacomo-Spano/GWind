@@ -98,7 +98,6 @@ public class SplashActivity extends AppCompatActivity implements
         initGoogleSignin();
         //silentSignIn();
         signIn();
-
         /*if (!sendLogToMail()) {
 
             initGoogleSignin();
@@ -107,7 +106,6 @@ public class SplashActivity extends AppCompatActivity implements
         } else {
             finish();
         }*/
-
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -118,6 +116,7 @@ public class SplashActivity extends AppCompatActivity implements
                 boolean sentToken = sharedPreferences
                         .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
                 if (sentToken) {// TODO attivare le linee sotto per
+                                // servono per indicare che la registrazione non è arrivata e potrebbero non suonare le sveglie
                     //mInformationTextView.setText(getString(R.string.gcm_send_message));
                     //mInformationTextView.setVisibility(ProgressBar.GONE);
                 } else {
@@ -164,6 +163,8 @@ public class SplashActivity extends AppCompatActivity implements
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(new Scope(Scopes.DRIVE_APPFOLDER))
                 .requestServerAuthCode(serverClientId, false)
+                .requestEmail()
+                .requestId()
                 .build();
 
         // [END configure_signin]
@@ -221,7 +222,6 @@ public class SplashActivity extends AppCompatActivity implements
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("userProfile", profile);
         startActivityForResult(intent, RC_SHOWMAINACTIVITY);
-        //finish();
     }
 
     boolean sendLogToMail() {
@@ -235,7 +235,6 @@ public class SplashActivity extends AppCompatActivity implements
             while ((line = reader.readLine()) != null) {
                 trace += line + "\n";
             }
-
 
             String address = "giaggi70@gmail.com";
             String subject = "Error report";
@@ -335,6 +334,11 @@ public class SplashActivity extends AppCompatActivity implements
         boolean signedIn;
         if (result.isSuccess()) {
 
+            // Se il signin è ok controlla che siano installati
+            // i playservices di google e avvia l'intent RegistrationIntentService
+            // Se la registration ok viuene chiamato in modo async mRegistrationBroadcastReceiver
+            // che poi avvia la MainActivity
+
             acct = result.getSignInAccount();
 
             mProfile = new UserProfile();
@@ -351,12 +355,10 @@ public class SplashActivity extends AppCompatActivity implements
                 Intent intent = new Intent(this/*MainActivity.getContext()*/, RegistrationIntentService.class);
                 startService(intent);
             }
-            //startMainActivity(mProfile);
 
         } else {
 
             mProfile = null;
-
             showLoginFragment();
         }
     }
@@ -389,26 +391,15 @@ public class SplashActivity extends AppCompatActivity implements
         LogoutFragment logoutFragment = new LogoutFragment();
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
-        //ft.add(logoutFragment,"tag");
         ft.replace(R.id.content_frame, logoutFragment);
         //ft.addToBackStack(null);
         ft.commit();
     }
 
     private void revokeAccess() {
-        /*Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        // ...
-                        mProfile = null;
-
-                    }
-                });*/
 
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_DISCONNECT);
-
     }
 
     private void signOut() {
@@ -416,8 +407,6 @@ public class SplashActivity extends AppCompatActivity implements
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGNOUT);
     }
-
-
 
     private void registerReceiver() {
         if (!isReceiverRegistered) {
@@ -433,6 +422,4 @@ public class SplashActivity extends AppCompatActivity implements
         isReceiverRegistered = false;
         super.onPause();
     }
-
-
 }

@@ -21,6 +21,11 @@ import wind.newwindalarm.ScreenSlidePageFragment;
 
 public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodataFragment.OnClickListener {
 
+    public static final int MeteodataPage = 0;
+    public static final int WebcamPage = 1;
+    public static final int ChartPage = 2;
+    public static final int ProgramListPage = 3;
+
     private MeteoStationData meteoData;
     private SpotDetailsMeteodataFragment meteodataFragment;
     private SpotDetailsWebcamFragment webcamFragment;
@@ -33,7 +38,52 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
     OnClickListener mCallback;
     // Container Activity must implement this interface
     public interface OnClickListener {
-        void onRefreshClick();
+        void onRefreshDetailViewRequest(int position);
+        void onChangeDetailView(int position);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View v;
+        v = inflater.inflate(R.layout.fragment_spotdetail, container, false);
+        TabLayout tabLayout = (TabLayout) v.findViewById(R.id.tablayout);
+        mPager = (ViewPager) v.findViewById(R.id.pager);
+
+        mPagerAdapter = new SpotDetailPagerAdapter(((MainActivity)getActivity()).getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+
+        mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            // optional
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
+
+            // optional
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            // optional
+            @Override
+            public void onPageScrollStateChanged(int state) { }
+        });
+
+        tabLayout.setupWithViewPager(mPager);
+
+        tabLayout.getTabAt(0).setIcon(R.drawable.logo);
+        tabLayout.getTabAt(1).setIcon(R.drawable.webcamicon);
+        tabLayout.getTabAt(2).setIcon(R.drawable.graphicon);
+        tabLayout.getTabAt(3).setIcon(R.drawable.graphicon);
+
+        // Updating the action bar title
+        if (meteoData != null) {
+            String txt = ((MainActivity)getActivity()).getSpotName(meteoData.spotID);
+            if (txt != null) {
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(txt);
+            }
+        }
+        return v;
     }
 
     public void setListener(OnClickListener listener) {
@@ -74,47 +124,11 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
         return chartFragment.getLastHistoryMeteoData();
     }
 
-    /*@Override
-    public void onPrepareOptionsMenu(Menu menu) {
-
-        MenuItem mm = menu.findItem(R.id.options_refresh);
-        if (mm != null) {
-
-            menu.findItem(R.id.options_refresh).setVisible(true);
-        }
-    }*/
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v;
-        v = inflater.inflate(R.layout.fragment_spotdetail, container, false);
-        TabLayout tabLayout = (TabLayout) v.findViewById(R.id.tablayout);
-        mPager = (ViewPager) v.findViewById(R.id.pager);
+    public void onRefreshMeteoDataRequest() {
 
-        mPagerAdapter = new SpotDetailPagerAdapter(((MainActivity)getActivity()).getSupportFragmentManager());
-        mPager.setAdapter(mPagerAdapter);
-
-        tabLayout.setupWithViewPager(mPager);
-
-        tabLayout.getTabAt(0).setIcon(R.drawable.logo);
-        tabLayout.getTabAt(1).setIcon(R.drawable.webcamicon);
-        tabLayout.getTabAt(2).setIcon(R.drawable.graphicon);
-        tabLayout.getTabAt(3).setIcon(R.drawable.graphicon);
-
-        // Updating the action bar title
-        if (meteoData != null) {
-            String txt = ((MainActivity)getActivity()).getSpotName(meteoData.spotID);
-            if (txt != null) {
-                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(txt);
-            }
-        }
-        return v;
-    }
-
-    @Override
-    public void onRefreshClick() {
-        mCallback.onRefreshClick();
+        int position = mPager.getCurrentItem();
+        mCallback.onRefreshDetailViewRequest(position);
     }
 
     private class SpotDetailPagerAdapter extends FragmentStatePagerAdapter {
@@ -125,31 +139,32 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
             super(fm);
         }
 
+
         @Override
         public android.support.v4.app.Fragment getItem(int position) {
 
-            if (position == 0 ) {
+            if (position == MeteodataPage) {
 
                 meteodataFragment.setSpotId(spotId);
                 meteodataFragment.setMeteoData(meteoData);
                 meteodataFragment.refreshData();
                 return  meteodataFragment;
 
-            }  else if (position == 1 ) {
+            }  else if (position == WebcamPage) {
 
                 webcamFragment.setSpotId(spotId);
                 webcamFragment.setMeteoData(meteoData);
                 webcamFragment.refreshData();
                 return  webcamFragment;
 
-            }  else if (position == 2 ) {
+            }  else if (position == ChartPage) {
 
                 chartFragment.setSpotId(spotId);
                 chartFragment.setMeteoData(meteoData);
                 chartFragment.refreshData();
                 return chartFragment;
 
-            }  else if (position == 3 ) {
+            }  else if (position == ProgramListPage) {
 
                 programListFragment.setSpotId(spotId);
                 //programListFragment.setMeteoData(meteoData);

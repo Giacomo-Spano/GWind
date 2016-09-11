@@ -1,4 +1,4 @@
-package wind.newwindalarm;
+package wind.newwindalarm.fragment;
 
 //import android.app.Fragment;
 import android.content.SharedPreferences;
@@ -15,7 +15,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import wind.newwindalarm.AsyncRequestMeteoDataResponse;
+import wind.newwindalarm.MainActivity;
+import wind.newwindalarm.MeteoStationData;
+import wind.newwindalarm.R;
+import wind.newwindalarm.Spot;
+import wind.newwindalarm.SpotMeteoListListener;
 import wind.newwindalarm.fragment.SpotDetailsFragment;
+import wind.newwindalarm.requestMeteoDataTask;
 
 public class SpotMeteoListFragment extends ListFragment implements SpotMeteoListListener {
 
@@ -45,12 +52,12 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
 
     private void getSpotListFromServer(final SpotMeteoListListener listener) {
 
-        final Set<String> favorites = AlarmPreferences.getSpotListFavorites(getContext());
+
 
         new requestMeteoDataTask(getActivity(), new AsyncRequestMeteoDataResponse() {
 
             @Override
-            public void processFinish(List<Object> list, boolean error, String errorMessage) {
+            public void processFinish(List<MeteoStationData> list, boolean error, String errorMessage) {
             }
 
             @Override
@@ -59,7 +66,7 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
             }
 
             @Override
-            public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
+            public void processFinishSpotList(List<Spot> list, List<Long> favorites, boolean error, String errorMessage) {
 
                 ArrayList<Spot> spotList = new ArrayList<Spot>();
 
@@ -69,15 +76,14 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
                 }
 
                 List<Spot> sl = new ArrayList<Spot>();
-                for (int i = 0; i < list.size(); i++) {
-                    Spot spot = (Spot) list.get(i);
+                for (Spot spot : list) {
 
-                    Iterator iter = favorites.iterator();
-                    spot.favorites = false;
-                    while (iter.hasNext()) {
-                        long id = Long.valueOf((String)iter.next());
-                        if (id == spot.id)
-                            spot.favorites = true;
+                    if (favorites != null) {
+                        spot.favorites = false;
+                        for (Long spotId : favorites) {
+                            if (spotId == spot.id)
+                                spot.favorites = true;
+                        }
                     }
                     sl.add(spot);
                 }
@@ -86,10 +92,16 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
             }
 
             @Override
-            public void processFinishFavorites(boolean error, String errorMessage) {
+            public void processFinishAddFavorite(long spotId, boolean error, String errorMessage) {
 
             }
-        },requestMeteoDataTask.REQUEST_SPOTLIST_FULLINFO).execute();
+
+            @Override
+            public void processFinishRemoveFavorite(long spotId, boolean error, String errorMessage) {
+
+            }
+
+        },requestMeteoDataTask.REQUEST_SPOTLIST_FULLINFO).execute("");
     }
 
     @Override
@@ -109,13 +121,16 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
         //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         //String url = sharedPreferences.getString(QuickstartPreferences.KEY_PREF_SERVERURL, getActivity().getResources().getString(R.string.pref_serverURL_default));
 
+        MainActivity a = (MainActivity) getActivity();
         if (selected) {
-            AlarmPreferences.addToSpotListFavorites(getActivity(), spotId);
+            a.addToFavorites(spotId);
+            //AlarmPreferences.addToSpotListFavorites(getActivity(), spotId);
         } else {
-            AlarmPreferences.deleteFromSpotListFavorites(getActivity(), spotId);
+            a.removeFromFavorites(spotId);
+            //AlarmPreferences.deleteFromSpotListFavorites(getActivity(), spotId);
         }
 
-        Set<String> favorites = AlarmPreferences.getSpotListFavorites(getActivity());
+        /*Set<String> favorites = AlarmPreferences.getSpotListFavorites(getActivity());
         String list = "";
         int count = 0;
         for (String str : favorites) {
@@ -124,14 +139,14 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
                 list += ",";
             list += str;
         }
-        updateFavorites(list);
+        updateFavorites(list);*/
     }
 
-    public void updateFavorites(String favorites) {
+    /*public void updateFavorites(String favorites) {
 
         MainActivity a = (MainActivity) getActivity();
         a.updateFavorites(favorites);
-    }
+    }*/
 
     @Override
     public void onClick(long spotId) {

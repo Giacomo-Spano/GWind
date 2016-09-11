@@ -2,15 +2,7 @@ package wind.newwindalarm;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
-import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
-
-import com.google.gson.Gson;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -35,7 +27,6 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -43,14 +34,15 @@ import java.util.List;
  * Created by giacomo on 01/07/2015.
  */
 public class requestMeteoDataTask extends
-        AsyncTask<Object, Long, List<Object/*MeteoStationData*/>> {
+        AsyncTask<Object, Long, requestMeteoDataTask.Result> {
 
     public static final int REQUEST_LASTMETEODATA = 1;
     public static final int REQUEST_HISTORYMETEODATA = 2;
     public static final int REQUEST_SPOTLIST = 3;
     public static final int REQUEST_SPOTLIST_FULLINFO = 4;
     public static final int REQUEST_LOGMETEODATA = 5;
-    public static final int REQUEST_POSTFAVORITES = 6;
+    public static final int REQUEST_ADDFAVORITES = 6;
+    public static final int REQUEST_REMOVEFAVORITE = 7;
 
     public static String Spot_All = "all";
     public AsyncRequestMeteoDataResponse delegate = null;//Call back interface
@@ -61,6 +53,13 @@ public class requestMeteoDataTask extends
     int requestType;
     int contentSize;
 
+    protected class Result {
+        List<MeteoStationData> meteoList;
+        List<Spot> spotList;
+        List<Long> favorites;
+        long spotId;
+    }
+
     public requestMeteoDataTask(Activity activity, AsyncRequestMeteoDataResponse asyncResponse, int type) {
         this.activity = activity;
         dialog = new ProgressDialog(activity);
@@ -68,25 +67,27 @@ public class requestMeteoDataTask extends
         requestType = type;
     }
 
-    protected List<Object> doInBackground(Object... params) {
+    protected requestMeteoDataTask.Result doInBackground(Object... params) {
 
+        requestMeteoDataTask.Result result = new requestMeteoDataTask.Result();
         URL url;
-        List<Object> list = new ArrayList<Object>();
+        //List<Object> list = new ArrayList<Object>();
 
-        if (requestType == REQUEST_POSTFAVORITES) {
+        if (requestType == REQUEST_ADDFAVORITES || requestType == REQUEST_REMOVEFAVORITE) {
 
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost;
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
             String regId = AlarmPreferences.getRegId(activity.getApplicationContext());
 
-            String favorites = (String) params[0];
+            long spotId = (long) params[0];
             String userid = (String) params[1];
             String serverUrl = AlarmPreferences.getServerUrl(activity);
             httppost = new HttpPost(serverUrl + "/meteo");
-            nameValuePairs.add(new BasicNameValuePair("favorites", favorites));
+            nameValuePairs.add(new BasicNameValuePair("spotid", "" + spotId));
             nameValuePairs.add(new BasicNameValuePair("userid", userid));
-
+            if (requestType == REQUEST_REMOVEFAVORITE)
+                nameValuePairs.add(new BasicNameValuePair("remove", "true"));
             try {
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                 HttpResponse response = httpclient.execute(httppost);
@@ -102,40 +103,32 @@ public class requestMeteoDataTask extends
                 errorMessage = e.toString();
                 return null;
             }
-            return null;
+
+            result.spotId = spotId;
+            return result;
 
         } else {
 
             try {
                 String path = "/meteo?";
 
+
                 if (requestType == REQUEST_LASTMETEODATA) {
                     String spotList = (String) params[0]; //lista di spot separata da virgola
+                    String userid = (String) params[1];
 
                     path += "lastdata=true";
                     path += "&history=false";
                     path += "&requestspotlist=false";
                     path += "&fullinfo=false";
                     path += "&spot=" + spotList;
-
-                } else if (requestType == REQUEST_HISTORYMETEODATA) {
-                    long spotId = (long) params[0]; // spotID
-                    Date start = (Date) params[1];
-                    Date end = (Date) params[2];
-
-                    path += "lastdata=false";
-                    path += "&history=true";
-                    path += "&requestspotlist=false";
-                    path += "&fullinfo=false";
-                    path += "&spot=" + spotId;
-                    SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy-HH:mm:ss");
-                    path += "&start=" + df.format(start);
-                    path += "&end=" + df.format(end);
+                    path += "&userid=" + userid;
 
                 } else if (requestType == REQUEST_LOGMETEODATA) {
                     long spotId = (long) params[0]; // spotID
-                    Date start = (Date) params[1];
-                    Date end = (Date) params[2];
+                    String userid = (String) params[1];
+                    Date start = (Date) params[2];
+                    Date end = (Date) params[3];
 
                     path += "lastdata=false";
                     path += "&log=true";
@@ -145,20 +138,25 @@ public class requestMeteoDataTask extends
                     SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy-HH:mm:ss");
                     path += "&start=" + df.format(start);
                     path += "&end=" + df.format(end);
+                    path += "&userid=" + userid;
 
                 } else if (requestType == REQUEST_SPOTLIST) {
+                    String userid = (String) params[0];
                     path += "lastdata=false";
                     path += "&history=false";
                     path += "&requestspotlist=true";
                     path += "&fullinfo=false";
                     path += "&spot=" + Spot_All;
+                    path += "&userid=" + userid;
 
                 } else if (requestType == REQUEST_SPOTLIST_FULLINFO) {
+                    String userid = (String) params[0];
                     path += "lastdata=false";
                     path += "&history=false";
                     path += "&requestspotlist=true";
                     path += "&fullinfo=true";
                     path += "&spot=" + Spot_All;
+                    path += "&userid=" + userid;
 
                 }
 
@@ -182,6 +180,7 @@ public class requestMeteoDataTask extends
                     String json = convertStreamToString(in);
 
                     if (requestType == REQUEST_SPOTLIST || requestType == REQUEST_SPOTLIST_FULLINFO) {
+                        List<Spot> list = new ArrayList<Spot>();
                         JSONObject jObject = new JSONObject(json);
                         JSONArray jArray = jObject.getJSONArray("spotlist");
                         for (int i = 0; i < jArray.length(); i++) {
@@ -189,7 +188,22 @@ public class requestMeteoDataTask extends
                             Spot spt = new Spot(jObject2);
                             list.add(spt);
                         }
+                        String favorites = jObject.getString("favorites");
+                        result.spotList = list;
+                        result.favorites = new ArrayList<Long>();
+                        String[] split = favorites.split(",");
+                        if (split != null) {
+                            for (int i = 0; i < split.length; i++) {
+                                if (!split[i].equals("")) {
+                                    long id = Integer.valueOf(split[i]);
+                                    if (id != 0)
+                                        result.favorites.add(id);
+                                }
+                            }
+                        }
+                        // TODO add favorites list
                     } else if (requestType == REQUEST_LASTMETEODATA || requestType == REQUEST_HISTORYMETEODATA) {
+                        List<MeteoStationData> list = new ArrayList<MeteoStationData>();
                         JSONObject jObject = new JSONObject(json);
                         JSONArray jArray = jObject.getJSONArray("meteodata");
                         for (int i = 0; i < jArray.length(); i++) {
@@ -197,7 +211,9 @@ public class requestMeteoDataTask extends
                             MeteoStationData md = new MeteoStationData(jObject2);
                             list.add(md);
                         }
+                        result.meteoList = list;
                     } else if (requestType == REQUEST_LOGMETEODATA) {
+                        List<MeteoStationData> list = new ArrayList<MeteoStationData>();
                         JSONObject jObject = new JSONObject(json);
                         String date = jObject.getString("date");
                         String speed = jObject.getString("speed");
@@ -245,9 +261,9 @@ public class requestMeteoDataTask extends
                                 md.temperature = Double.valueOf(temperatures[i]);
                             else
                                 continue;
-
                             list.add(md);
                         }
+                        result.meteoList = list;
                     }
 
                     if (conn != null)
@@ -270,7 +286,8 @@ public class requestMeteoDataTask extends
                 e.printStackTrace();
                 errorMessage = e.toString();
             }
-            return list;
+
+            return result;
         }
     }
 
@@ -296,35 +313,33 @@ public class requestMeteoDataTask extends
         //progressBar.setProgress(values[0].intValue());
     }
 
-    protected void onPostExecute(List<Object> list) {
+    protected void onPostExecute(Result result) {
 
         if (dialog.isShowing()) {
             dialog.dismiss();
         }
 
-        if (requestType == REQUEST_SPOTLIST || requestType == REQUEST_SPOTLIST_FULLINFO)
-            delegate.processFinishSpotList(list, error, errorMessage);
-        else if (requestType == REQUEST_HISTORYMETEODATA) {
-            List<MeteoStationData> data = new ArrayList<>();
-            for(Object obj : list) {
-                data.add(new MeteoStationData((MeteoStationData)obj));
-            }
-            delegate.processFinishHistory(data, error, errorMessage);
+        if (requestType == REQUEST_SPOTLIST || requestType == REQUEST_SPOTLIST_FULLINFO) {
+            delegate.processFinishSpotList(result.spotList, result.favorites, error, errorMessage);
         } else if (requestType == REQUEST_LOGMETEODATA) {
             List<MeteoStationData> data = new ArrayList<>();
-            for(Object obj : list) {
+            for (Object obj : result.meteoList) {
 
-                data.add(new MeteoStationData((MeteoStationData)obj));
+                data.add(new MeteoStationData((MeteoStationData) obj));
             }
             delegate.processFinishHistory(data, error, errorMessage);
         } else if (requestType == REQUEST_LASTMETEODATA) {
-            delegate.processFinish(list, error, errorMessage);
-        } else if (requestType == REQUEST_POSTFAVORITES) {
-            delegate.processFinishFavorites(error, errorMessage);
+            delegate.processFinish(result.meteoList, error, errorMessage);
+        } else if (requestType == REQUEST_ADDFAVORITES) {
+            delegate.processFinishAddFavorite(result.spotId, error, errorMessage);
+        } else if (requestType == REQUEST_REMOVEFAVORITE) {
+            delegate.processFinishRemoveFavorite(result.spotId, error, errorMessage);
         }
+
 
         //progressBar.setVisibility(View.GONE);
     }
+
     private String convertStreamToString(InputStream is) {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));

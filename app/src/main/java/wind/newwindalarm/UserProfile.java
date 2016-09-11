@@ -1,9 +1,7 @@
 package wind.newwindalarm;
 
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.widget.ImageView;
-import android.widget.TextView;
+
 import java.io.Serializable;
 
 /**
@@ -12,10 +10,10 @@ import java.io.Serializable;
 @SuppressWarnings("serial") //With this annotation we are going to hide compiler warnings
 public class UserProfile implements Serializable {
 
-    String userName;
-    String email;
-    Bitmap userImage;
-    String photoUrl;
-    String personId;
+    public String userName;
+    public String email;
+    public Bitmap userImage;
+    public String photoUrl;
+    public String personId;
 
 }

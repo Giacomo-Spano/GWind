@@ -42,7 +42,7 @@ import java.util.Locale;
 /**
  * Created by giacomo on 04/07/2015.
  */
-public class registertask extends AsyncTask<Object, Boolean, Boolean> {
+public class registertask extends AsyncTask<Object, Boolean, String> {
 
 
     public static final int POST_REGISTERDEVICE = 1;
@@ -55,7 +55,7 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
     private boolean error = false;
     private String errorMessage = "";
     int regId;
-    String response = "";
+
 
     public registertask(Activity activity, AsyncRegisterResponse asyncResponse, int postType) {
 
@@ -65,10 +65,11 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
     }
 
     @Override
-    protected Boolean doInBackground(Object... params) {
-
+    protected String doInBackground(Object... params) {
+        String response = "";
         URL myUrl = null;
         HttpURLConnection conn = null;
+        long result;
 
         String serverURL = AlarmPreferences.getServerUrl(activity);//getServerURL();
 
@@ -111,7 +112,7 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
                         URLEncoder.encode(authCode, "UTF-8") + "&";
 
 
-            } else if (postType == POST_REGISTERUSER) {
+            } /*else if (postType == POST_REGISTERUSER) {
 
                 String personId = (String) params[0];
                 String personName = (String) params[1];
@@ -125,14 +126,11 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
                         URLEncoder.encode(personId, "UTF-8") + "&" +
                         URLEncoder.encode("personName", "UTF-8") + "=" +
                         URLEncoder.encode(personName, "UTF-8") + "&" +
-                        /*URLEncoder.encode("personEmail", "UTF-8") + "=" +
-                        URLEncoder.encode(personEmail, "UTF-8") + "&"+
-                        URLEncoder.encode("personPhoto", "UTF-8") + "=" +
-                        URLEncoder.encode(personPhoto.toString(), "UTF-8") + "&"+*/
+
                         URLEncoder.encode("authCode", "UTF-8") + "=" +
                         URLEncoder.encode(authCode, "UTF-8") + "&";
 
-            }
+            }*/
             OutputStream os = conn.getOutputStream();
             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
             bufferedWriter.write(postData);
@@ -141,7 +139,7 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
 
             InputStream inputStream = conn.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-            String line = "";
+            String line;
             while ((line = bufferedReader.readLine()) != null) {
                 response += line;
             }
@@ -151,44 +149,46 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
             os.close();
 
 
+
+
         } catch (
                 MalformedURLException e
                 )
 
         {
             e.printStackTrace();
-            return false;
+            return response;
         } catch (
                 UnsupportedEncodingException e
                 )
 
         {
             e.printStackTrace();
-            return false;
+            return response;
         } catch (
                 ProtocolException e
                 )
 
         {
             e.printStackTrace();
-            return false;
+            return response;
         } catch (
                 SocketTimeoutException e
                 )
 
         {
             e.printStackTrace();
-            return false;
+            return response;
         } catch (
                 IOException e
                 )
 
         {
             e.printStackTrace();
-            return false;
+            return response;
         }
 
-        return true;
+        return response;
     }
 
 
@@ -199,7 +199,7 @@ public class registertask extends AsyncTask<Object, Boolean, Boolean> {
         // setProgressPercent(progress[0]);
     }
 
-    protected void onPostExecute(Boolean res) {
+    protected void onPostExecute(String response) {
         delegate.processFinish(response, error, errorMessage);
     }
 

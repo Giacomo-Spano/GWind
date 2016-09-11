@@ -43,7 +43,7 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
     // Container Activity must implement this interface
     public interface OnSpotClickListener {
         void onSpotClick(long spotId);
-        void onRefreshClick();
+        void onRefreshPanelRequest();
     }
 
     @Override
@@ -55,7 +55,7 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
         refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCallback.onRefreshClick();
+                mCallback.onRefreshPanelRequest();
             }
         });
     }
@@ -162,31 +162,23 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
 
         mcontainer.removeAllViews();
 
-        Set<String> favorites = null;
-        favorites = AlarmPreferences.getSpotListFavorites(getContext());
+        MainActivity a = (MainActivity) getActivity();
+        List<Spot> favorites = a.getFavorites();
 
-        Iterator iter = favorites.iterator();
-        while (iter.hasNext()) {
-            long id = Long.valueOf((String) iter.next());
+        for (Spot spot : favorites) {
 
             MeteoCardItem carditem = new MeteoCardItem(this, getActivity(), mcontainer);
             mcontainer.addView(carditem.getCard());
-            Spot spot = ((MainActivity)getActivity()).getSpotFromId(id);
-            if (spot != null) {
-
-                carditem.setSourceUrl(spot.sourceUrl);
-                carditem.setTitle(spot.spotName);
-                            /*if (md.offline) {
-                                carditem.card.setTitle("offline");
-                            }*/
-            }
-            MeteoStationData md = getMeteoDataFromId(id);
+            carditem.setSourceUrl(spot.sourceUrl);
+            carditem.setTitle(spot.spotName);
+            /*if (md.offline) {
+                 carditem.card.setTitle("offline");
+            }*/
+            MeteoStationData md = getMeteoDataFromId(spot.id);
             if (md != null)
                 carditem.update(md);
-
-            carditem.setSpotId(id);
+            carditem.setSpotId(spot.id);
         }
         mcontainer.invalidate();
     }
-
 }

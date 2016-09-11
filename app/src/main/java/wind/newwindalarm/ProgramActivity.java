@@ -49,9 +49,12 @@ public class ProgramActivity extends AppCompatActivity {
             jsonMyObject = extras.getString("WindAlarmProgram");
             WindAlarmProgram program = new Gson().fromJson(jsonMyObject, WindAlarmProgram.class);
 
+            //Intent intent = getIntent();
+            //SpotList list = (SpotList) intent.getSerializableExtra("SpotList");
+
             Gson gson = new Gson();
             SpotList list = gson.fromJson(getIntent().getStringExtra("spotlist"), SpotList.class);
-            programFragment.setServerSpotList(list.list);
+            programFragment.setServerSpotList(list.spotList);
 
             programFragment.setWebduinoPrograms(program);
             //getActionBar().setTitle("Programma " + program.id);

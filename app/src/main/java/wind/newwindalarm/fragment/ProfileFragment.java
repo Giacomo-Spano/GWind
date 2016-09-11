@@ -1,4 +1,4 @@
-package wind.newwindalarm;
+package wind.newwindalarm.fragment;
 
 
 import android.app.Activity;
@@ -17,11 +17,18 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.SignInButton;
 
+import wind.newwindalarm.AlarmPreferences;
+import wind.newwindalarm.BuildConfig;
+import wind.newwindalarm.R;
+import wind.newwindalarm.SplashActivity;
+import wind.newwindalarm.UserProfile;
+
 public class ProfileFragment extends Fragment {
 
     OnSignInClickListener mCallback;
 
     private TextView mUserNameTextView;
+    private TextView mUserIdTextView;
     private TextView mEMailTextView;
     private ImageView mUserImageView;
     private TextView mRegIdTextView;
@@ -29,7 +36,7 @@ public class ProfileFragment extends Fragment {
     private Button mSignoutButton;
     private Button mDisconnectButton;
 
-    UserProfile mProfile;
+    private UserProfile mProfile;
     protected boolean initialized = false;
 
     // Container Activity must implement this interface
@@ -110,6 +117,7 @@ public class ProfileFragment extends Fragment {
 
         mUserNameTextView = (TextView) v.findViewById(R.id.userTextView);
         mEMailTextView = (TextView) v.findViewById(R.id.EmailTextView);
+        mUserIdTextView = (TextView) v.findViewById(R.id.userIdTextView);
         mUserImageView = (ImageView) v.findViewById(R.id.userImageView);
 
         initialized = true;
@@ -140,6 +148,8 @@ public class ProfileFragment extends Fragment {
         if (mProfile != null) {
             mUserNameTextView.setText(mProfile.userName);
             mUserNameTextView.setVisibility(View.VISIBLE);
+            mUserIdTextView.setText(mProfile.personId);
+            mUserIdTextView.setVisibility(View.VISIBLE);
             mEMailTextView.setText(mProfile.email);
             mEMailTextView.setVisibility(View.VISIBLE);
             mUserImageView.setVisibility(View.VISIBLE);
@@ -151,6 +161,8 @@ public class ProfileFragment extends Fragment {
         } else {
             mUserNameTextView.setText("No user");
             mUserNameTextView.setVisibility(View.GONE);
+            mUserIdTextView.setText("");
+            mUserIdTextView.setVisibility(View.GONE);
             mEMailTextView.setText("");
             mEMailTextView.setVisibility(View.GONE);
             mUserImageView.setImageResource(R.drawable.user_white);
@@ -161,5 +173,4 @@ public class ProfileFragment extends Fragment {
             mDisconnectButton.setVisibility(View.GONE);
         }
     }
-
 }

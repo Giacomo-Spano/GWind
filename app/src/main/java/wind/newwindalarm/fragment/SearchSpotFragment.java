@@ -17,18 +17,23 @@ import java.util.HashMap;
 
 import wind.newwindalarm.MainActivity;
 import wind.newwindalarm.R;
-import wind.newwindalarm.cardui.ChartCard;
+import wind.newwindalarm.SearchSpotListener;
+import wind.newwindalarm.Spot;
+import wind.newwindalarm.SpotList;
 
 /**
  * Created by Giacomo Spanò on 09/09/2016.
  */
-public class SearchSpotFragment extends Fragment {
+public class SearchSpotFragment extends Fragment implements SearchSpotListener {
 
     // List view
     private ListView lv;
 
     // Listview Adapter
-    ArrayAdapter<String> adapter;
+    SearchSpotListener.SearchSpotArrayAdapter adapter;
+    //SearchSpotListener mListener;
+
+    SpotList mSpotList;
 
     // Search EditText
     EditText inputSearch;
@@ -36,6 +41,11 @@ public class SearchSpotFragment extends Fragment {
 
     // ArrayList for Listview
     ArrayList<HashMap<String, String>> productList;
+
+    // Listview Data
+    String products[] = {"Dell Inspiron", "HTC One X", "HTC Wildfire S", "HTC Sense", "HTC Sensation XE",
+            "iPhone 4S", "Samsung Galaxy Note 800",
+            "Samsung Galaxy S3", "MacBook Air", "Mac Mini", "MacBook Pro"};
 
     @Nullable
     @Override
@@ -45,17 +55,15 @@ public class SearchSpotFragment extends Fragment {
         View v;
         v = inflater.inflate(R.layout.fragment_searchspot, container, false);
 
-        // Listview Data
-        String products[] = {"Dell Inspiron", "HTC One X", "HTC Wildfire S", "HTC Sense", "HTC Sensation XE",
-                "iPhone 4S", "Samsung Galaxy Note 800",
-                "Samsung Galaxy S3", "MacBook Air", "Mac Mini", "MacBook Pro"};
+
 
         lv = (ListView) v.findViewById(R.id.list_view);
         inputSearch = (EditText) v.findViewById(R.id.inputSearch);
 
         // Adding items to listview
-        adapter = new ArrayAdapter<String>(this.getActivity(), R.layout.list_item, R.id.product_name, products);
-        lv.setAdapter(adapter);
+        //adapter = new ArrayAdapter<String>(this.getActivity(), R.layout.list_item, R.id.product_name, products);
+
+        //lv.setAdapter(adapter);
 
         inputSearch.addTextChangedListener(new TextWatcher() {
 
@@ -78,5 +86,43 @@ public class SearchSpotFragment extends Fragment {
             }
         });
     return v;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        adapter = new SearchSpotListener.SearchSpotArrayAdapter(getActivity(), mSpotList.spotList, this);
+        lv.setAdapter(adapter);
+    }
+
+
+
+
+    public void setSpotList(SpotList spotList) {
+
+        mSpotList = spotList;
+
+        products = new String[mSpotList.spotList.size()];
+        int count = 0;
+        for (Spot spot : mSpotList.spotList) {
+            products[count] = mSpotList.spotList.get(count).spotName;
+            count++;
+        }
+    }
+
+    @Override
+    public void onClickCheckBox(long spotId, boolean selected) {
+        MainActivity a = (MainActivity) getActivity();
+
+        if (selected)
+            a.addToFavorites(spotId);
+        else
+            a.removeFromFavorites(spotId);
+    }
+
+    @Override
+    public void onClick(long spotId) {
+
     }
 }

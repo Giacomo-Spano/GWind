@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:gravity="center_vertical">
 
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/linearLayout"><![CDATA[
+        android:orientation="vertical"><![CDATA[
 
 
         LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -29,30 +29,37 @@
             android:paddingTop="@dimen/nav_header_vertical_spacing"
             android:src="@android:drawable/sym_def_app_icon" />
 
-
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="User"
             android:id="@+id/userTextView"
-            android:layout_gravity="center_horizontal" />
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="mail"
+            android:layout_gravity="center_horizontal"
+            android:text="User"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
             android:id="@+id/EmailTextView"
-            android:layout_gravity="center_horizontal" />
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="regID"
+            android:layout_gravity="center_horizontal"
+            android:text="mail"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/userIdTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="userId"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
             android:id="@+id/regIdTextView"
-            android:layout_gravity="center_horizontal" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="regID"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <com.google.android.gms.common.SignInButton
             android:id="@+id/sign_in_button"
@@ -77,30 +84,28 @@
             android:text="disconnect" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="version"
             android:id="@+id/versionNameTextView"
-            android:layout_gravity="center_horizontal" />
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="build"
+            android:layout_gravity="center_horizontal"
+            android:text="version"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
             android:id="@+id/versionCodeTextView"
-            android:layout_gravity="center_horizontal" />
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="device id"
+            android:layout_gravity="center_horizontal"
+            android:text="build"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
             android:id="@+id/deviceTextView"
-            android:layout_gravity="center_horizontal" />
-
-
-
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="device id"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
 
     </LinearLayout>

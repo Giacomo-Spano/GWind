@@ -43,7 +43,7 @@ public class SpotDetailsMeteodataFragment extends Fragment {
 
     // Container Activity must implement this interface
     public interface OnClickListener {
-        void onRefreshClick();
+        void onRefreshMeteoDataRequest();
     }
 
     public void setListener(OnClickListener listener) {
@@ -63,7 +63,7 @@ public class SpotDetailsMeteodataFragment extends Fragment {
         refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCallback.onRefreshClick();
+                mCallback.onRefreshMeteoDataRequest();
             }
         });
     }

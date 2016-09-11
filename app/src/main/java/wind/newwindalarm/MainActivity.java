@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -20,7 +19,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.text.format.Time;
 import android.view.View;
@@ -48,17 +46,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import wind.newwindalarm.fragment.PanelFragment;
+import wind.newwindalarm.fragment.ProfileFragment;
 import wind.newwindalarm.fragment.ProgramFragment;
 import wind.newwindalarm.fragment.ProgramListFragment;
 import wind.newwindalarm.fragment.SearchSpotFragment;
 import wind.newwindalarm.fragment.SpotDetailsFragment;
+import wind.newwindalarm.fragment.SpotMeteoListFragment;
 
 public class MainActivity extends AppCompatActivity implements
         //GoogleApiClient.OnConnectionFailedListener,
-        View.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
+        /*View.OnClickListener, */NavigationView.OnNavigationItemSelectedListener,
         ProfileFragment.OnSignInClickListener,
         PanelFragment.OnSpotClickListener,
         SpotDetailsFragment.OnClickListener {
@@ -117,7 +116,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private TextView mInformationTextView;
     private static final String TAG = "SignInActivity";
-    public List<Spot> spotList;
+    //public List<Spot> spotList;
+    private SpotList mSpotList = new SpotList();
     private Settings mSettings;
 
     PanelFragment panelFragment;
@@ -140,6 +140,22 @@ public class MainActivity extends AppCompatActivity implements
     private UserProfile mProfile = null;
     static boolean signedIn = false;
     static int nextFragment = -1;
+
+    public List<Spot> getFavorites() {
+        return mSpotList.getSpotFavorites();
+    }
+    public void addToFavorites(long id) {
+        mSpotList.addToFavorites(this,id,mProfile.personId);
+    }
+    public void removeFromFavorites(long id) {
+        mSpotList.removeFromFavorites(this,id,mProfile.personId);
+    }
+    public Spot getSpotFromId(long id) {
+        return mSpotList.getSpotFromId(id);
+    }
+    public String getSpotName(long id) {
+        return mSpotList.getSpotName(id);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,7 +197,6 @@ public class MainActivity extends AppCompatActivity implements
         mUserNameTextView = (TextView) header.findViewById(R.id.UserNameTextView);
         memailTextView = (TextView) header.findViewById(R.id.UserEmailTextView);
         mUserImageImageView = (ImageView) header.findViewById(R.id.imageView);
-
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         mSettings = new Settings(this);
@@ -206,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements
         settingsFragment.setSettings(mSettings);
         profileFragment = new ProfileFragment();
         spotMeteoListFragment = new SpotMeteoListFragment();
-        searchSpotFragment = new SearchSpotFragment();
+        //searchSpotFragment = new SearchSpotFragment();
 
         mInformationTextView = (TextView) findViewById(R.id.informationTextView);
 
@@ -220,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements
         new LoadImagefromUrl().execute();
 
         mInformationTextView.setText("Loading meteodata");
-        getLastMeteoData();
+        //getLastMeteoData();
     }
 
 
@@ -385,9 +400,9 @@ public class MainActivity extends AppCompatActivity implements
         return syncConnPref;
     }*/
 
-    public List<Spot> getServerSpotList() { // TODO Eliminare . usata soloda programFragmentspotlist
+    public SpotList getServerSpotList() { // TODO Eliminare . usata soloda programFragmentspotlist
 
-        return spotList;
+        return mSpotList/*.spotList*/;
     }
 
     private void getSpotListFromServer() {
@@ -395,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements
         new requestMeteoDataTask(this, new AsyncRequestMeteoDataResponse() {
 
             @Override
-            public void processFinish(List<Object> list, boolean error, String errorMessage) {
+            public void processFinish(List<MeteoStationData> list, boolean error, String errorMessage) {
             }
 
             @Override
@@ -403,35 +418,52 @@ public class MainActivity extends AppCompatActivity implements
             }
 
             @Override
-            public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
+            public void processFinishSpotList(List<Spot> list, List<Long> favorites, boolean error, String errorMessage) {
 
                 if (error) {
                     showError(errorMessage);
                     return;
                 }
 
-                spotList = new ArrayList<Spot>();
-                for (int i = 0; i < list.size(); i++) {
-                    spotList.add((Spot) list.get(i));
+                for (Spot spot : list) {
+                    for (Long id : favorites) {
+                        if (id == spot.id) {
+                            spot.favorites = true;
+                            break;
+                        }
+                    }
+                    mSpotList.add(spot);
                 }
 
-                //settingsFragment.setServerSpotList(spotList);
-                programListFragment.setServerSpotList(spotList);
-                //spotMeteoListFragment.setSpotList(spotList);
 
-                //panelFragment.setMeteoDataList(meteoDataList);
+
+                programListFragment.setServerSpotList(mSpotList.getSpotList());
+
                 if (panelFragment == null) {
                     panelFragment = new PanelFragment();
                     showFragment(R.id.nav_favorites, false);
                 }
-                panelFragment.refreshMeteoData();
+
+                searchSpotFragment = new SearchSpotFragment();
+                searchSpotFragment.setSpotList(mSpotList);
+                //panelFragment.refreshMeteoData();
+                getLastMeteoData();
             }
 
             @Override
-            public void processFinishFavorites(boolean error, String errorMessage) {
+            public void processFinishAddFavorite(long spotId, boolean error, String errorMessage) {
 
             }
-        }, requestMeteoDataTask.REQUEST_SPOTLIST).execute();
+
+            @Override
+            public void processFinishRemoveFavorite(long spotId, boolean error, String errorMessage) {
+
+            }
+
+
+        }, requestMeteoDataTask.REQUEST_SPOTLIST).execute(mProfile.personId);
+
+
 
     }
 
@@ -464,31 +496,6 @@ public class MainActivity extends AppCompatActivity implements
         alertDialog.show();
     }
 
-    public String getSpotName(long id) {
-
-        if (spotList == null)
-            return null;
-
-        for (int i = 0; i < spotList.size(); i++) {
-            if (spotList.get(i).id == id)
-                return spotList.get(i).spotName;
-        }
-        return null;
-    }
-
-    public Spot getSpotFromId(long id) {
-
-        if (spotList == null)
-            return null;
-
-        for (int i = 0; i < spotList.size(); i++) {
-            if (spotList.get(i).id == id) {
-
-                return (Spot) spotList.get(i);
-            }
-        }
-        return null;
-    }
 
     public MeteoStationData getMeteodataFromId(long spotId) {
 
@@ -537,52 +544,26 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onRefreshClick() {
+    public void onRefreshPanelRequest() {
         getLastMeteoData();
     }
 
-    @Override
-    public void onClick(View view) {
-
-    }
-
-
     public void getLastMeteoData() {
-
 
         startProgressBar();
 
-        Set<String> favorites = AlarmPreferences.getSpotListFavorites(this);
-        if (favorites.size() == 0)
+        List<Spot> favorites = mSpotList.getSpotFavorites();
+        if (favorites == null)
             return;
 
         String spotList = "";
-        Iterator iter = favorites.iterator();
-        while (iter.hasNext()) {
-            long id = Long.valueOf((String) iter.next());
-            spotList += id;
-            if (iter.hasNext())
+        int count = 0;
+        for (Spot spot : favorites) {
+            if (count++ > 0)
                 spotList += ",";
+            spotList += spot.id;
         }
-
-        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_LASTMETEODATA).execute(spotList);
-
-
-        /*countDownTimer = new CountDownTimer(50000, 3000){
-
-            private int progress = 10;
-            public void onTick(long millisUntilFinished) {
-                //mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
-                progressBar.setProgress(progress);
-                progress += 10;
-            }
-
-            public void onFinish() {
-                //mTextField.setText("done!");
-            }
-
-        }.start();*/
-
+        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_LASTMETEODATA).execute(spotList,mProfile.personId);
     }
 
     private void startProgressBar() {
@@ -614,7 +595,7 @@ public class MainActivity extends AppCompatActivity implements
 
         startProgressBar();
 
-        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_LOGMETEODATA).execute(spotId, start, end);
+        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_LOGMETEODATA).execute(spotId, mProfile.personId, start, end);
     }
 
     @Override
@@ -625,7 +606,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onSignOutClick() {
         unregister();
-        //unregisterReceiver();
         setResult(SplashActivity.RESULT_SIGN_OUT);
         finish();
     }
@@ -633,15 +613,24 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onDisconnectClick() {
         unregister();
-        //unregisterReceiver();
         setResult(SplashActivity.RESULT_DISCONNECT);
         finish();
+    }
+
+    @Override
+    public void onRefreshDetailViewRequest(int position) {
+        getLastMeteoData();
+    }
+
+    @Override
+    public void onChangeDetailView(int position) {
+
     }
 
     private class requestDataResponse implements AsyncRequestMeteoDataResponse {
 
         @Override
-        public void processFinish(List<Object> list, boolean error, String errorMessage) {
+        public void processFinish(List<MeteoStationData> list, boolean error, String errorMessage) {
 
             /*if (panelFragment == null) {
                 panelFragment = new PanelFragment();
@@ -669,16 +658,22 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         @Override
-        public void processFinishSpotList(List<Object> list, boolean error, String errorMessage) {
+        public void processFinishSpotList(List<Spot> list, List<Long> favorites, boolean error, String errorMessage) {
 
             progressBar.setVisibility(View.GONE);
 
         }
 
         @Override
-        public void processFinishFavorites(boolean error, String errorMessage) {
+        public void processFinishAddFavorite(long spotId, boolean error, String errorMessage) {
 
         }
+
+        @Override
+        public void processFinishRemoveFavorite(long spotId, boolean error, String errorMessage) {
+
+        }
+
     }
 
     private class LoadImagefromUrl extends AsyncTask<Object, Void, Bitmap> {
@@ -763,8 +758,8 @@ public class MainActivity extends AppCompatActivity implements
         return circuleBitmap;
     }
 
-    public void updateFavorites(String favorites) {
-        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_POSTFAVORITES).execute(favorites,mProfile.personId);
+    /*public void updateFavorites(String favorites) {
+        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_ADDFAVORITES).execute(favorites,mProfile.personId);
 
-    }
+    }*/
 }

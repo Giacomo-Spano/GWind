@@ -205,8 +205,12 @@ public class ProgramListFragment extends Fragment implements
         resultIntent.putExtra("WindAlarmProgram", new Gson().toJson(alarm));
 
         Gson gson = new Gson();
-        SpotList sl = new SpotList();
-        sl.list = mSpotList;
+        MainActivity a = (MainActivity) getActivity();
+        SpotList sl = a.getServerSpotList();
+        //sl.list = mSpotList;
+        //resultIntent.putExtra("SpotList", sl);
+
+
         String myJson = gson.toJson(sl);
         resultIntent.putExtra("spotlist", myJson);
         resultIntent.putExtra("serverurl", (AlarmPreferences.getServerUrl(getActivity())));
