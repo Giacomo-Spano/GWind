@@ -133,9 +133,8 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
     private Spinner mSpot;
 
     private List<Spot> mSpotList;
-    ArrayList<Long> spotIdList;
-
-
+    private ArrayList<Long> spotIdList;
+    //private long spotId = -1;
 
 
     @Override
@@ -146,7 +145,6 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
         v = loadProgramFragment(inflater, container/*, items*/);
 
 
-
         return v;
     }
 
@@ -154,13 +152,13 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
         mSpotList = list;
     }
 
+    /*public void setSpotId(long id) {
+        spotId = id;
+    }*/
+
     private View loadProgramFragment(LayoutInflater inflater,
                                      ViewGroup container) {
 
-        if (mSpotList == null) {
-            showError();
-            return null;
-        }
 
         View v;
         v = inflater.inflate(R.layout.fragment_program, container, false);
@@ -214,36 +212,39 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
                         confirmTestDialog();
                     }
 
-                }, postprogramtask.POST_TESTALARM).execute(/*MainActivity.getDeviceId()*/AlarmPreferences.getDeviceId(getActivity()),program.id);
+                }, postprogramtask.POST_TESTALARM).execute(/*MainActivity.getDeviceId()*/AlarmPreferences.getDeviceId(getActivity()), program.id);
 
             }
         });
 
-        mSpot = (Spinner) v.findViewById(R.id.spinnerSpot);
-        ArrayList<String> list = new ArrayList<String>();
-        spotIdList = new ArrayList<Long>();
+        if (mSpotList != null) {
 
-        for (int i = 0; i < mSpotList.size(); i++) {
+            mSpot = (Spinner) v.findViewById(R.id.spinnerSpot);
+            ArrayList<String> list = new ArrayList<String>();
+            spotIdList = new ArrayList<Long>();
 
-            list.add(mSpotList.get(i).spotName);
-            spotIdList.add(i, mSpotList.get(i).id);
+            for (int i = 0; i < mSpotList.size(); i++) {
 
+                list.add(mSpotList.get(i).spotName);
+                spotIdList.add(i, mSpotList.get(i).id);
+
+            }
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>
+                    (this.getActivity(), android.R.layout.simple_dropdown_item_1line, list);
+            mSpot.setAdapter(adapter);
+            mSpot.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+                public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                           int arg2, long arg3) {
+
+                }
+
+                public void onNothingSelected(AdapterView<?> arg0) {
+
+                }
+            });
         }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>
-                (this.getActivity(), android.R.layout.simple_dropdown_item_1line, list);
-        mSpot.setAdapter(adapter);
-        mSpot.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-            public void onItemSelected(AdapterView<?> arg0, View arg1,
-                                       int arg2, long arg3) {
-
-            }
-
-            public void onNothingSelected(AdapterView<?> arg0) {
-
-            }
-        });
 
         View titleText = v.findViewById(R.id.titleTextView);
         titleText.requestFocus();
@@ -274,6 +275,9 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
     }
 
     private int getIndexFromSpotId(long spotid) {
+        if (spotIdList == null)
+            return -1;
+
         for (int i = 0; i < spotIdList.size(); i++) {
             if (spotIdList.get(i) == spotid)
                 return i;
@@ -322,7 +326,9 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
         mFriday.setChecked(program.fr);
         mSaturday.setChecked(program.sa);
         mSunday.setChecked(program.su);
-        mSpot.setSelection(getIndexFromSpotId(program.spotId));
+        int index = getIndexFromSpotId(program.spotId);
+        if (index != -1)
+            mSpot.setSelection(index);
     }
 
     @SuppressLint("HandlerLeak")
@@ -351,7 +357,11 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
         program.sa = mSaturday.isChecked();
         program.su = mSunday.isChecked();
 
-        program.spotId = spotIdList.get(mSpot.getSelectedItemPosition());
+        if (mSpotList != null) {
+            program.spotId = spotIdList.get(mSpot.getSelectedItemPosition());
+        }/* else {
+            program.spotId = spotId;
+        }*/
 
         Calendar startdate = Calendar.getInstance();
         Calendar enddate = Calendar.getInstance();
@@ -411,12 +421,8 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
     }
 
     @SuppressLint("HandlerLeak")
-    public void setWebduinoPrograms(WindAlarmProgram prgms) {
-
-        program = prgms;
-
-        //updateProgramFragment();
-        //enableAllControls(true);
+    public void setProgram(WindAlarmProgram program) {
+        this.program = program;
     }
 
     private enum pickerType {

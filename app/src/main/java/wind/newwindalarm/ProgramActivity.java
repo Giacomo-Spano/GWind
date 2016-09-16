@@ -18,9 +18,15 @@ import wind.newwindalarm.controls.DatePickerDialogFragment;
 import wind.newwindalarm.controls.SpeedDialogFragment;
 import wind.newwindalarm.controls.TimePickerDialogFragment;
 import wind.newwindalarm.fragment.ProgramFragment;
-import wind.newwindalarm.fragment.ProgramListFragment;
 
 public class ProgramActivity extends AppCompatActivity {
+
+    public static final int EDITPROGRAM_REQUEST = 1;
+    public static final int CREATEPROGRAM_REQUEST = 2;
+    public static final int REQUESTRESULT_SAVED = 1;
+    public static final int REQUESTRESULT_DELETED = 2;
+    public static final int REQUESTRESULT_ERROR = 3;
+    public static final int REQUESTRESULT_ABORT = 4;
 
     protected ProgramFragment programFragment;
     protected String mServerUrl;
@@ -49,19 +55,24 @@ public class ProgramActivity extends AppCompatActivity {
             jsonMyObject = extras.getString("WindAlarmProgram");
             WindAlarmProgram program = new Gson().fromJson(jsonMyObject, WindAlarmProgram.class);
 
-            //Intent intent = getIntent();
-            //SpotList list = (SpotList) intent.getSerializableExtra("SpotList");
+            if (getIntent().getStringExtra("spotlist") != null) {
+                Gson gson = new Gson();
+                SpotList list = gson.fromJson(getIntent().getStringExtra("spotlist"), SpotList.class);
+                programFragment.setServerSpotList(list.spotList);
+            } else {
+                /*String spotId = pro//extras.getString("spotid");
+                long id = Long.valueOf(spotId);
+                programFragment.setSpotId(id);*/
+            }
 
-            Gson gson = new Gson();
-            SpotList list = gson.fromJson(getIntent().getStringExtra("spotlist"), SpotList.class);
-            programFragment.setServerSpotList(list.spotList);
-
-            programFragment.setWebduinoPrograms(program);
+            //programFragment.setSpotId(program.spotId);
+            programFragment.setProgram(program);
             //getActionBar().setTitle("Programma " + program.id);
             getSupportActionBar().setTitle("Programma " + program.id);
 
 
-            mServerUrl = getIntent().getStringExtra("serverurl");
+            //mServerUrl = getIntent().getStringExtra("serverurl");
+            mServerUrl = AlarmPreferences.getServerUrl(this);
         }
         saveProgramFab = (FloatingActionButton) findViewById(R.id.saveProgramFab);
         saveProgramFab.setOnClickListener(new View.OnClickListener() {
@@ -131,15 +142,15 @@ public class ProgramActivity extends AppCompatActivity {
                 WindAlarmProgram program = (WindAlarmProgram) obj;
                 if (error) {
 
-                    setResult(ProgramListFragment.REQUESTRESULT_ERROR, null);
+                    setResult(ProgramActivity.REQUESTRESULT_ERROR, null);
                 } else {
                     Intent output = new Intent();
                     output.putExtra("WindAlarmProgram", new Gson().toJson(program));
 
                     if (postType == postprogramtask.POST_DELETEALARM)
-                        setResult(ProgramListFragment.REQUESTRESULT_DELETED, output);
+                        setResult(ProgramActivity.REQUESTRESULT_DELETED, output);
                     else if  (postType == postprogramtask.POST_ALARM)
-                        setResult(ProgramListFragment.REQUESTRESULT_SAVED, output);
+                        setResult(ProgramActivity.REQUESTRESULT_SAVED, output);
 
                 }
                 finish();
@@ -149,7 +160,7 @@ public class ProgramActivity extends AppCompatActivity {
 
     public void onBackPressed() {
 
-        setResult(ProgramListFragment.REQUESTRESULT_ABORT, null);
+        setResult(ProgramActivity.REQUESTRESULT_ABORT, null);
         finish();
         // super.onBackPressed();
         // myFragment.onBackPressed();

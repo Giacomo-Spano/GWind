@@ -7,9 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.Space;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +28,8 @@ import wind.newwindalarm.AsyncRequestProgramResponse;
 import wind.newwindalarm.MainActivity;
 import wind.newwindalarm.ProgramActivity;
 import wind.newwindalarm.R;
+import wind.newwindalarm.SplashActivity;
 import wind.newwindalarm.Spot;
-import wind.newwindalarm.SpotList;
 import wind.newwindalarm.WindAlarmProgram;
 import wind.newwindalarm.cardui.AlarmCard;
 import wind.newwindalarm.cardui.AlarmCardSubitem;
@@ -41,15 +39,16 @@ import wind.newwindalarm.requestprogramtask;
 public class ProgramListFragment extends Fragment implements
         OnItemSelectedListener {
 
-    public static final int SHOWPROGRAM_REQUEST = 1;
+    /*public static final int EDITPROGRAM_REQUEST = 1;
     public static final int CREATEPROGRAM_REQUEST = 2;
     public static final int REQUESTRESULT_SAVED = 1;
     public static final int REQUESTRESULT_DELETED = 2;
     public static final int REQUESTRESULT_ERROR = 3;
-    public static final int REQUESTRESULT_ABORT = 4;
+    public static final int REQUESTRESULT_ABORT = 4;*/
 
     private boolean offline = false;
 
+    LayoutInflater inflater;
     View programListView;
     LinearLayout mcontainer;
     LinearLayout mErrorLayout;
@@ -58,6 +57,23 @@ public class ProgramListFragment extends Fragment implements
     private long spotId = -1;
     private FloatingActionButton addProgramFab;
     private ProgressBar progressBar;
+    OnProgramListListener mCallback;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        getAlarmListFromServer();
+    }
+
+    // Container Activity must implement this interface
+    public interface OnProgramListListener {
+        void onEditProgram(WindAlarmProgram program);
+    }
+
+    public void setListener(OnProgramListListener listener) {
+        mCallback = listener;
+    }
 
     public void setServerSpotList(List<Spot> list) {
 
@@ -72,29 +88,21 @@ public class ProgramListFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        this.inflater = inflater;
         programListView = inflater.inflate(R.layout.fragment_programlist, container, false);
-
-        addProgramFab = (FloatingActionButton) getActivity().findViewById(R.id.fabButton);
-        addProgramFab.setImageResource(R.drawable.add);
-        addProgramFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createProgram();
-            }
-        });
 
         mcontainer = (LinearLayout) programListView.findViewById(R.id.programlist);
         mErrorLayout = (LinearLayout) programListView.findViewById(R.id.errorLayout);
 
         progressBar = (ProgressBar) programListView.findViewById(R.id.progressBar);
 
-        getAlarmListFromServer();
+        //getAlarmListFromServer();
 
         final Button button = (Button) programListView.findViewById(R.id.retryButton);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
-                getAlarmListFromServer();
+                //getAlarmListFromServer();
             }
         });
 
@@ -113,6 +121,10 @@ public class ProgramListFragment extends Fragment implements
     }
 
     private void getAlarmListFromServer() {
+
+        mcontainer.removeAllViewsInLayout();
+        mcontainer.invalidate();
+
 
         alarmList.clear();
 
@@ -162,7 +174,7 @@ public class ProgramListFragment extends Fragment implements
         }, AlarmPreferences.getDeviceId(getActivity()),spotId).execute();
     }
 
-    public void createProgram() {
+    /*public void createProgram() {
 
         WindAlarmProgram program = new WindAlarmProgram();
         if (alarmList.size() == 0)
@@ -172,14 +184,17 @@ public class ProgramListFragment extends Fragment implements
 
         //addProgram(program);
         startProgramActivity(program, CREATEPROGRAM_REQUEST);
-    }
+    }*/
 
-    private void addProgram(WindAlarmProgram program) {
+    public void addProgram(final WindAlarmProgram program) {
 
-        if (getActivity() == null)
+        /*if (getActivity() == null)
             return;// TODO  qualche volta è null????
         final AlarmCardItem carditem = new AlarmCardItem();
-        carditem.card = (AlarmCard) getActivity().getLayoutInflater().inflate(R.layout.card_alarm, mcontainer, false);
+        carditem.card = (AlarmCard) getActivity().getLayoutInflater().inflate(R.layout.card_alarm, mcontainer, false);*/
+        final AlarmCardItem carditem = new AlarmCardItem();
+        carditem.card = (AlarmCard) inflater.inflate(R.layout.card_alarm, mcontainer, false);
+
         carditem.init();
 
         carditem.alarm = program;
@@ -195,31 +210,38 @@ public class ProgramListFragment extends Fragment implements
             @Override
             public void onClick(View v) {
 
-                startProgramActivity(carditem.alarm, SHOWPROGRAM_REQUEST);
+                //startProgramActivity(carditem.alarm, EDITPROGRAM_REQUEST);
+                mCallback.onEditProgram(program);
             }
         });
     }
 
-    private void startProgramActivity(WindAlarmProgram alarm, int request) {
-        Intent resultIntent = new Intent(getActivity(), ProgramActivity.class);
+    public void updateProgram(WindAlarmProgram program) {
+        AlarmCardItem card = getCardFromId(program.id);
+        card.update(program);
+    }
+
+    public void deleteProgram(WindAlarmProgram program) {
+        AlarmCardItem card = getCardFromId(program.id);
+        alarmList.remove(card);
+        card.remove();
+    }
+
+    /*private void startProgramActivity(WindAlarmProgram alarm, int request) {
+        //Intent resultIntent = new Intent(getActivity(), ProgramActivity.class);
+        Intent resultIntent = new Intent(SplashActivity.getContext(), ProgramActivity.class);
         resultIntent.putExtra("WindAlarmProgram", new Gson().toJson(alarm));
 
-        Gson gson = new Gson();
-        MainActivity a = (MainActivity) getActivity();
-        SpotList sl = a.getServerSpotList();
-        //sl.list = mSpotList;
-        //resultIntent.putExtra("SpotList", sl);
+        resultIntent.putExtra("spotid",spotId);
 
 
-        String myJson = gson.toJson(sl);
-        resultIntent.putExtra("spotlist", myJson);
-        resultIntent.putExtra("serverurl", (AlarmPreferences.getServerUrl(getActivity())));
+        //resultIntent.putExtra("serverurl", (AlarmPreferences.getServerUrl(getActivity())));
 
 
         startActivityForResult(resultIntent, request);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (resultCode == REQUESTRESULT_ERROR) {
@@ -263,7 +285,7 @@ public class ProgramListFragment extends Fragment implements
             }
         }
 
-        if (requestCode == SHOWPROGRAM_REQUEST) {
+        if (requestCode == EDITPROGRAM_REQUEST) {
 
             if (resultCode == REQUESTRESULT_SAVED) {
 
@@ -280,7 +302,7 @@ public class ProgramListFragment extends Fragment implements
             }
         }
 
-    }
+    }*/
 
     @Override
     public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,

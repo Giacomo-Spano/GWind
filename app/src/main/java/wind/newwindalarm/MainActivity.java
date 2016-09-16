@@ -35,6 +35,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -60,12 +62,14 @@ public class MainActivity extends AppCompatActivity implements
         /*View.OnClickListener, */NavigationView.OnNavigationItemSelectedListener,
         ProfileFragment.OnSignInClickListener,
         PanelFragment.OnSpotClickListener,
-        SpotDetailsFragment.OnClickListener {
+        SpotDetailsFragment.OnClickListener,
+        ProgramListFragment.OnProgramListListener {
 
     private List<MeteoStationData> meteoDataList = new ArrayList<>();
 
     CountDownTimer countDownTimer;
     ProgressBar progressBar;
+    private long spotId;
 
     @Override
     protected void onDestroy() {
@@ -134,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements
     TextView memailTextView;
     ImageView mUserImageImageView;
 
-    FloatingActionButton addFab;
+    FloatingActionButton fabButton;
     FloatingActionButton refreshFab;
 
     private UserProfile mProfile = null;
@@ -168,12 +172,14 @@ public class MainActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /*addFab = (FloatingActionButton) findViewById(R.id.addFab);
-        addFab.setOnClickListener(new View.OnClickListener() {
+        fabButton = (FloatingActionButton) findViewById(R.id.addFab);
+        /*fabButton.setImageResource(R.drawable.refreshbutton);
+        fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                programListFragment.createProgram();
+                getLastMeteoData();
+                //programListFragment.createProgram();
             }
         });*/
 
@@ -217,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements
 
         programFragment = new ProgramFragment();
         programListFragment = new ProgramListFragment();
+        programListFragment.setListener(this);
         settingsFragment = new SettingsFragment();
         settingsFragment.setSettings(mSettings);
         profileFragment = new ProfileFragment();
@@ -314,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements
                 return true;*/
             case R.id.action_add:
 
-                programListFragment.createProgram();
+                //programListFragment.createProgram();
                 ;
                 return true;
             /*case R.id.action_unregister:
@@ -362,7 +369,7 @@ public class MainActivity extends AppCompatActivity implements
             android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
 
             //refreshFab.setVisibility(View.GONE);
-            //addFab.setVisibility(View.GONE);
+            //fabButton.setVisibility(View.GONE);
 
 
             if (!signedIn && mPosition != R.id.nav_settings) {
@@ -373,15 +380,20 @@ public class MainActivity extends AppCompatActivity implements
 
                 if (mPosition == R.id.nav_favorites && panelFragment != null) {
                     ft.replace(R.id.content_frame, panelFragment);
+                    enableRefreshButton();
                     //refreshFab.setVisibility(View.VISIBLE);
                 } else if (mPosition == R.id.nav_program) {
                     ft.replace(R.id.content_frame, programListFragment);
-                    //addFab.setVisibility(View.VISIBLE);
+                    enableAddProgramButton();
+                    //fabButton.setVisibility(View.VISIBLE);
                 } else if (mPosition == R.id.nav_meteostation) {
+                    disableAllButton();
                     ft.replace(R.id.content_frame, spotMeteoListFragment);
                 } else if (mPosition == R.id.nav_settings) {
+                    disableAllButton();
                     ft.replace(R.id.content_frame, settingsFragment);
                 } else if (mPosition == R.id.nav_profile) {
+                    disableAllButton();
                     ft.replace(R.id.content_frame, profileFragment);
                     profileFragment.setProfile(mProfile);
                 }
@@ -437,7 +449,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
 
-                programListFragment.setServerSpotList(mSpotList.getSpotList());
+                //programListFragment.setServerSpotList(mSpotList.getSpotList());
 
                 if (panelFragment == null) {
                     panelFragment = new PanelFragment();
@@ -519,6 +531,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onSpotClick(long spotId) {
 
+        this.spotId = spotId;
         spotDetailsFragment = new SpotDetailsFragment();
         spotDetailsFragment.setListener(this);
         spotDetailsFragment.setMeteoData(getMeteodataFromId(spotId));
@@ -623,9 +636,143 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onChangeDetailView(int position) {
+    public void onChangeDetailView(int page) {
+
+        switch (page) {
+            case SpotDetailsFragment.Pager_ChartPage:
+                enableRefreshButton();
+                break;
+            case SpotDetailsFragment.Pager_MeteodataPage:
+                enableRefreshButton();
+                break;
+            case SpotDetailsFragment.Pager_ProgramListPage:
+                enableAddProgramButton();
+                break;
+            case SpotDetailsFragment.Pager_WebcamPage:
+                enableRefreshButton();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void enableRefreshButton() {
+        fabButton.setImageResource(R.drawable.refreshbutton);
+        fabButton.setVisibility(View.VISIBLE);
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                getLastMeteoData();
+            }
+        });
+    }
+
+    private void enableAddProgramButton() {
+
+        fabButton.setImageResource(R.drawable.add);
+        fabButton.setVisibility(View.VISIBLE);
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //programListFragment.createProgram();
+                WindAlarmProgram program = new WindAlarmProgram();
+                program.spotId = spotId;
+                /*if (alarmList.size() == 0)
+                    program.id = 1L;
+                else
+                    program.id = alarmList.get(alarmList.size() - 1).alarm.id + 1;*/
+                startProgramActivity(program, ProgramActivity.CREATEPROGRAM_REQUEST);
+            }
+        });
+    }
+
+    private void disableAllButton() {
+
+        fabButton.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onEditProgram(WindAlarmProgram program) {
+
+        startProgramActivity(program, ProgramActivity.EDITPROGRAM_REQUEST);
+    }
+
+    private void startProgramActivity(WindAlarmProgram alarm, int request) {
+        //Intent resultIntent = new Intent(getActivity(), ProgramActivity.class);
+        Intent resultIntent = new Intent(SplashActivity.getContext(), ProgramActivity.class);
+        resultIntent.putExtra("WindAlarmProgram", new Gson().toJson(alarm));
+
+        //resultIntent.putExtra("spotid",spotId);
+
+        /*Gson gson = new Gson();
+        MainActivity a = (MainActivity) getActivity();
+        SpotList sl = a.getServerSpotList();
+        String myJson = gson.toJson(sl);
+        resultIntent.putExtra("spotlist", myJson);*/
+        //resultIntent.putExtra("serverurl", (AlarmPreferences.getServerUrl(getActivity())));
+
+
+        startActivityForResult(resultIntent, request);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (resultCode == ProgramActivity.REQUESTRESULT_ERROR) {
+            // non faccio niemnte
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+            alertDialogBuilder.setTitle("Errore");
+            alertDialogBuilder
+                    .setMessage("Impossibile salvare")
+                    .setCancelable(false);
+            alertDialogBuilder
+                    .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // if this button is clicked, just close
+                            // the dialog box and do nothing
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alertDialog;
+            alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+            return;
+        }
+        if (resultCode == ProgramActivity.REQUESTRESULT_ABORT) {
+            // non faccio niemnte
+            return;
+        }
+
+        String jsonMyObject;
+        jsonMyObject = data.getStringExtra("WindAlarmProgram");
+        WindAlarmProgram program = new Gson().fromJson(jsonMyObject, WindAlarmProgram.class);
+        if (requestCode == ProgramActivity.CREATEPROGRAM_REQUEST) {
+            if (resultCode == ProgramActivity.REQUESTRESULT_SAVED) {
+                //programListFragment.addProgram(program);
+                //programListFragment.
+                //programListFragment = new ProgramListFragment();
+            } else if (resultCode == ProgramActivity.REQUESTRESULT_DELETED) {
+                // non faccio niemnte
+            }
+        } else if (requestCode == ProgramActivity.EDITPROGRAM_REQUEST) {
+            if (resultCode == ProgramActivity.REQUESTRESULT_SAVED) {
+                /*AlarmCardItem card = getCardFromId(program.id);
+                card.update(program);*/
+                //programListFragment.updateProgram(program);
+            } else if (resultCode == ProgramActivity.REQUESTRESULT_DELETED) {
+                /*AlarmCardItem card = getCardFromId(program.id);
+                alarmList.remove(card);
+                card.remove();*/
+                //programListFragment.deleteProgram(program);
+            }
+        }
 
     }
+
+
 
     private class requestDataResponse implements AsyncRequestMeteoDataResponse {
 
@@ -636,6 +783,8 @@ public class MainActivity extends AppCompatActivity implements
                 panelFragment = new PanelFragment();
                 showFragment(R.id.nav_favorites, false);
             }*/
+            meteoDataList.clear();
+
             Iterator iterator = list.iterator();
             while (iterator.hasNext()) {
                 MeteoStationData md = (MeteoStationData) iterator.next();

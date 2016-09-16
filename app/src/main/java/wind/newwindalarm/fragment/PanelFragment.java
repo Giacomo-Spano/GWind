@@ -50,14 +50,13 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
     public void onResume() {
         super.onResume();
 
-        refreshFab.setImageResource(R.drawable.refreshbutton);
-        //refreshFab.setVisibility(View.GONE);
+        /*refreshFab.setImageResource(R.drawable.refreshbutton);
         refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mCallback.onRefreshPanelRequest();
             }
-        });
+        });*/
     }
 
     public void setMeteoDataList(List<MeteoStationData> list) {
@@ -113,7 +112,7 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
 
         mcontainer = (LinearLayout) v.findViewById(R.id.meteolist);
 
-        refreshFab = (FloatingActionButton) getActivity().findViewById(R.id.fabButton);
+        //refreshFab = (FloatingActionButton) getActivity().findViewById(R.id.fabButton);
 
 
         //mErrorLayout = (LinearLayout) v.findViewById(R.id.errorLayout);

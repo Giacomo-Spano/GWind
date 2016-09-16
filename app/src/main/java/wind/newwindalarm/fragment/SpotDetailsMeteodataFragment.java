@@ -39,7 +39,7 @@ public class SpotDetailsMeteodataFragment extends Fragment {
     private InfoCard windIdInfoCard;
 
     OnClickListener mCallback;
-    private FloatingActionButton refreshFab;
+    //private FloatingActionButton refreshFab;
 
     // Container Activity must implement this interface
     public interface OnClickListener {
@@ -59,13 +59,13 @@ public class SpotDetailsMeteodataFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        refreshFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.refreshbutton));
+        /*refreshFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.refreshbutton));
         refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mCallback.onRefreshMeteoDataRequest();
             }
-        });
+        });*/
     }
 
     @Override
@@ -80,7 +80,7 @@ public class SpotDetailsMeteodataFragment extends Fragment {
         View v;
         v = inflater.inflate(R.layout.fragment_spotdetails_meteodata, container, false);
 
-        refreshFab = (FloatingActionButton) getActivity().findViewById(R.id.fabButton);
+        //refreshFab = (FloatingActionButton) getActivity().findViewById(R.id.fabButton);
 
         speedInfoCard = (InfoCard) v.findViewById(R.id.speedInfoCard);
         speedInfoCard.init();
