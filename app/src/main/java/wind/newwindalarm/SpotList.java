@@ -84,7 +84,7 @@ public class SpotList {
             }
 
             @Override
-            public void processFinishHistory(List<MeteoStationData> list, boolean error, String errorMessage) {
+            public void processFinishHistory(long spotId, List<MeteoStationData> list, boolean error, String errorMessage) {
 
             }
 

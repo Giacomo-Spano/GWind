@@ -161,7 +161,25 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
 
         mcontainer.removeAllViews();
 
-        MainActivity a = (MainActivity) getActivity();
+        if (meteoDataList == null)
+            return;
+
+        for (MeteoStationData md : meteoDataList) {
+            MeteoCardItem carditem = new MeteoCardItem(this, getActivity(), mcontainer);
+            mcontainer.addView(carditem.getCard());
+            carditem.setSourceUrl(md.source);
+            carditem.setTitle(md.spotName);
+            /*if (md.offline) {
+                 carditem.card.setTitle("offline");
+            }*/
+            carditem.update(md);
+            carditem.setSpotId(md.spotID);
+        }
+        mcontainer.invalidate();
+
+
+
+        /*MainActivity a = (MainActivity) getActivity();
         List<Spot> favorites = a.getFavorites();
 
         for (Spot spot : favorites) {
@@ -170,14 +188,12 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
             mcontainer.addView(carditem.getCard());
             carditem.setSourceUrl(spot.sourceUrl);
             carditem.setTitle(spot.spotName);
-            /*if (md.offline) {
-                 carditem.card.setTitle("offline");
-            }*/
             MeteoStationData md = getMeteoDataFromId(spot.id);
             if (md != null)
                 carditem.update(md);
             carditem.setSpotId(spot.id);
         }
         mcontainer.invalidate();
+        */
     }
 }

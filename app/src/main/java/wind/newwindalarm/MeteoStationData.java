@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by giacomo on 07/06/2015.
@@ -27,10 +28,12 @@ public class MeteoStationData /*extends Object*/ {
     public String spotName;
     public long spotID;
     public Double trend = 0.0;
+    public String source = null;
     public String webcamurl = null;
     public String webcamurl2 = null;
     public String webcamurl3 = null;
     public boolean offline = false;
+
 
     public MeteoStationData() {
     }
@@ -113,6 +116,8 @@ public class MeteoStationData /*extends Object*/ {
             webcamurl3 = jObject.getString("webcamurl3");
         if (!jObject.isNull("offline"))
             offline = jObject.getBoolean("offline");
+        if (!jObject.isNull("source"))
+            source = jObject.getString("source");
     }
 
     public String toJson() {

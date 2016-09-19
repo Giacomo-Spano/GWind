@@ -12,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
 import java.util.List;
 import wind.newwindalarm.MainActivity;
 import wind.newwindalarm.MeteoStationData;
@@ -85,13 +87,18 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
         tabLayout.getTabAt(2).setIcon(R.drawable.graphicon);
         tabLayout.getTabAt(3).setIcon(R.drawable.graphicon);
 
+
         // Updating the action bar title
         if (meteoData != null) {
-            String txt = ((MainActivity)getActivity()).getSpotName(meteoData.spotID);
-            if (txt != null) {
-                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(txt);
+            String spotName = ((MainActivity)getActivity()).getSpotName(meteoData.spotID);
+            if (spotName != null) {
+                //((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(spotName);
+                TextView tv = (TextView) v.findViewById(R.id.spotNameTextView);
+                tv.setText(spotName);
+
             }
         }
+
         return v;
     }
 

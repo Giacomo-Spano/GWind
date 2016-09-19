@@ -8,8 +8,8 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#999999"
-        android:padding="5dp"
+        android:background="@color/colorPrimary"
+        android:padding="0dp"
         android:layout_alignParentTop="true">
 
         <RelativeLayout
@@ -112,12 +112,16 @@
 <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pager"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+
+    >
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tablayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        >
 
         <android.support.design.widget.TabItem
             android:layout_width="wrap_content"

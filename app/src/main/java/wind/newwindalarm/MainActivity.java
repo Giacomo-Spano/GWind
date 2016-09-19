@@ -132,7 +132,9 @@ public class MainActivity extends AppCompatActivity implements
     SpotMeteoListFragment spotMeteoListFragment;
     SpotDetailsFragment spotDetailsFragment;
     SearchSpotFragment searchSpotFragment;
-    HistoricalMetoData historicalMeteoData = new HistoricalMetoData();
+    //HistoricalMetoData historicalMeteoData = new HistoricalMetoData();
+    SpotMeteoDataList spotMeteoDataList = new SpotMeteoDataList();
+
     // google properties
     TextView mUserNameTextView;
     TextView memailTextView;
@@ -196,6 +198,10 @@ public class MainActivity extends AppCompatActivity implements
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        //getSupportActionBar().setElevation(0);
+
+        //drawer.setScrimColor(Color.TRANSPARENT);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -426,7 +432,7 @@ public class MainActivity extends AppCompatActivity implements
             }
 
             @Override
-            public void processFinishHistory(List<MeteoStationData> list, boolean error, String errorMessage) {
+            public void processFinishHistory(long spotId, List<MeteoStationData> list, boolean error, String errorMessage) {
             }
 
             @Override
@@ -547,13 +553,15 @@ public class MainActivity extends AppCompatActivity implements
             // There's no way to avoid getting this if saveInstanceState has already been called.
         }
 
-        List<MeteoStationData> list = historicalMeteoData.getFromId(spotId);
-        if (list != null) {
+        getHistoryMeteoData(spotId);
+
+        /*List<MeteoStationData> list = spotMeteoDataList.getHistory(spotId);
+        if (list != null && list.size() > 0) {
             spotDetailsFragment.setHistoryMeteoData(list);
         } else {
 
             getHistoryMeteoData(spotId);
-        }
+        }*/
     }
 
     @Override
@@ -576,7 +584,8 @@ public class MainActivity extends AppCompatActivity implements
                 spotList += ",";
             spotList += spot.id;
         }
-        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_LASTMETEODATA).execute(spotList,mProfile.personId);
+        //new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_LASTMETEODATA).execute(spotList,mProfile.personId);
+        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_FAVORITESLASTMETEODATA).execute(mProfile.personId);
     }
 
     private void startProgressBar() {
@@ -600,6 +609,8 @@ public class MainActivity extends AppCompatActivity implements
 
     public void getHistoryMeteoData(long spotId) {
 
+        long lastWindId = spotMeteoDataList.getLastHistoryId(spotId);
+
         Date end = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(end);
@@ -608,7 +619,7 @@ public class MainActivity extends AppCompatActivity implements
 
         startProgressBar();
 
-        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_LOGMETEODATA).execute(spotId, mProfile.personId, start, end);
+        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_LOGMETEODATA).execute(spotId, mProfile.personId, start, end, lastWindId);
     }
 
     @Override
@@ -779,37 +790,37 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void processFinish(List<MeteoStationData> list, boolean error, String errorMessage) {
 
-            /*if (panelFragment == null) {
-                panelFragment = new PanelFragment();
-                showFragment(R.id.nav_favorites, false);
-            }*/
-            meteoDataList.clear();
 
-            Iterator iterator = list.iterator();
-            while (iterator.hasNext()) {
-                MeteoStationData md = (MeteoStationData) iterator.next();
-                meteoDataList.add(md);
-            }
-            panelFragment.setMeteoDataList(meteoDataList);
+            if (list == null)
+                return;
+            //meteoDataList = list;
+            for (MeteoStationData md : list)
+                spotMeteoDataList.setLastMeteoData(md.spotID,md);
+            panelFragment.setMeteoDataList(list);
             panelFragment.refreshMeteoData();
 
             //countDownTimer.cancel();
             progressBar.setVisibility(View.GONE);
+            mInformationTextView.setVisibility(View.GONE);
         }
 
         @Override
-        public void processFinishHistory(List<MeteoStationData> list, boolean error, String errorMessage) {
+        public void processFinishHistory(long spotId, List<MeteoStationData> list, boolean error, String errorMessage) {
 
-            if (spotDetailsFragment != null)
+            if (spotDetailsFragment != null) {
+                spotMeteoDataList.setHistory(spotId,list);
                 spotDetailsFragment.setHistoryMeteoData(list);
+            }
 
             progressBar.setVisibility(View.GONE);
+            mInformationTextView.setVisibility(View.GONE);
         }
 
         @Override
         public void processFinishSpotList(List<Spot> list, List<Long> favorites, boolean error, String errorMessage) {
 
             progressBar.setVisibility(View.GONE);
+            mInformationTextView.setVisibility(View.GONE);
 
         }
 
@@ -907,8 +918,49 @@ public class MainActivity extends AppCompatActivity implements
         return circuleBitmap;
     }
 
-    /*public void updateFavorites(String favorites) {
-        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_ADDFAVORITES).execute(favorites,mProfile.personId);
+    private class SpotMeteoData {
+        private MeteoStationData md;
+        private List<MeteoStationData> history = new ArrayList<MeteoStationData>();
+    }
+    private class SpotMeteoDataList {
+        List<SpotMeteoData> lastMeteoData = new ArrayList<SpotMeteoData>();
 
-    }*/
+        private SpotMeteoData getFromId(long spotId) {
+            if (lastMeteoData == null) return null;
+            for (SpotMeteoData smd : lastMeteoData) {
+                if (smd.md.spotID == spotId)
+                    return smd;
+            }
+            return null;
+        }
+        public MeteoStationData getLastMeteoData(long spotId) {
+            return getFromId(spotId).md;
+        }
+        public void setLastMeteoData(long spotId, MeteoStationData md) {
+            SpotMeteoData smd = getFromId(spotId);
+            if (smd == null) {
+                smd = new SpotMeteoData();
+                lastMeteoData.add(smd);
+            }
+            smd.md = md;
+        }
+        public List<MeteoStationData> getHistory(long spotId) {
+            SpotMeteoData smd = getFromId(spotId);
+            if (smd == null || smd.history == null || smd.history.size() == 0)
+                return null;
+            return getFromId(spotId).history;
+        }
+        public long getLastHistoryId(long spotId) {
+            List<MeteoStationData> list = getHistory(spotId);
+            if (list == null) return -1;
+            return list.get(list.size()-1).id;
+        }
+        public void setHistory(long spotId, List<MeteoStationData> history) {
+            SpotMeteoData smd = getFromId(spotId);
+            if (smd == null) {
+                smd = new SpotMeteoData();
+            }
+            smd.history = history;
+        }
+    }
 }
