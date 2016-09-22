@@ -157,8 +157,10 @@ public class requestMeteoDataTask extends
 
                 } else if (requestType == REQUEST_FAVORITESLASTMETEODATA) {
                     String userid = (String) params[0];
+                    Long windid = (Long) params[1];
                     path += "favoriteslastdata=true";
                     path += "&userid=" + userid;
+                    path += "&lastwindid=" + windid;
 
                 } else if (requestType == REQUEST_SPOTLIST_FULLINFO) {
                     String userid = (String) params[0];

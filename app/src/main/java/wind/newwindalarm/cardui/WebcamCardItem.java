@@ -1,6 +1,7 @@
 package wind.newwindalarm.cardui;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,46 +18,51 @@ public class WebcamCardItem {
 
     public WebcamCard card;
     WebcamCardListener listener;
+    private Bitmap image;
+
+    public void show() {
+
+    }
+
+    public void hide() {
+
+    }
 
     public interface WebcamCardListener {
         public void cardSelected();
     }
 
-    public WebcamCardItem(WebcamCardListener ml, final Activity activity, LinearLayout container) {
-
-        listener = ml;
-        card = (WebcamCard) activity.getLayoutInflater().inflate(R.layout.card_webcam, container, false);
-
-        card.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                listener.cardSelected();
-            }
-        });
-
-        card.init();
-    }
-
     public WebcamCardItem(WebcamCardListener ml) {
 
         listener = ml;
-        //card.init();
     }
 
     public ImageView getImageView() {
         return card.getImageView();
     }
 
+    public void setWebCamImage(Bitmap bmp) {
+        image = bmp;
+    }
+
     public ProgressBar getProgressBar() {
         return card.getProgressBar();
+    }
+
+    public void hideProgressBar() {
+        card.hideProgressBar();
     }
 
     public void setTitle(String title) {
         card.setTitle(title);
     }
 
-    public void update(MeteoStationData data) {
+    public void update() {
+        if (image != null && card != null) {
+            card.setVisibility(View.VISIBLE);
+            card.setImage(image);
+            card.hideProgressBar();
+        }
 
    }
 }

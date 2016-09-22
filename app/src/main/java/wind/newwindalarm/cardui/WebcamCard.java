@@ -1,6 +1,7 @@
 package wind.newwindalarm.cardui;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -49,5 +50,9 @@ public class WebcamCard extends LinearLayout {
 
         if (title == null) return;
             titleTextView.setText(title);
+    }
+
+    public void setImage(Bitmap bmp) {
+        imageView.setImageBitmap(bmp);
     }
 }

@@ -2,19 +2,21 @@ package wind.newwindalarm.fragment;
 
 
 //import android.app.Fragment;
+
+import android.graphics.Bitmap;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.List;
+
 import wind.newwindalarm.MainActivity;
 import wind.newwindalarm.MeteoStationData;
 import wind.newwindalarm.R;
@@ -44,10 +46,26 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
         mCallback.onEditProgram(program);
     }
 
+    public void setWebCamImage(int n, Bitmap bmp) {
+        if (webcamFragment != null) {
+            webcamFragment.setWebCamImage(n, bmp);
+            webcamFragment.refreshData();
+        }
+    }
+
+    public void showWebCamProgressBar(int n) {
+        if (webcamFragment != null) {
+            webcamFragment.showWebCamProgressBar(n);
+            //webcamFragment.refreshData();
+        }
+    }
+
     // Container Activity must implement this interface
     public interface OnClickListener {
         void onRefreshDetailViewRequest(int position); // click sul bottone refrersh ??? non più usato
+
         void onChangeDetailView(int position); // cambiamento Tab pager attivo
+
         void onEditProgram(WindAlarmProgram program);
     }
 
@@ -59,25 +77,44 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
         TabLayout tabLayout = (TabLayout) v.findViewById(R.id.tablayout);
         mPager = (ViewPager) v.findViewById(R.id.pager);
 
-        mPagerAdapter = new SpotDetailPagerAdapter(((MainActivity)getActivity()).getSupportFragmentManager());
+        mPagerAdapter = new SpotDetailPagerAdapter(((MainActivity) getActivity()).getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
         mCallback.onChangeDetailView(Pager_MeteodataPage);
 
         mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             // optional
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
             // optional
             @Override
             public void onPageSelected(int position) {
                 mCallback.onChangeDetailView(position);
 
+                switch (position) {
+                    case Pager_MeteodataPage:
+                        meteodataFragment.refreshData();
+                        break;
+
+                    case Pager_WebcamPage:
+                        webcamFragment.refreshData();
+                        break;
+
+                    case Pager_ChartPage:
+                        chartFragment.refreshData();
+                        break;
+
+                    case Pager_ProgramListPage:
+                        //programListFragment.refreshData();
+                        break;
+                }
             }
 
             // optional
             @Override
-            public void onPageScrollStateChanged(int state) { }
+            public void onPageScrollStateChanged(int state) {
+            }
         });
 
         tabLayout.setupWithViewPager(mPager);
@@ -90,12 +127,11 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
 
         // Updating the action bar title
         if (meteoData != null) {
-            String spotName = ((MainActivity)getActivity()).getSpotName(meteoData.spotID);
+            String spotName = ((MainActivity) getActivity()).getSpotName(meteoData.spotID);
             if (spotName != null) {
                 //((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(spotName);
                 TextView tv = (TextView) v.findViewById(R.id.spotNameTextView);
                 tv.setText(spotName);
-
             }
         }
 
@@ -113,7 +149,6 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
         chartFragment = new SpotDetailsChartFragment();
         programListFragment = new ProgramListFragment();
         programListFragment.setListener(this);
-
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -124,8 +159,6 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
     public void setMeteoData(MeteoStationData data) {
         meteoData = data;
 
-        /*chartFragment.setMeteoData(data);
-        webcamFragment.setMeteoData(data);*/
         meteodataFragment.setMeteoData(data);
     }
 
@@ -138,9 +171,9 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
         chartFragment.setHistoryMeteoData(meteoDataList);
     }
 
-    public MeteoStationData getLastHistoryMeteoData() {
+    /*public MeteoStationData getLastHistoryMeteoData() {
         return chartFragment.getLastHistoryMeteoData();
-    }
+    }*/
 
     @Override
     public void onRefreshMeteoDataRequest() {
@@ -165,24 +198,24 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
 
                 meteodataFragment.setSpotId(spotId);
                 meteodataFragment.setMeteoData(meteoData);
-                meteodataFragment.refreshData();
-                return  meteodataFragment;
+                //meteodataFragment.refreshData();
+                return meteodataFragment;
 
-            }  else if (position == Pager_WebcamPage) {
+            } else if (position == Pager_WebcamPage) {
 
                 webcamFragment.setSpotId(spotId);
                 webcamFragment.setMeteoData(meteoData);
-                webcamFragment.refreshData();
-                return  webcamFragment;
+                //webcamFragment.refreshData();
+                return webcamFragment;
 
-            }  else if (position == Pager_ChartPage) {
+            } else if (position == Pager_ChartPage) {
 
                 chartFragment.setSpotId(spotId);
                 chartFragment.setMeteoData(meteoData);
-                chartFragment.refreshData();
+                //chartFragment.refreshData();
                 return chartFragment;
 
-            }  else if (position == Pager_ProgramListPage) {
+            } else if (position == Pager_ProgramListPage) {
 
                 programListFragment.setSpotId(spotId);
                 //programListFragment.setMeteoData(meteoData);
@@ -197,14 +230,14 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
         @Override
         public CharSequence getPageTitle(int position) {
             String titolo = "titolo " + position;
-            if (position == 0 ) {
-                return  "Dati meteo";
-            }  else if (position == 1 ) {
-                return  "Webcam";
-            } else if (position == 2 ) {
-                return  "Grafico";
-            } else if (position == 3 ) {
-                return  "Sveglie";
+            if (position == 0) {
+                return "Dati meteo";
+            } else if (position == 1) {
+                return "Webcam";
+            } else if (position == 2) {
+                return "Grafico";
+            } else if (position == 3) {
+                return "Sveglie";
             }
             return titolo;
         }

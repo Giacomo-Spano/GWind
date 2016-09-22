@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -29,9 +30,10 @@ public class MeteoStationData /*extends Object*/ {
     public long spotID;
     public Double trend = 0.0;
     public String source = null;
-    public String webcamurl = null;
+    public List<String> webcamurlList = new ArrayList<>();
+    /*public String webcamurl = null;
     public String webcamurl2 = null;
-    public String webcamurl3 = null;
+    public String webcamurl3 = null;*/
     public boolean offline = false;
 
 
@@ -56,9 +58,10 @@ public class MeteoStationData /*extends Object*/ {
         spotName = md.spotName;;
         spotID = md.spotID;;
         trend = md.trend;
-        webcamurl = md.webcamurl;
-        webcamurl2 = md.webcamurl2;
-        webcamurl3 = md.webcamurl3;
+        int count = 0;
+        for (String url : md.webcamurlList) {
+            webcamurlList.add(url);
+        }
         offline  = md.offline;
     }
 
@@ -109,11 +112,11 @@ public class MeteoStationData /*extends Object*/ {
         if (!jObject.isNull("spotid"))
             spotID = jObject.getLong("spotid");
         if (!jObject.isNull("webcamurl"))
-            webcamurl = jObject.getString("webcamurl");
+            webcamurlList.add(jObject.getString("webcamurl"));
         if (!jObject.isNull("webcamurl2"))
-            webcamurl2 = jObject.getString("webcamurl2");
+            webcamurlList.add(jObject.getString("webcamurl2"));
         if (!jObject.isNull("webcamurl3"))
-            webcamurl3 = jObject.getString("webcamurl3");
+            webcamurlList.add(jObject.getString("webcamurl3"));
         if (!jObject.isNull("offline"))
             offline = jObject.getBoolean("offline");
         if (!jObject.isNull("source"))
@@ -137,7 +140,13 @@ public class MeteoStationData /*extends Object*/ {
             obj.put("sampledatetime", sampledatetime);
             obj.put("trend", trend);
             obj.put("spotid", spotID);
-            obj.put("webcamurl", webcamurl);
+            int count = 0;
+            for (String url : webcamurlList) {
+                if (count++ == 0)
+                    obj.put("webcamurl", url);
+                else
+                    obj.put("webcamurl"+count, url);
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();

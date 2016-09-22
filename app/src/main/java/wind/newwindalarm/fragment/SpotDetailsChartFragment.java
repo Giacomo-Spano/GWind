@@ -1,6 +1,7 @@
 package wind.newwindalarm.fragment;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import com.github.mikephil.charting.listener.OnChartGestureListener;
 import java.util.List;
 
 import wind.newwindalarm.FullChartActivity;
+import wind.newwindalarm.MainActivity;
 import wind.newwindalarm.MeteoStationData;
 import wind.newwindalarm.R;
 import wind.newwindalarm.cardui.ChartCard;
@@ -96,7 +98,8 @@ public class SpotDetailsChartFragment extends Fragment implements ChartCardListe
         hc = new HistoryChart(getActivity(), mWindChart, mTrendChart, mTemperatureChart);
         if (meteoDataList != null) {
 
-            hc.drawChart(meteoDataList);
+            refreshData();
+            //hc.drawChart(meteoDataList);
         }
 
 
@@ -150,6 +153,8 @@ public class SpotDetailsChartFragment extends Fragment implements ChartCardListe
     public void refreshData() {
 
         //hc = new HistoryChart(getActivity(), mWindChart, mTrendChar, mTemperatureChart);
+        //Activity a = getActivity();
+
         if (hc != null) {
             mWindCard.hideProgressBar();
             mTemperatureCard.hideProgressBar();
