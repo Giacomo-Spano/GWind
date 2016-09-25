@@ -9,16 +9,19 @@ import android.widget.ProgressBar;
 
 import com.github.mikephil.charting.charts.LineChart;
 
+import java.io.Serializable;
+
 import wind.newwindalarm.MeteoStationData;
 import wind.newwindalarm.R;
 import wind.newwindalarm.controls.TouchImageView;
 
 
-public class WebcamCardItem {
+public class WebcamCardItem implements Serializable {
 
     public WebcamCard card;
     WebcamCardListener listener;
     private Bitmap image;
+    private long lastWebcamImageWindId;
 
     public void show() {
 
@@ -41,8 +44,18 @@ public class WebcamCardItem {
         return card.getImageView();
     }
 
-    public void setWebCamImage(Bitmap bmp) {
+    public void setWebCamImage(Bitmap bmp, long lastWebcamImageWindId) {
+
         image = bmp;
+        this.lastWebcamImageWindId = lastWebcamImageWindId;
+    }
+
+    public Bitmap getWebCamImage() {
+        return image;
+    }
+
+    public long getlastWebcamImageWindId() {
+        return lastWebcamImageWindId;
     }
 
     public ProgressBar getProgressBar() {
@@ -59,9 +72,10 @@ public class WebcamCardItem {
 
     public void update() {
         if (image != null && card != null) {
-            card.setVisibility(View.VISIBLE);
+
             card.setImage(image);
             card.hideProgressBar();
+            card.setVisibility(View.VISIBLE);
         }
 
    }

@@ -23,7 +23,7 @@ import wind.newwindalarm.R;
 import wind.newwindalarm.cardui.InfoCard;
 import wind.newwindalarm.cardui.WebcamCard;
 
-public class SpotDetailsMeteodataFragment extends Fragment {
+public class SpotDetailsMeteodataFragment extends Fragment implements SpotDetailsFragmentInterface {
 
     private long spotID;
     private MeteoStationData meteoData;

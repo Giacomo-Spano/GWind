@@ -140,4 +140,89 @@ public class AlarmPreferences {
         editor.commit();
 
     }
+
+    public static long getUserId(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        long userId = sharedPreferences.getLong(QuickstartPreferences.USER_ID,-1l);
+        return userId;
+    }
+
+    public static void setUserId(Context context, long userId) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong(QuickstartPreferences.USER_ID, userId);  // Saving string
+        editor.commit(); // commit changes*/
+    }
+
+    public static void deleteUserId(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(QuickstartPreferences.USER_ID);
+        editor.commit();
+
+    }
+
+    public static String getPhotoURL(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String photoURL = sharedPreferences.getString(QuickstartPreferences.PHOTOURL_ID,null);
+        return photoURL;
+    }
+
+    public static void setPhotoURL(Context context, String photoURL) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(QuickstartPreferences.PHOTOURL_ID, photoURL);  // Saving string
+        editor.commit(); // commit changes*/
+    }
+
+    public static void deletePhotoURL(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(QuickstartPreferences.PHOTOURL_ID);
+        editor.commit();
+
+    }
+
+    public static String getEmail(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String email = sharedPreferences.getString(QuickstartPreferences.EMAIL_ID,null);
+        return email;
+    }
+
+    public static void setEmail(Context context, String email) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(QuickstartPreferences.EMAIL_ID, email);  // Saving string
+        editor.commit(); // commit changes*/
+    }
+
+    public static void deleteEmail(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(QuickstartPreferences.EMAIL_ID);
+        editor.commit();
+
+    }
+
+    public static String getUserName(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String userName = sharedPreferences.getString(QuickstartPreferences.USERNAME_ID,null);
+        return userName;
+    }
+
+    public static void setUserName(Context context, String userName) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(QuickstartPreferences.USERNAME_ID, userName);  // Saving string
+        editor.commit(); // commit changes*/
+    }
+
+    public static void deleteUserName(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(QuickstartPreferences.USERNAME_ID);
+        editor.commit();
+
+    }
+
 }

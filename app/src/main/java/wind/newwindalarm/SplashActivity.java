@@ -74,6 +74,7 @@ public class SplashActivity extends AppCompatActivity implements
 
     private static SplashActivity instance;
 
+    private long spotId = -1;
 
     public static SplashActivity getInstance() {
         return instance;
@@ -95,9 +96,11 @@ public class SplashActivity extends AppCompatActivity implements
         instance = this;
         Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
 
-        initGoogleSignin();
-        //silentSignIn();
-        signIn();
+        String spotIdStr = getIntent().getStringExtra("spotId");
+        if (spotIdStr != null) {
+            spotId = Integer.valueOf(spotIdStr);
+        }
+
         /*if (!sendLogToMail()) {
 
             initGoogleSignin();
@@ -106,6 +109,33 @@ public class SplashActivity extends AppCompatActivity implements
         } else {
             finish();
         }*/
+
+        long deviceId = AlarmPreferences.getDeviceId(getContext());
+        long userId = AlarmPreferences.getUserId(getContext());
+        String personId = AlarmPreferences.getPersonId(getContext());
+        String photoURL = AlarmPreferences.getPhotoURL(getContext());
+        String email = AlarmPreferences.getEmail(getContext());
+        String username = AlarmPreferences.getUserName(getContext());
+
+
+
+
+        if (deviceId != -1 && userId != -1 && personId != null) {
+
+            mProfile = new UserProfile();
+            mProfile.userName = username;
+            mProfile.email = email;
+            mProfile.personId = personId;
+            if (photoURL != null)
+                mProfile.photoUrl = photoURL;
+
+            startMainActivity(mProfile);
+        }
+
+
+        initGoogleSignin();
+        //silentSignIn();
+        signIn();
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -119,10 +149,11 @@ public class SplashActivity extends AppCompatActivity implements
                                 // servono per indicare che la registrazione non è arrivata e potrebbero non suonare le sveglie
                     //mInformationTextView.setText(getString(R.string.gcm_send_message));
                     //mInformationTextView.setVisibility(ProgressBar.GONE);
+                    CommonUtilities.sendMessageToMainActivity(context, "title", "Registrazione completata");
                 } else {
                     //mInformationTextView.setText(getString(R.string.token_error_message));
+                    CommonUtilities.sendMessageToMainActivity(context, "title", "Errore: registrazione non completata");
                 }
-                startMainActivity(mProfile);
             }
         };
     }
@@ -135,13 +166,16 @@ public class SplashActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver();
+        // unregisterReceiver è commentato perchè altrimenti se il messaggio
+        // QuickstartPreferences.REGISTRATION_COMPLETE arriva quando l'activity
+        // MainActivity è già partita allora non arriva mai
+        //registerReceiver();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver();
+        //unregisterReceiver();
     }
 
     void initGoogleSignin() {
@@ -221,6 +255,7 @@ public class SplashActivity extends AppCompatActivity implements
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("userProfile", profile);
+        intent.putExtra("spotId", ""+spotId);
         startActivityForResult(intent, RC_SHOWMAINACTIVITY);
     }
 
@@ -312,8 +347,10 @@ public class SplashActivity extends AppCompatActivity implements
                 revokeAccess();
 
             } else if (resultCode == RESULT_EXIT) {
+                unregisterReceiver();
                 finish();
             } else {
+                unregisterReceiver();
                 finish();
             }
         } else if (requestCode == RC_SIGNOUT) {
@@ -352,12 +389,13 @@ public class SplashActivity extends AppCompatActivity implements
             registerReceiver();
             if (checkPlayServices()) {
                 // Start IntentService to register this application with GCM.
-                Intent intent = new Intent(this/*MainActivity.getContext()*/, RegistrationIntentService.class);
+                Intent intent = new Intent(this, RegistrationIntentService.class);
                 startService(intent);
             }
 
-        } else {
+            startMainActivity(mProfile);
 
+        } else {
             mProfile = null;
             showLoginFragment();
         }

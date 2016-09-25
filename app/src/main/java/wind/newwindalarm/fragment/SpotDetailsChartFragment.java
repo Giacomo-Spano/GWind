@@ -30,7 +30,7 @@ import wind.newwindalarm.cardui.WebcamCard;
 import wind.newwindalarm.cardui.WebcamCardItem;
 import wind.newwindalarm.chart.HistoryChart;
 
-public class SpotDetailsChartFragment extends Fragment implements ChartCardListener {
+public class SpotDetailsChartFragment extends Fragment implements SpotDetailsFragmentInterface, ChartCardListener {
 
     private LineChart mWindChart, mTrendChart, mTemperatureChart;
     private long spotID;

@@ -3,6 +3,7 @@ package wind.newwindalarm.fragment;
 
 import android.app.Activity;
 //import android.app.Fragment;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.content.Context;
@@ -18,6 +19,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.LinearLayout;
 
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +31,7 @@ import wind.newwindalarm.MainActivity;
 import wind.newwindalarm.MeteoStationData;
 import wind.newwindalarm.R;
 import wind.newwindalarm.Spot;
+import wind.newwindalarm.SpotList;
 import wind.newwindalarm.cardui.MeteoCardItem;
 import wind.newwindalarm.cardui.MeteoCardListener;
 
@@ -35,32 +40,20 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
     private boolean viewCreated = false;
     OnSpotClickListener mCallback;
     private LinearLayout mcontainer;
-    private Menu mMenu;
-    private List<MeteoStationData> meteoDataList;
-    private FloatingActionButton refreshFab;
+    private MeteoDataList meteoDataList = new MeteoDataList();
 
+    private class MeteoDataList {
+        public List<MeteoStationData> list = new ArrayList<MeteoStationData>();
+    }
 
     // Container Activity must implement this interface
     public interface OnSpotClickListener {
         void onSpotClick(long spotId);
-        void onRefreshPanelRequest();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        /*refreshFab.setImageResource(R.drawable.refreshbutton);
-        refreshFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mCallback.onRefreshPanelRequest();
-            }
-        });*/
+        void onEnablePanelRefreshButtonRequest();
     }
 
     public void setMeteoDataList(List<MeteoStationData> list) {
-        meteoDataList = list;
+        meteoDataList.list = list;
     }
 
     @Override
@@ -100,31 +93,41 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Do something that differs the Activity's menu here
         super.onCreateOptionsMenu(menu, inflater);
-        mMenu = menu;//.getItem(R.id.options_refresh);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        if (savedInstanceState != null) {
+            Gson gson = new Gson();
+            String gsonString = savedInstanceState.getString("meteoDataList");
+            meteoDataList = gson.fromJson(gsonString, MeteoDataList.class);
+            mCallback.onEnablePanelRefreshButtonRequest();
+        }
+
         View v;
         v = inflater.inflate(R.layout.fragment_controlpanel, container, false);
 
         mcontainer = (LinearLayout) v.findViewById(R.id.meteolist);
-
-        //refreshFab = (FloatingActionButton) getActivity().findViewById(R.id.fabButton);
-
-
-        //mErrorLayout = (LinearLayout) v.findViewById(R.id.errorLayout);
-        //mProgress = (ProgressBar) v.findViewById(R.id.progressBar);
 
         // Updating the action bar title
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Stazioni meteo"/*items[position]*/);
 
         viewCreated = true;
         refreshMeteoData();
+        mCallback.onEnablePanelRefreshButtonRequest();
 
         return v;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Gson gson = new Gson();
+        String myJson = gson.toJson(meteoDataList);
+        outState.putString("meteoDataList", myJson);
     }
 
     @Override
@@ -142,7 +145,7 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
         // Another interface callback
     }
 
-    MeteoStationData getMeteoDataFromId(long id) {
+    /*MeteoStationData getMeteoDataFromId(long id) {
         if (meteoDataList == null)
             return null;
         Iterator iterator = meteoDataList.iterator();
@@ -152,7 +155,7 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
                 return md;
         }
         return null;
-    }
+    }*/
 
     public void refreshMeteoData() {
 
@@ -161,10 +164,10 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
 
         mcontainer.removeAllViews();
 
-        if (meteoDataList == null)
+        if (meteoDataList == null || meteoDataList.list == null || meteoDataList.list.size() == 0)
             return;
 
-        for (MeteoStationData md : meteoDataList) {
+        for (MeteoStationData md : meteoDataList.list) {
             MeteoCardItem carditem = new MeteoCardItem(this, getActivity(), mcontainer);
             mcontainer.addView(carditem.getCard());
             carditem.setSourceUrl(md.source);
@@ -176,24 +179,5 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
             carditem.setSpotId(md.spotID);
         }
         mcontainer.invalidate();
-
-
-
-        /*MainActivity a = (MainActivity) getActivity();
-        List<Spot> favorites = a.getFavorites();
-
-        for (Spot spot : favorites) {
-
-            MeteoCardItem carditem = new MeteoCardItem(this, getActivity(), mcontainer);
-            mcontainer.addView(carditem.getCard());
-            carditem.setSourceUrl(spot.sourceUrl);
-            carditem.setTitle(spot.spotName);
-            MeteoStationData md = getMeteoDataFromId(spot.id);
-            if (md != null)
-                carditem.update(md);
-            carditem.setSpotId(spot.id);
-        }
-        mcontainer.invalidate();
-        */
     }
 }

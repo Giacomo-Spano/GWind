@@ -1,5 +1,6 @@
 package wind.newwindalarm.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.support.v4.app.Fragment;
 //import android.app.Fragment;
@@ -26,6 +27,7 @@ import wind.newwindalarm.AlarmPreferences;
 import wind.newwindalarm.AsyncPostProgramResponse;
 import wind.newwindalarm.AsyncRequestProgramResponse;
 import wind.newwindalarm.MainActivity;
+import wind.newwindalarm.MeteoStationData;
 import wind.newwindalarm.ProgramActivity;
 import wind.newwindalarm.R;
 import wind.newwindalarm.SplashActivity;
@@ -36,8 +38,7 @@ import wind.newwindalarm.cardui.AlarmCardSubitem;
 import wind.newwindalarm.postprogramtask;
 import wind.newwindalarm.requestprogramtask;
 
-public class ProgramListFragment extends Fragment implements
-        OnItemSelectedListener {
+public class ProgramListFragment extends Fragment implements SpotDetailsFragmentInterface, OnItemSelectedListener {
 
     /*public static final int EDITPROGRAM_REQUEST = 1;
     public static final int CREATEPROGRAM_REQUEST = 2;
@@ -66,6 +67,10 @@ public class ProgramListFragment extends Fragment implements
         getAlarmListFromServer();
     }
 
+    public void setMeteoData(MeteoStationData meteoData) {
+
+    }
+
     // Container Activity must implement this interface
     public interface OnProgramListListener {
         void onEditProgram(WindAlarmProgram program);
@@ -82,6 +87,11 @@ public class ProgramListFragment extends Fragment implements
 
     public void setSpotId(long spotId) {
         this.spotId = spotId;
+    }
+
+    @Override
+    public void refreshData() {
+
     }
 
     @Override
@@ -165,10 +175,14 @@ public class ProgramListFragment extends Fragment implements
                     for (WindAlarmProgram program :list) {
                         addProgram(program);
                     }
-                    LinearLayout space = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.space_layout, mcontainer, false);
-                    mcontainer.addView(space);
 
-                    offline = false;
+                    Activity a = getActivity();
+                    if (a != null) {
+                        LinearLayout space = (LinearLayout) a.getLayoutInflater().inflate(R.layout.space_layout, mcontainer, false);
+                        mcontainer.addView(space);
+
+                        offline = false;
+                    }
                 }
             }
         }, AlarmPreferences.getDeviceId(getActivity()),spotId).execute();

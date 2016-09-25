@@ -28,20 +28,15 @@ public class SearchSpotFragment extends Fragment implements SearchSpotListener {
 
     // List view
     private ListView lv;
-
     // Listview Adapter
     SearchSpotListener.SearchSpotArrayAdapter adapter;
     //SearchSpotListener mListener;
-
     SpotList mSpotList;
-
     // Search EditText
     EditText inputSearch;
 
-
     // ArrayList for Listview
     ArrayList<HashMap<String, String>> productList;
-
     // Listview Data
     String products[] = {"Dell Inspiron", "HTC One X", "HTC Wildfire S", "HTC Sense", "HTC Sensation XE",
             "iPhone 4S", "Samsung Galaxy Note 800",
@@ -92,16 +87,18 @@ public class SearchSpotFragment extends Fragment implements SearchSpotListener {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        adapter = new SearchSpotListener.SearchSpotArrayAdapter(getActivity(), mSpotList.spotList, this);
-        lv.setAdapter(adapter);
+        /*adapter = new SearchSpotListener.SearchSpotArrayAdapter(getActivity(), mSpotList.spotList, this);
+        lv.setAdapter(adapter);*/
     }
-
-
-
 
     public void setSpotList(SpotList spotList) {
 
         mSpotList = spotList;
+
+        adapter = new SearchSpotListener.SearchSpotArrayAdapter(getActivity(), mSpotList.spotList, this);
+        lv.setAdapter(adapter);
+
+
 
         products = new String[mSpotList.spotList.size()];
         int count = 0;

@@ -74,7 +74,4 @@ public final class CommonUtilities {
         sendMessageToMainActivity(context, title, message, "");
     }
     
-
-    
-    
 }

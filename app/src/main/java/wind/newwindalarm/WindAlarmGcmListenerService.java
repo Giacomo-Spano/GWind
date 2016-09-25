@@ -16,6 +16,7 @@
 
 package wind.newwindalarm;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -94,7 +95,8 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
                 String title = data.getString("title");
                 message = data.getString("message");
                 //CommonUtilities.sendMessageToMainActivity(getApplicationContext(), title, "messagetext", notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
-                generateUINotification(getApplicationContext(), message, title); // questo genera la notifica nella barra notifica
+                //generateUINotification(getApplicationContext(), message, title); // questo genera la notifica nella barra notifica
+                notifyUser(SplashActivity.getInstance(), message, title, spotId);
 
             }
         }
@@ -174,12 +176,18 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
 
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         getApplication().startActivity(resultIntent);
-        generateUINotification(getApplicationContext(), curDate.toString()
+        /*generateUINotification(getApplicationContext(), curDate.toString()
                 + "\nSveglia vento attivata"
                 + "\nIntensità vento " + curspeed
                 + "\nIntensità media " + curavspeed
                 + "\nwindid " + windid,
-                "" + spotName);
+                "" + spotName);*/
+        notifyUser(SplashActivity.getInstance(), curDate.toString()
+                        + "\nSveglia vento attivata"
+                        + "\nIntensità vento " + curspeed
+                        + "\nIntensità media " + curavspeed
+                        + "\nwindid " + windid,
+                "" + spotName, spotId);
         //sendMessageToMainActivity(getApplicationContext(), "title", "messagetext", notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
 
 
@@ -205,9 +213,10 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setSmallIcon(icon)
                 .setContentText(message).build();
+
+
+
         // Creates an explicit intent for an Activity in your app
-
-
         // The stack builder object will contain an artificial back stack for the
         // started Activity.
         // This ensures that navigating backward from the Activity leads out of
@@ -229,8 +238,38 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
         // mId allows you to update the notification later on.
         int mId = 1;
         mNotificationManager.notify(mId, notification/*mBuilder.build()*/);
+    }
+
+    public static void notifyUser(Activity activity, String header,
+                                  String message, String spotId) {
+
+        NotificationManager notificationManager = (NotificationManager) activity
+                .getSystemService(Activity.NOTIFICATION_SERVICE);
+        Intent notificationIntent = new Intent(
+                activity.getApplicationContext(), SplashActivity.class);
+
+        notificationIntent.putExtra("spotId",spotId);
 
 
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(activity);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(notificationIntent);
+        PendingIntent pIntent = stackBuilder.getPendingIntent(0,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification notification = new Notification.Builder(activity)
+                .setContentTitle(header)
+                .setContentText(message)
+                .setContentIntent(pIntent)
+                .setDefaults(
+                        Notification.DEFAULT_SOUND
+                                | Notification.DEFAULT_VIBRATE)
+                .setContentIntent(pIntent).setAutoCancel(true)
+                .setSmallIcon(R.drawable.logo).build();
+
+        // mId allows you to update the notification later on.
+        int mId = 2;
+        notificationManager.notify(mId, notification);
     }
 
 }

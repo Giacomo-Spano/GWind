@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -20,6 +21,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.text.format.Time;
 import android.view.Display;
@@ -36,6 +38,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +49,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import wind.newwindalarm.fragment.PanelFragment;
 import wind.newwindalarm.fragment.ProfileFragment;
@@ -55,6 +57,8 @@ import wind.newwindalarm.fragment.ProgramListFragment;
 import wind.newwindalarm.fragment.SearchSpotFragment;
 import wind.newwindalarm.fragment.SpotDetailsFragment;
 import wind.newwindalarm.fragment.SpotMeteoListFragment;
+
+import static wind.newwindalarm.CommonUtilities.DISPLAY_MESSAGE_ACTION;
 
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
@@ -122,15 +126,15 @@ public class MainActivity extends AppCompatActivity implements
     private SpotList mSpotList = new SpotList();
     private Settings mSettings;
 
-    PanelFragment panelFragment;
-    ProgramFragment programFragment;
-    ProgramListFragment programListFragment;
-    SettingsFragment settingsFragment;
-    ProfileFragment profileFragment;
-    SpotMeteoListFragment spotMeteoListFragment;
-    SpotDetailsFragment spotDetailsFragment;
-    SearchSpotFragment searchSpotFragment;
-    SpotMeteoDataList spotMeteoDataList = new SpotMeteoDataList();
+    private PanelFragment panelFragment;
+    private ProgramFragment programFragment;
+    private ProgramListFragment programListFragment;
+    private SettingsFragment settingsFragment;
+    private ProfileFragment profileFragment;
+    private SpotMeteoListFragment spotMeteoListFragment;
+    private SpotDetailsFragment spotDetailsFragment;
+    private SearchSpotFragment searchSpotFragment;
+    private SpotMeteoDataList spotMeteoDataList = new SpotMeteoDataList();
 
     // google properties
     TextView mUserNameTextView;
@@ -138,7 +142,6 @@ public class MainActivity extends AppCompatActivity implements
     ImageView mUserImageImageView;
 
     FloatingActionButton fabButton;
-    FloatingActionButton refreshFab;
 
     private UserProfile mProfile = null;
     static boolean signedIn = false;
@@ -165,30 +168,17 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
+        String str = (String) intent.getStringExtra("spotId");
         mProfile = (UserProfile) intent.getSerializableExtra("userProfile");
+
+        if (str != null)
+            spotId = Long.valueOf(str);
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         fabButton = (FloatingActionButton) findViewById(R.id.addFab);
-        /*fabButton.setImageResource(R.drawable.refreshbutton);
-        fabButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                getLastMeteoData();
-                //programListFragment.createProgram();
-            }
-        });*/
-
-        /*refreshFab = (FloatingActionButton) findViewById(R.id.fabButton);
-        refreshFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getLastMeteoData();
-            }
-        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -221,9 +211,12 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        // carica la spot list per la combo dei programmmi
-        getSpotListFromServer();
 
+        // carica la spot list per la combo dei programmmi
+        //getSpotListFromServer();
+        getLastMeteoData();
+
+        panelFragment = new PanelFragment();
         programFragment = new ProgramFragment();
         programListFragment = new ProgramListFragment();
         programListFragment.setListener(this);
@@ -231,11 +224,32 @@ public class MainActivity extends AppCompatActivity implements
         settingsFragment.setSettings(mSettings);
         profileFragment = new ProfileFragment();
         spotMeteoListFragment = new SpotMeteoListFragment();
-        //searchSpotFragment = new SearchSpotFragment();
+        searchSpotFragment = new SearchSpotFragment();
+        //spotDetailsFragment = new SpotDetailsFragment();
 
         mInformationTextView = (TextView) findViewById(R.id.informationTextView);
 
         init();
+
+        if (savedInstanceState != null) {
+
+                //spotDetailsFragment.setListener(this);
+            spotId = savedInstanceState.getLong("spotId");
+
+        } else {
+            showFragment(R.id.nav_favorites, false);
+        }
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            //spotDetailsFragment.setListener(this);
+
+        }
+
     }
 
     private void init() {
@@ -243,22 +257,32 @@ public class MainActivity extends AppCompatActivity implements
         signedIn = true;
         mInformationTextView.setText("Loading profile");
         new LoadImagefromUrl().execute();
-
         mInformationTextView.setText("Loading meteodata");
     }
 
+////////////////////
+    //public static final String INTENT_ACTION = "it.gmariotti.android.example.receiver.intent.action.TEST";
+    private IntentFilter filter =new IntentFilter(DISPLAY_MESSAGE_ACTION);
+    //private MyTestReceiver receiver =new MyTestReceiver();
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
+        // Register the broadcast receiver.
+        registerReceiver(mHandleMessageReceiver, filter);
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
+        // Unregister the receiver
+        unregisterReceiver(mHandleMessageReceiver);
         super.onPause();
     }
 
-    // TODO ma questo a cosa serve?????
+    // Questo receiver serve a ricevere dei messaggi dall'esterno o dall'activity Splash
+    // inviati trami te CommonUtilities.sendMessageToMainActivity
+    // per riceverli deve esserci la chiamata a registerReceiver nella onResume
+    // altrimenti non funziona
     private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -269,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements
              * depending upon your app requirement
              * For now i am just displaying it on the screen
              * */
-            Toast.makeText(getApplicationContext(), "New Message: " + newMessage, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "" + newMessage, Toast.LENGTH_LONG).show();
             String title = intent.getExtras().getString("title");
             Time today = new Time(Time.getCurrentTimezone());
             today.setToNow();
@@ -309,12 +333,7 @@ public class MainActivity extends AppCompatActivity implements
                 return true;
             case R.id.options_searchspot:
 
-                android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
-                android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
-
-                ft.replace(R.id.content_frame, searchSpotFragment);
-                ft.addToBackStack(null);
-                ft.commit();
+                showSearchSpot();
                 return true;
 
             /*case R.id.action_settings:
@@ -329,6 +348,18 @@ public class MainActivity extends AppCompatActivity implements
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    private void showSearchSpot() {
+
+        getSpotListFromServer();
+
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
+
+        ft.replace(R.id.content_frame, searchSpotFragment);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     @Override
@@ -365,7 +396,7 @@ public class MainActivity extends AppCompatActivity implements
 
                 if (mPosition == R.id.nav_favorites && panelFragment != null) {
                     ft.replace(R.id.content_frame, panelFragment);
-                    enableRefreshButton();
+                    enableRefreshFavoritesMeteoDataButton();
                 } else if (mPosition == R.id.nav_program) {
                     ft.replace(R.id.content_frame, programListFragment);
                     enableAddProgramButton();
@@ -394,12 +425,10 @@ public class MainActivity extends AppCompatActivity implements
         new requestMeteoDataTask(this, new AsyncRequestMeteoDataResponse() {
 
             @Override
-            public void processFinish(List<MeteoStationData> list, boolean error, String errorMessage) {
-            }
+            public void processFinish(List<MeteoStationData> list, boolean error, String errorMessage) {            }
 
             @Override
-            public void processFinishHistory(long spotId, List<MeteoStationData> list, boolean error, String errorMessage) {
-            }
+            public void processFinishHistory(long spotId, List<MeteoStationData> list, boolean error, String errorMessage) {            }
 
             @Override
             public void processFinishSpotList(List<Spot> list, List<Long> favorites, boolean error, String errorMessage) {
@@ -419,19 +448,9 @@ public class MainActivity extends AppCompatActivity implements
                     mSpotList.add(spot);
                 }
 
-
-
-                //programListFragment.setServerSpotList(mSpotList.getSpotList());
-
-                if (panelFragment == null) {
-                    panelFragment = new PanelFragment();
-                    showFragment(R.id.nav_favorites, false);
-                }
-
-                searchSpotFragment = new SearchSpotFragment();
+                //searchSpotFragment = new SearchSpotFragment();
                 searchSpotFragment.setSpotList(mSpotList);
-                //panelFragment.refreshMeteoData();
-                getLastMeteoData();
+                //getLastMeteoData();
             }
 
             @Override
@@ -479,13 +498,14 @@ public class MainActivity extends AppCompatActivity implements
     private void unregister() {
         AlarmPreferences.deleteRegId(this);
         AlarmPreferences.deletePersonId(this);
+        AlarmPreferences.deleteUserId(this);
     }
 
     @Override
     public void onSpotClick(long spotId) {
 
         this.spotId = spotId;
-        spotDetailsFragment = new SpotDetailsFragment();
+        spotDetailsFragment = new SpotDetailsFragment(); // questo fragment deve essere creato qui altrimenti in certi casi non lo ridisegna
         spotDetailsFragment.setListener(this);
         MeteoStationData md = spotMeteoDataList.getLastMeteoData(spotId);
         spotDetailsFragment.setMeteoData(spotMeteoDataList.getLastMeteoData(spotId));
@@ -502,15 +522,15 @@ public class MainActivity extends AppCompatActivity implements
             // There's no way to avoid getting this if saveInstanceState has already been called.
         }
 
-        getHistoryMeteoData(spotId);
-
         getWebCamImages(spotId,md);
 
+        getHistoryMeteoData(spotId);
     }
 
     @Override
-    public void onRefreshPanelRequest() {
-        getLastMeteoData();
+    public void onEnablePanelRefreshButtonRequest() {
+        //getLastMeteoData();
+        enableRefreshFavoritesMeteoDataButton();
     }
 
     public void getLastMeteoData() {
@@ -558,21 +578,29 @@ public class MainActivity extends AppCompatActivity implements
 
     public void getWebCamImages(long spotId, MeteoStationData md) {
 
+        if (spotId ==  -1 || md == null)
+            return;
+
         long lastWindId = spotMeteoDataList.getWebCamWindId(spotId,1);
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
-        //int height_one = size.y;
 
         int count = 1;
         for (String webcamurl : md.webcamurlList) {
             if (lastWindId < md.id) {
-                spotDetailsFragment.showWebCamProgressBar(count);
-                new DownloadImageTask(this, count, md.id, width).execute(webcamurl);
+
+                if (md.id <= spotMeteoDataList.getWebCamImageRequestInProgressId(spotId,count)) {
+                    // c'è già una richiesta in corso, non fare nulla
+                } else {
+                    spotDetailsFragment.showWebCamProgressBar(count);
+                    spotMeteoDataList.setWebCamImageRequestInProgress(spotId, count, md.id);
+                    new DownloadImageTask(this, count, md.id, width).execute(webcamurl);
+                }
 
             } else {
-                spotDetailsFragment.setWebCamImage(count, spotMeteoDataList.getWebCamImage(spotId, count));
+                spotDetailsFragment.setWebCamImage(count, spotMeteoDataList.getWebCamImage(spotId, count), lastWindId);
             }
             count++;
         }
@@ -603,27 +631,31 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onChangeDetailView(int page) {
+    public void onChangeDetailView(int page,long spotId, MeteoStationData md) {
 
         switch (page) {
-            case SpotDetailsFragment.Pager_ChartPage:
-                enableRefreshButton();
-                break;
+
             case SpotDetailsFragment.Pager_MeteodataPage:
-                enableRefreshButton();
+                enableRefreshMeteoDataButton();
+                break;
+            case SpotDetailsFragment.Pager_WebcamPage:
+                enableRefreshWebcamImagesButton(spotId,md);
+                break;
+            case SpotDetailsFragment.Pager_ChartPage:
+                enableRefreshHistoryButton();
                 break;
             case SpotDetailsFragment.Pager_ProgramListPage:
                 enableAddProgramButton();
-                break;
-            case SpotDetailsFragment.Pager_WebcamPage:
-                enableRefreshButton();
                 break;
             default:
                 break;
         }
     }
 
-    private void enableRefreshButton() {
+    // Questo è il bottone attivo quando è visibile il panelFragment
+    // è diverso da enableRefreshMeteoDataButton() perchè
+    // non aggiorna la history e le webcam
+    private void enableRefreshFavoritesMeteoDataButton() {
         fabButton.setImageResource(R.drawable.refreshbutton);
         fabButton.setVisibility(View.VISIBLE);
         fabButton.setOnClickListener(new View.OnClickListener() {
@@ -631,6 +663,46 @@ public class MainActivity extends AppCompatActivity implements
             public void onClick(View view) {
 
                 getLastMeteoData();
+            }
+        });
+    }
+
+    private void enableRefreshMeteoDataButton() {
+        fabButton.setImageResource(R.drawable.refreshbutton);
+        fabButton.setVisibility(View.VISIBLE);
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                getLastMeteoData();
+                //getWebCamImages(spotId.);
+                //getHistoryMeteoData(spotId);
+            }
+        });
+    }
+
+    private void enableRefreshHistoryButton() {
+        fabButton.setImageResource(R.drawable.refreshbutton);
+        fabButton.setVisibility(View.VISIBLE);
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                getLastMeteoData();
+                getHistoryMeteoData(spotId);
+            }
+        });
+    }
+
+    // abilita bottone che aggiorna solo le webcam
+    private void enableRefreshWebcamImagesButton(final long spotId, final MeteoStationData md) {
+        fabButton.setImageResource(R.drawable.refreshbutton);
+        fabButton.setVisibility(View.VISIBLE);
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                getWebCamImages(spotId,md);
             }
         });
     }
@@ -740,12 +812,27 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putLong("spotId", spotId);
+    }
+
+    public void setSpotDetailsFragment(SpotDetailsFragment fragment) {
+        spotDetailsFragment = fragment;
+    }
+
+
+
+    @Override
     public void processFinishDownloadImage(int index, Bitmap bmp, long windId) {
-        if (bmp != null) {
+        //if (bmp != null) {
+        //
             spotMeteoDataList.setWebCamImage(spotId,index,bmp,windId);
-            //spotDetailsFragment.setWebCamImage(index, bmp);
-            spotDetailsFragment.setWebCamImage(index, bmp); /// TODO qui c'è un errore. lo spot del fragment nel frattempo potrebbe cambiare
-        }
+            spotDetailsFragment.setWebCamImage(index, bmp, windId); /// TODO qui c'è un errore. lo spot del fragment nel frattempo potrebbe cambiare
+
+        //}
+
     }
 
 
@@ -757,13 +844,20 @@ public class MainActivity extends AppCompatActivity implements
 
             if (list == null)
                 return;
-            //meteoDataList = list;
+
+            // aggiorna i dati archiviati
             for (MeteoStationData md : list)
                 spotMeteoDataList.setLastMeteoData(md.spotID,md);
+            // aggiorna tutte le schede dei favorites
             panelFragment.setMeteoDataList(list);
             panelFragment.refreshMeteoData();
-
-            //countDownTimer.cancel();
+            // aggiorna la spotdetailview
+            if (spotDetailsFragment != null) {
+                MeteoStationData md = spotMeteoDataList.getLastMeteoData(spotId);
+                spotDetailsFragment.setMeteoData(md);
+                spotDetailsFragment.refreshData();
+            }
+            //disattiva la progress bar
             progressBar.setVisibility(View.GONE);
             mInformationTextView.setVisibility(View.GONE);
         }
@@ -887,6 +981,7 @@ public class MainActivity extends AppCompatActivity implements
         private List<MeteoStationData> history = new ArrayList<MeteoStationData>();
         private Bitmap[] webcamBitmap = new Bitmap[3];
         private long[] webcamWindId = new long[3];
+        private long[] webcamImageRequestInprogress = new long[3]; // windid dell'immagine richiesta
     }
     private class SpotMeteoDataList {
         List<SpotMeteoData> lastMeteoData = new ArrayList<SpotMeteoData>();
@@ -900,7 +995,11 @@ public class MainActivity extends AppCompatActivity implements
             return null;
         }
         public MeteoStationData getLastMeteoData(long spotId) {
-            return getFromId(spotId).md;
+            SpotMeteoData smd = getFromId(spotId);
+            if (smd == null)
+                return null;
+            else
+                return smd.md;
         }
         public void setLastMeteoData(long spotId, MeteoStationData md) {
             SpotMeteoData smd = getFromId(spotId);
@@ -914,7 +1013,7 @@ public class MainActivity extends AppCompatActivity implements
             SpotMeteoData smd = getFromId(spotId);
             if (smd == null || smd.history == null || smd.history.size() == 0)
                 return null;
-            return getFromId(spotId).history;
+            return smd.history;
         }
         public long getLastHistoryId(long spotId) {
             List<MeteoStationData> list = getHistory(spotId);
@@ -963,6 +1062,25 @@ public class MainActivity extends AppCompatActivity implements
                 return;
             smd.webcamBitmap[index-1] = bmp;
             smd.webcamWindId[index-1] = windId;
+            smd.webcamImageRequestInprogress[index-1] = 0;
+        }
+        public void setWebCamImageRequestInProgress(long spotId, int index, long requestedWindId) {
+            SpotMeteoData smd = getFromId(spotId);
+            if (smd == null) {
+                smd = new SpotMeteoData();
+            }
+            if (index < 1 || index > smd.webcamBitmap.length)
+                return;
+            smd.webcamImageRequestInprogress[index-1] = requestedWindId;
+        }
+        public long getWebCamImageRequestInProgressId(long spotId, int index) {
+            SpotMeteoData smd = getFromId(spotId);
+            if (smd == null) {
+                smd = new SpotMeteoData();
+            }
+            if (index < 1 || index > smd.webcamBitmap.length)
+                return 0;
+            return smd.webcamImageRequestInprogress[index-1];
         }
     }
 }

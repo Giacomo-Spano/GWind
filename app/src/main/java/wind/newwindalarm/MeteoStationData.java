@@ -4,6 +4,7 @@ package wind.newwindalarm;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * Created by giacomo on 07/06/2015.
  */
-public class MeteoStationData /*extends Object*/ {
+public class MeteoStationData implements Serializable {
 
     public long id;
     public Double speed = null;

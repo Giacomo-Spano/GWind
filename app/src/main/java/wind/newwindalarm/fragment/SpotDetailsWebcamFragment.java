@@ -15,33 +15,103 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.google.gson.Gson;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import wind.newwindalarm.MainActivity;
 import wind.newwindalarm.MeteoStationData;
 import wind.newwindalarm.R;
 import wind.newwindalarm.cardui.WebcamCard;
 import wind.newwindalarm.cardui.WebcamCardItem;
 
-public class SpotDetailsWebcamFragment extends Fragment implements WebcamCardItem.WebcamCardListener {
+public class SpotDetailsWebcamFragment extends Fragment implements SpotDetailsFragmentInterface, WebcamCardItem.WebcamCardListener {
 
-    private List<WebcamCardItem> webcamCards = new ArrayList<>();
-    //private List<Bitmap> webcamBitmaps = new ArrayList<>();
     private MeteoStationData meteoData;
-    private long spotID;
+    private long spotId;
+    private WebcamCardItemList webcamCards;
+    private int[] ids = {R.id.webcamcard1, R.id.webcamcard2, R.id.webcamcard3};
+
+    private class WebcamCardItemList {
+        public List<WebcamCardItem> list = new ArrayList<WebcamCardItem>();
+    }
+
+    public SpotDetailsWebcamFragment() {
+
+        webcamCards = new WebcamCardItemList();
+
+        for (int i = 0; i < ids.length; i++) {
+            WebcamCardItem wci = new WebcamCardItem(this);
+            webcamCards.list.add(wci);
+        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+
+
+        if (savedInstanceState != null) {
+            meteoData = (MeteoStationData) savedInstanceState.getSerializable("meteoData");
+            spotId = savedInstanceState.getLong("spotId");
+
+            int count = 1;
+            for (WebcamCardItem wci : webcamCards.list) {
+
+                Bitmap bitmap = savedInstanceState.getParcelable("bitmap"+count);
+                long lastWebCamWindId = savedInstanceState.getLong("lastWebcamWindId"+count);
+                wci.setWebCamImage(bitmap,lastWebCamWindId);
+                count++;
+            }
+        }
+
+        View v;
+        v = inflater.inflate(R.layout.fragment_webcam, container, false);
+        int count = 0;
+        for (WebcamCardItem wci : webcamCards.list) {
+
+            wci.card = (WebcamCard) v.findViewById(ids[count]);
+            wci.card.init();
+            if (meteoData != null && meteoData.webcamurlList != null &&
+                    count < (meteoData.webcamurlList.size()) &&
+                    meteoData.webcamurlList.get(count) != null) {
+                wci.card.setVisibility(View.VISIBLE);
+            } else {
+                wci.card.setVisibility(View.GONE);
+            }
+            count++;
+        }
+        refreshData();
+        return v;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable("meteoData", meteoData);
+        outState.putLong("spotId", spotId);
+
+        int count = 1;
+        for (WebcamCardItem wci : webcamCards.list) {
+            Bitmap bitmap = wci.getWebCamImage();
+            outState.putParcelable("bitmap"+count, bitmap);
+            long lastWebCamWindId = wci.getlastWebcamImageWindId();
+            outState.putLong("lastWebcamWindId"+count, lastWebCamWindId);
+            count++;
+        }
+
+    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
 
-    public SpotDetailsWebcamFragment() {
-        for(int i = 0; i < 3; i++) {
-            WebcamCardItem wci = new WebcamCardItem(this);
-            webcamCards.add(wci);
-        }
-    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -51,68 +121,40 @@ public class SpotDetailsWebcamFragment extends Fragment implements WebcamCardIte
 
     public void setMeteoData(MeteoStationData meteoData) {
         this.meteoData = meteoData;
-        //refreshData();
     }
 
     public void setSpotId(long id) {
-        spotID = id;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v;
-        v = inflater.inflate(R.layout.fragment_webcam, container, false);
-
-        int[] ids = {R.id.webcamcard1,R.id.webcamcard2,R.id.webcamcard3};
-        for (int i = 0; i < ids.length; i++) {
-
-            webcamCards.get(i).card = (WebcamCard) v.findViewById(ids[i]);
-            webcamCards.get(i).card.init();
-            webcamCards.get(i).card.setVisibility(View.GONE);
-        }
-
-        refreshData();
-
-        return v;
+        spotId = id;
     }
 
     public void refreshData() {
 
-        if (meteoData == null)
+        if (meteoData == null || webcamCards == null)
             return;
 
-        for (WebcamCardItem wci : webcamCards) {
+        for (WebcamCardItem wci : webcamCards.list) {
             wci.update();
         }
-
-
-
     }
 
     @Override
     public void cardSelected() {
-
     }
 
-    public void setWebCamImage(int n, Bitmap bmp) {
+    public void setWebCamImage(int n, Bitmap bmp, long lastWebcamImageWindId) {
 
-        if (n < 1 || n > webcamCards.size())
+        if (n < 1 || n > webcamCards.list.size())
             return;
 
-        webcamCards.get(n-1).setWebCamImage(bmp);
-        //webcamBitmaps[n] = bmp;
-        //wc.card.setVisibility(View.VISIBLE);
-        //    wc.hideProgressBar();
-
-
+        webcamCards.list.get(n - 1).setWebCamImage(bmp,lastWebcamImageWindId);
     }
 
     public void showWebCamProgressBar(int n) {
 
-        if (n < 1 || n > webcamCards.size())
+        if (webcamCards == null)
             return;
 
-        //webcamCards.get(n-1).card.setVisibility(View.VISIBLE);
+        if (n < 1 || n > webcamCards.list.size())
+            return;
     }
 }

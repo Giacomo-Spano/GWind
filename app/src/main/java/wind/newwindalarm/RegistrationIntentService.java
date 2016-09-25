@@ -30,6 +30,20 @@ package wind.newwindalarm;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * <p>
+ * Copyright 2015 Google Inc. All Rights Reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 /**
  * Copyright 2015 Google Inc. All Rights Reserved.
@@ -111,22 +125,17 @@ public class RegistrationIntentService extends IntentService {
             //int deviceId = -1; //getDeviceIdFromServer(token,serverURL);
 
 
-            if (!sentToken || deviceId == -1 || deviceId == 0) {
-                //deviceId = MainActivity.getDeviceId();//MainActivity.getIMEI();
-                //Log.i(TAG, "deviceId=" + deviceId);
-                //String personId = AlarmPreferences.getPersonId(MainActivity.getContext());
+            //if (!sentToken || deviceId == -1 || deviceId == 0) {
 
-                String personId = SplashActivity.getAcct().getId();
-                String personName = SplashActivity.getAcct().getDisplayName();
-                String personEmail = SplashActivity.getAcct().getEmail();
-                Uri personPhoto = SplashActivity.getAcct().getPhotoUrl();
-                String authCode = SplashActivity.getAcct().getServerAuthCode();
+            String personId = SplashActivity.getAcct().getId();
+            String personName = SplashActivity.getAcct().getDisplayName();
+            String personEmail = SplashActivity.getAcct().getEmail();
+            Uri personPhoto = SplashActivity.getAcct().getPhotoUrl();
+            String authCode = SplashActivity.getAcct().getServerAuthCode();
 
-                sendRegistrationToServer(personId, personName, personEmail, personPhoto,authCode);
-                //ServerUtilities.registerDevice(token);
-            }
-            //deviceId = getDeviceIdFromServer(token,serverURL);
-            //MainActivity.setDeviceId(deviceId);
+            sendRegistrationToServer(personId, personName, personEmail, personPhoto, authCode);
+            //}
+
             // Subscribe to topic channels
             subscribeTopics(token);
 
@@ -166,7 +175,7 @@ public class RegistrationIntentService extends IntentService {
      *
      * @param token The new token.
      */
-    private void sendRegistrationToServer(String personId, String personName, String personEmail, Uri personPhoto, String authCode) {
+    private void sendRegistrationToServer(final String personId, final String personName, final String personEmail, Uri personPhoto, String authCode) {
         // Add custom implementation, as needed.
         //ServerUtilities.register(token, serverURL);
         String model = Build.MODEL;
@@ -179,15 +188,21 @@ public class RegistrationIntentService extends IntentService {
 
                 try {
                     JSONObject json = new JSONObject(jsonStr);
+                    int deviceId = -1;
+                    int userId = -1;
                     if (json.has("deviceid")) {
-                        int deviceId = json.getInt("deviceid");
+                        deviceId = json.getInt("deviceid");
                         long old_deviceId = AlarmPreferences.getDeviceId(SplashActivity.getContext());
-                        AlarmPreferences.setDeviceId(SplashActivity.getContext(),deviceId);
+                        AlarmPreferences.setDeviceId(SplashActivity.getContext(), deviceId);
                     }
                     if (json.has("userid")) {
-                        int userId = json.getInt("userid");
-
+                        userId = json.getInt("userid");
+                        AlarmPreferences.setUserId(SplashActivity.getContext(), userId);
                     }
+                    AlarmPreferences.setPersonId(SplashActivity.getContext(), personId);
+                    AlarmPreferences.setEmail(SplashActivity.getContext(), personEmail);
+                    AlarmPreferences.setUserName(SplashActivity.getContext(), personName);
+                    CommonUtilities.sendMessageToMainActivity(SplashActivity.getContext(), "title", "Registrazione utente completata: deviceid=" + deviceId + "userId=" + userId);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
