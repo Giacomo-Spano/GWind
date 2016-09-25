@@ -61,18 +61,12 @@ public class SpotDetailsChartFragment extends Fragment implements SpotDetailsFra
         refreshData();
     }
 
-    public MeteoStationData getLastHistoryMeteoData() {
-        return (MeteoStationData) meteoDataList.get(meteoDataList.size()-1);
-    }
-
-
     public void setSpotId(long id) {
         spotID = id;
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
 
         View v;
         v = inflater.inflate(R.layout.fragment_chart, container, false);
@@ -106,44 +100,35 @@ public class SpotDetailsChartFragment extends Fragment implements SpotDetailsFra
         mWindChart.setOnChartGestureListener(new OnChartGestureListener() {
             @Override
             public void onChartGestureStart(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
-
             }
 
             @Override
             public void onChartGestureEnd(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
-
             }
 
             @Override
             public void onChartLongPressed(MotionEvent me) {
-
             }
 
             @Override
             public void onChartDoubleTapped(MotionEvent me) {
-
                 startFullChartActivity();
-
             }
 
             @Override
             public void onChartSingleTapped(MotionEvent me) {
-
             }
 
             @Override
             public void onChartFling(MotionEvent me1, MotionEvent me2, float velocityX, float velocityY) {
-
             }
 
             @Override
             public void onChartScale(MotionEvent me, float scaleX, float scaleY) {
-
             }
 
             @Override
             public void onChartTranslate(MotionEvent me, float dX, float dY) {
-
             }
         });
 
@@ -151,9 +136,6 @@ public class SpotDetailsChartFragment extends Fragment implements SpotDetailsFra
     }
 
     public void refreshData() {
-
-        //hc = new HistoryChart(getActivity(), mWindChart, mTrendChar, mTemperatureChart);
-        //Activity a = getActivity();
 
         if (hc != null) {
             mWindCard.hideProgressBar();
@@ -165,7 +147,6 @@ public class SpotDetailsChartFragment extends Fragment implements SpotDetailsFra
     }
 
     private void startFullChartActivity() {
-        //hc.
 
         Intent resultIntent = new Intent(getActivity(), FullChartActivity.class);
         int request = 0;
@@ -174,6 +155,5 @@ public class SpotDetailsChartFragment extends Fragment implements SpotDetailsFra
 
     @Override
     public void chartCardSelected(long index) {
-
     }
 }

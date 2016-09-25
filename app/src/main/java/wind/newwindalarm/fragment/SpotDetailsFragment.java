@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
 import java.util.List;
 import wind.newwindalarm.MainActivity;
 import wind.newwindalarm.MeteoStationData;
@@ -26,15 +28,17 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
 
     private MeteoStationData meteoData;
     private long spotId;
-
-    OnClickListener mCallback;
-
     private SpotDetailsMeteodataFragment meteodataFragment;
     private SpotDetailsWebcamFragment webcamFragment;
     private SpotDetailsChartFragment chartFragment;
     private ProgramListFragment programListFragment;
     private ViewPager mPager;
     private SpotDetailPagerAdapter mPagerAdapter;
+    private TextView spotNameTextView;
+    private TextView speedTextView;
+    private TextView lastUpateTextView;
+
+    OnClickListener mCallback;
 
     // Container Activity must implement this interface
     public interface OnClickListener {
@@ -42,7 +46,6 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
         void onChangeDetailView(int position, long spotId, MeteoStationData md); // cambiamento Tab pager attivo. chiamata per cambiare ilfab button
         void onEditProgram(WindAlarmProgram program);
     }
-
 
     @Override
     public void onEditProgram(WindAlarmProgram program) {
@@ -102,14 +105,16 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
 
         View v;
         v = inflater.inflate(R.layout.fragment_spotdetail, container, false);
+
+        spotNameTextView = (TextView) v.findViewById(R.id.spotNameTextView);
+        speedTextView = (TextView) v.findViewById(R.id.speedTextView);
+        lastUpateTextView = (TextView) v.findViewById(R.id.lastUpdateTextView);
+
+
         TabLayout tabLayout = (TabLayout) v.findViewById(R.id.tablayout);
         mPager = (ViewPager) v.findViewById(R.id.pager);
         mPagerAdapter = new SpotDetailPagerAdapter(((MainActivity) getActivity()).getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
-        /*mPagerAdapter.getItem(Pager_MeteodataPage);
-        mPagerAdapter.getItem(Pager_WebcamPage);
-        mPagerAdapter.getItem(Pager_ChartPage);
-        mPagerAdapter.getItem(Pager_ProgramListPage);*/
         mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             // optional
             @Override
@@ -163,6 +168,8 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
             }
         }
 
+        refreshData();
+
         return v;
     }
 
@@ -200,6 +207,14 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
     }
 
     public void refreshData() {
+
+        if (meteoData == null)
+            return;
+
+        spotNameTextView.setText(meteoData.spotName);
+        speedTextView.setText(""+meteoData.speed);
+        SimpleDateFormat df = new SimpleDateFormat("d/MM/yyyy HH:mm");
+        lastUpateTextView.setText(df.format(meteoData.date));
 
         meteodataFragment.refreshData();
         webcamFragment.refreshData();

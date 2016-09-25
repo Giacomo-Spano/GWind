@@ -65,7 +65,9 @@ public class MainActivity extends AppCompatActivity implements
         ProfileFragment.OnSignInClickListener,
         PanelFragment.OnSpotClickListener,
         SpotDetailsFragment.OnClickListener,
-        ProgramListFragment.OnProgramListListener, DownloadImageTask.AsyncDownloadImageResponse {
+        ProgramListFragment.OnProgramListListener,
+        SearchSpotFragment.OnSearchSpotClickListener,
+        DownloadImageTask.AsyncDownloadImageResponse {
 
     private List<MeteoStationData> meteoDataList = new ArrayList<>();
 
@@ -224,8 +226,7 @@ public class MainActivity extends AppCompatActivity implements
         settingsFragment.setSettings(mSettings);
         profileFragment = new ProfileFragment();
         spotMeteoListFragment = new SpotMeteoListFragment();
-        searchSpotFragment = new SearchSpotFragment();
-        //spotDetailsFragment = new SpotDetailsFragment();
+        //searchSpotFragment = new SearchSpotFragment();
 
         mInformationTextView = (TextView) findViewById(R.id.informationTextView);
 
@@ -325,7 +326,7 @@ public class MainActivity extends AppCompatActivity implements
         /*
          * Typically, an application registers automatically, so options below
 		 * are disabled. Uncomment them if you want to manually register or
-		 * unregister the device (you will also need to uncomment the equivalent
+		 * unregisterUserData the device (you will also need to uncomment the equivalent
 		 * options on options_menu.xml).*/
 
             case R.id.options_diagfile:
@@ -356,6 +357,9 @@ public class MainActivity extends AppCompatActivity implements
 
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
+
+        searchSpotFragment = new SearchSpotFragment();
+        searchSpotFragment.setListener(this);
 
         ft.replace(R.id.content_frame, searchSpotFragment);
         ft.addToBackStack(null);
@@ -449,7 +453,9 @@ public class MainActivity extends AppCompatActivity implements
                 }
 
                 //searchSpotFragment = new SearchSpotFragment();
-                searchSpotFragment.setSpotList(mSpotList);
+                if (searchSpotFragment != null) {
+                    searchSpotFragment.setSpotList(mSpotList);
+                }
                 //getLastMeteoData();
             }
 
@@ -495,7 +501,7 @@ public class MainActivity extends AppCompatActivity implements
         alertDialog.show();
     }
 
-    private void unregister() {
+    private void unregisterUserData() {
         AlarmPreferences.deleteRegId(this);
         AlarmPreferences.deletePersonId(this);
         AlarmPreferences.deleteUserId(this);
@@ -504,6 +510,10 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onSpotClick(long spotId) {
 
+        showSpotDetailsFragment(spotId);
+    }
+
+    private void showSpotDetailsFragment(long spotId) {
         this.spotId = spotId;
         spotDetailsFragment = new SpotDetailsFragment(); // questo fragment deve essere creato qui altrimenti in certi casi non lo ridisegna
         spotDetailsFragment.setListener(this);
@@ -613,14 +623,14 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSignOutClick() {
-        unregister();
+        unregisterUserData();
         setResult(SplashActivity.RESULT_SIGN_OUT);
         finish();
     }
 
     @Override
     public void onDisconnectClick() {
-        unregister();
+        unregisterUserData();
         setResult(SplashActivity.RESULT_DISCONNECT);
         finish();
     }
@@ -833,6 +843,17 @@ public class MainActivity extends AppCompatActivity implements
 
         //}
 
+    }
+
+    @Override
+    public void onSearchSpotClick(Spot spot) {
+        showSpotDetailsFragment(spotId);
+        //searchSpotFragment.
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.remove(searchSpotFragment);
+        ft.commit();
+        searchSpotFragment = null;
     }
 
 

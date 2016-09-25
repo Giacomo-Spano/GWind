@@ -17,6 +17,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -116,11 +117,7 @@ public class SplashActivity extends AppCompatActivity implements
         String photoURL = AlarmPreferences.getPhotoURL(getContext());
         String email = AlarmPreferences.getEmail(getContext());
         String username = AlarmPreferences.getUserName(getContext());
-
-
-
-
-        if (deviceId != -1 && userId != -1 && personId != null) {
+        if (/*deviceId != -1 && userId != -1 && */personId != null) {
 
             mProfile = new UserProfile();
             mProfile.userName = username;
@@ -128,6 +125,10 @@ public class SplashActivity extends AppCompatActivity implements
             mProfile.personId = personId;
             if (photoURL != null)
                 mProfile.photoUrl = photoURL;
+
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+            //sendRegistrationToServer(personId, username, email, photoURL, null);
 
             startMainActivity(mProfile);
         }

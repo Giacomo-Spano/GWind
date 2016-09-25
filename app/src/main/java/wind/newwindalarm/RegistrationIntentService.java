@@ -107,7 +107,6 @@ public class RegistrationIntentService extends IntentService {
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
 
-
             AlarmPreferences.setRegId(SplashActivity.getContext(), token);
             Log.i(TAG, "GCM Registration Token: " + token);
             boolean sentToken = sharedPreferences.getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
@@ -115,26 +114,25 @@ public class RegistrationIntentService extends IntentService {
 
             long deviceId = AlarmPreferences.getDeviceId(SplashActivity.getContext());
             Log.i(TAG, "deviceid=" + deviceId);
-            //String str = MainActivity.getContext().getResources().getString(R.string.pref_serverURL_default);
-            //String serverURL = sharedPreferences.getString(QuickstartPreferences.KEY_PREF_SERVERURL, str);
-            //String serverURL = AlarmPreferences.getServerUrl(MainActivity.getContext());
 
-            //Log.i(TAG, "serverURL="+serverURL);
+            String personId, personName, personEmail, authCode;
+            Uri personPhoto = null;
 
-            //TelephonyManager mngr = (TelephonyManager) MainActivity.getContext().getSystemService(MainActivity.getContext().TELEPHONY_SERVICE);
-            //int deviceId = -1; //getDeviceIdFromServer(token,serverURL);
-
-
-            //if (!sentToken || deviceId == -1 || deviceId == 0) {
-
-            String personId = SplashActivity.getAcct().getId();
-            String personName = SplashActivity.getAcct().getDisplayName();
-            String personEmail = SplashActivity.getAcct().getEmail();
-            Uri personPhoto = SplashActivity.getAcct().getPhotoUrl();
-            String authCode = SplashActivity.getAcct().getServerAuthCode();
+            if (SplashActivity.getAcct() == null) {
+                personId = AlarmPreferences.getPersonId(SplashActivity.getContext());;
+                personName = null;
+                personEmail = null;
+                personPhoto = null;
+                authCode = null;
+            } else {
+                personId = SplashActivity.getAcct().getId();
+                personName = SplashActivity.getAcct().getDisplayName();
+                personEmail = SplashActivity.getAcct().getEmail();
+                personPhoto = SplashActivity.getAcct().getPhotoUrl();
+                authCode = SplashActivity.getAcct().getServerAuthCode();
+            }
 
             sendRegistrationToServer(personId, personName, personEmail, personPhoto, authCode);
-            //}
 
             // Subscribe to topic channels
             subscribeTopics(token);
@@ -200,8 +198,10 @@ public class RegistrationIntentService extends IntentService {
                         AlarmPreferences.setUserId(SplashActivity.getContext(), userId);
                     }
                     AlarmPreferences.setPersonId(SplashActivity.getContext(), personId);
-                    AlarmPreferences.setEmail(SplashActivity.getContext(), personEmail);
-                    AlarmPreferences.setUserName(SplashActivity.getContext(), personName);
+                    if (personEmail != null)
+                        AlarmPreferences.setEmail(SplashActivity.getContext(), personEmail);
+                    if (personName != null)
+                        AlarmPreferences.setUserName(SplashActivity.getContext(), personName);
                     CommonUtilities.sendMessageToMainActivity(SplashActivity.getContext(), "title", "Registrazione utente completata: deviceid=" + deviceId + "userId=" + userId);
                 } catch (JSONException e) {
                     e.printStackTrace();

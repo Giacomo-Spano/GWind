@@ -39,9 +39,9 @@ public class HistoryChart {
     private LineChart mTrendChart;
     private LineChart mTemperatureChart;
 
-    LineData windData;
-    LineData trendData;
-    LineData temperatureData;
+    private LineData windData;
+    private LineData trendData;
+    private LineData temperatureData;
 
     private long startTimeMilliseconds;
     private long endTimeMilliseconds;
@@ -205,15 +205,6 @@ public class HistoryChart {
         xTemperatureAxis.setTextColor(Color.BLACK);
         xTemperatureAxis.setGranularity(60000L * 5f); // one minute in millis
 
-        // now modify viewport
-        //mWindChart.setVisibleXRangeMaximum(20); // allow 20 values to be displayed at once on the x-axis, not more
-        //mWindChart.moveViewToX(valsCompSpeed.size() - 20); // set the left edge of the chart to x-index 10
-        // moveViewToX(...) also calls invalidate()
-
-        long start = (endTimeMilliseconds - startTimeMilliseconds) / 2;
-        //xAxis.setAxisMinValue(0); // start at zero
-        //xAxis.setAxisMaxValue(endTimeMilliseconds - startTimeMilliseconds); // the axis maximum is 100*/
-
         AxisValueFormatter avf = new AxisValueFormatter() {
 
             private SimpleDateFormat mFormat = new SimpleDateFormat("HH:mm");
@@ -237,7 +228,6 @@ public class HistoryChart {
         xAxis.setValueFormatter(avf);
         xTemperatureAxis.setValueFormatter(avf);
         xTrendAxis.setValueFormatter(avf);
-
 
         YAxis yLeftAxis = mWindChart.getAxisLeft();
         yLeftAxis.setDrawAxisLine(true);
@@ -267,8 +257,6 @@ public class HistoryChart {
         mTrendChart.setData(trendData);
         temperatureData = new LineData(temperatureDataSets);
         mTemperatureChart.setData(temperatureData);
-
-
 
         Legend legend = mWindChart.getLegend();
         legend.setFormSize(10f); // set the size of the legend forms/shapes
@@ -300,17 +288,25 @@ public class HistoryChart {
         legend.setYEntrySpace(5f); // set the space between the legend entries on the y-axis
         legend.setEnabled(true);
 
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(meteoDataList.get(meteoDataList.size()-1).date);
+        cal.add(Calendar.HOUR_OF_DAY, -2); //minus number would decrement the hours
+        Date leftDate = cal.getTime();
+        long leftDateTimeMilliseconds = leftDate.getTime();
 
-        //mWindChart.setVisibleXRangeMinimum((endTimeMilliseconds-startTimeMilliseconds)/2);
-       // mWindChart.setVisibleXRangeMaximum(endTimeMilliseconds-startTimeMilliseconds);
-        //mWindChart.moveViewToX ((endTimeMilliseconds-startTimeMilliseconds)/2);
-        mWindChart.zoom(4f,1f,3*(endTimeMilliseconds-startTimeMilliseconds)/4,35/4);
-        mWindChart.moveViewToX (3*(endTimeMilliseconds-startTimeMilliseconds)/4);
+        //mWindChart.zoom(1f,1f,1f,1f); // ripristina lo zoom iniziale dal draw precedente
+        //mWindChart.zoom(4f,1f,3*(endTimeMilliseconds-startTimeMilliseconds)/4,35/4);
+        //mWindChart.moveViewToX(leftDateTimeMilliseconds);
+        //mWindChart.setVisibleXRangeMaximum(20); // allow 20 values to be displayed at once on the x-axis, not more
+        //mWindChart.moveViewToX(10); // set
 
-        mTemperatureChart.zoom(4f,1f,3*(endTimeMilliseconds-startTimeMilliseconds)/4,35/4);
-        mTemperatureChart.moveViewToX (3*(endTimeMilliseconds-startTimeMilliseconds)/4);
+        // muovi la finestra a leftdatetime
+        //mTemperatureChart.zoom(4f,1f,3*(endTimeMilliseconds-startTimeMilliseconds)/4,35/4);
+        //mTemperatureChart.zoom(10f,1f,leftDateTimeMilliseconds,35/2);
+        //mTemperatureChart.moveViewToX(leftDateTimeMilliseconds);
+        //mTemperatureChart.moveViewToX (3*(endTimeMilliseconds-startTimeMilliseconds)/4);
 
-        mTrendChart.zoom(4f,1f,3*(endTimeMilliseconds-startTimeMilliseconds)/4,35/4);
+        mTrendChart.zoom(2f,1f,3*(endTimeMilliseconds-startTimeMilliseconds)/4,35/4);
         mTrendChart.moveViewToX (3*(endTimeMilliseconds-startTimeMilliseconds)/4);
 
         mWindChart.invalidate(); // refresh

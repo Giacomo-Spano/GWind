@@ -33,7 +33,7 @@
 
 
             <TextView
-                android:id="@+id/speedTitleTextView"
+                android:id="@+id/speedTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
@@ -99,7 +99,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="01/01/2015"
                 android:textColor="#FFFFFF"
-                android:id="@+id/dateTextView"
+                android:id="@+id/lastUpdateTextView"
                 android:layout_gravity="right"
                 android:layout_alignParentTop="false"
                 android:layout_alignParentRight="true"
