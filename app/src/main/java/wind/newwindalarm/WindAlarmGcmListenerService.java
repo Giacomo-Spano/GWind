@@ -96,7 +96,7 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
                 message = data.getString("message");
                 //CommonUtilities.sendMessageToMainActivity(getApplicationContext(), title, "messagetext", notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
                 //generateUINotification(getApplicationContext(), message, title); // questo genera la notifica nella barra notifica
-                notifyUser(SplashActivity.getInstance(), message, title, spotId);
+                notifyUser(getApplicationContext(), message, title, spotId);
 
             }
         }
@@ -240,24 +240,24 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
         mNotificationManager.notify(mId, notification/*mBuilder.build()*/);
     }
 
-    public static void notifyUser(Activity activity, String header,
+    public static void notifyUser(Context context, String header,
                                   String message, String spotId) {
 
-        NotificationManager notificationManager = (NotificationManager) activity
+        NotificationManager notificationManager = (NotificationManager) context
                 .getSystemService(Activity.NOTIFICATION_SERVICE);
         Intent notificationIntent = new Intent(
-                activity.getApplicationContext(), SplashActivity.class);
+                context.getApplicationContext(), SplashActivity.class);
 
         notificationIntent.putExtra("spotId",spotId);
 
 
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(activity);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addParentStack(MainActivity.class);
         stackBuilder.addNextIntent(notificationIntent);
         PendingIntent pIntent = stackBuilder.getPendingIntent(0,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification notification = new Notification.Builder(activity)
+        Notification notification = new Notification.Builder(context)
                 .setContentTitle(header)
                 .setContentText(message)
                 .setContentIntent(pIntent)

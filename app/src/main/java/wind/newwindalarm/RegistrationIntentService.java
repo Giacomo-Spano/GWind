@@ -183,6 +183,9 @@ public class RegistrationIntentService extends IntentService {
             @Override
             public void processFinish(String jsonStr, boolean error, String errorMessage) {
 
+                if (error)
+                    CommonUtilities.sendMessageToMainActivity(SplashActivity.getContext(), "errore registrazione", errorMessage);
+
 
                 try {
                     JSONObject json = new JSONObject(jsonStr);

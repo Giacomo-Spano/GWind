@@ -73,7 +73,6 @@ public class requestMeteoDataTask extends
 
         requestMeteoDataTask.Result result = new requestMeteoDataTask.Result();
         URL url;
-        //List<Object> list = new ArrayList<Object>();
 
         if (requestType == REQUEST_ADDFAVORITES || requestType == REQUEST_REMOVEFAVORITE) {
 
@@ -113,8 +112,6 @@ public class requestMeteoDataTask extends
 
             try {
                 String path = "/meteo?";
-
-
                 if (requestType == REQUEST_LASTMETEODATA) {
                     String spotList = (String) params[0]; //lista di spot separata da virgola
                     String userid = (String) params[1];

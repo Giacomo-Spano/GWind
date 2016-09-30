@@ -169,12 +169,17 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-        String str = (String) intent.getStringExtra("spotId");
-        mProfile = (UserProfile) intent.getSerializableExtra("userProfile");
+        if (savedInstanceState != null) {
+            spotId = savedInstanceState.getLong("spotId");
+            mProfile = (UserProfile) savedInstanceState.getSerializable("userProfile");
 
-        if (str != null)
-            spotId = Long.valueOf(str);
+        } else {
+            Intent intent = getIntent();
+            String str = (String) intent.getStringExtra("spotId");
+            mProfile = (UserProfile) intent.getSerializableExtra("userProfile");
+            if (str != null)
+                spotId = Long.valueOf(str);
+        }
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -269,8 +274,10 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onResume() {
         super.onResume();
+        getLastMeteoData();
         // Register the broadcast receiver.
         registerReceiver(mHandleMessageReceiver, filter);
+
     }
 
     @Override
@@ -826,6 +833,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onSaveInstanceState(outState);
 
         outState.putLong("spotId", spotId);
+        outState.putSerializable("userProfile",mProfile);
     }
 
     public void setSpotDetailsFragment(SpotDetailsFragment fragment) {
@@ -847,7 +855,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSearchSpotClick(Spot spot) {
-        showSpotDetailsFragment(spotId);
+        showSpotDetailsFragment(spot.id);
         //searchSpotFragment.
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -862,6 +870,8 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void processFinish(List<MeteoStationData> list, boolean error, String errorMessage) {
 
+            if (error)
+                showError(errorMessage);
 
             if (list == null)
                 return;
@@ -885,6 +895,9 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public void processFinishHistory(long spotId, List<MeteoStationData> list, boolean error, String errorMessage) {
+
+            if (error)
+                showError(errorMessage);
 
             if (spotDetailsFragment != null) {
                 spotMeteoDataList.setHistory(spotId,list);

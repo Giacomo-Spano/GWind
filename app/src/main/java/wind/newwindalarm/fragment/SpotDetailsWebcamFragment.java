@@ -1,10 +1,12 @@
 package wind.newwindalarm.fragment;
 
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,7 +19,13 @@ import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,8 +60,6 @@ public class SpotDetailsWebcamFragment extends Fragment implements SpotDetailsFr
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
-
         if (savedInstanceState != null) {
             meteoData = (MeteoStationData) savedInstanceState.getSerializable("meteoData");
             spotId = savedInstanceState.getLong("spotId");
@@ -61,9 +67,11 @@ public class SpotDetailsWebcamFragment extends Fragment implements SpotDetailsFr
             int count = 1;
             for (WebcamCardItem wci : webcamCards.list) {
 
-                Bitmap bitmap = savedInstanceState.getParcelable("bitmap"+count);
                 long lastWebCamWindId = savedInstanceState.getLong("lastWebcamWindId"+count);
+                //Bitmap bitmap = savedInstanceState.getParcelable("bitmap"+count);
+                Bitmap bitmap = getImageBitmap(getContext(), "bitmap" + count, "jpg");
                 wci.setWebCamImage(bitmap,lastWebCamWindId);
+
                 count++;
             }
         }
@@ -88,6 +96,36 @@ public class SpotDetailsWebcamFragment extends Fragment implements SpotDetailsFr
         return v;
     }
 
+    public void saveImage(Context context, Bitmap b, String name, String extension){
+        name=name+"."+extension;
+        FileOutputStream out;
+        try {
+            out = context.openFileOutput(name, Context.MODE_PRIVATE);
+            b.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Bitmap getImageBitmap(Context context,String name,String extension){
+        name=name+"."+extension;
+        try{
+            FileInputStream fis = context.openFileInput(name);
+            Bitmap b = BitmapFactory.decodeStream(fis);
+            fis.close();
+            return b;
+        }
+        catch(Exception e){
+        }
+        return null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -98,7 +136,8 @@ public class SpotDetailsWebcamFragment extends Fragment implements SpotDetailsFr
         int count = 1;
         for (WebcamCardItem wci : webcamCards.list) {
             Bitmap bitmap = wci.getWebCamImage();
-            outState.putParcelable("bitmap"+count, bitmap);
+            //outState.putParcelable("bitmap"+count, bitmap);
+            saveImage(getContext(), bitmap, "bitmap" + count, "jpg");
             long lastWebCamWindId = wci.getlastWebcamImageWindId();
             outState.putLong("lastWebcamWindId"+count, lastWebCamWindId);
             count++;
