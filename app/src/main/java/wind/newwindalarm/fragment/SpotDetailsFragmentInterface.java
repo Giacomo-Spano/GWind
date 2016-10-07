@@ -1,6 +1,6 @@
 package wind.newwindalarm.fragment;
 
-import wind.newwindalarm.MeteoStationData;
+import wind.newwindalarm.data.MeteoStationData;
 
 /**
  * Created by Giacomo Spanò on 24/09/2016.

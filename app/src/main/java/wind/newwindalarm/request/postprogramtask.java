@@ -1,4 +1,4 @@
-package wind.newwindalarm;
+package wind.newwindalarm.request;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -24,6 +24,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import wind.newwindalarm.AlarmPreferences;
+import wind.newwindalarm.AsyncPostProgramResponse;
+import wind.newwindalarm.NotificationSettings;
+import wind.newwindalarm.WindAlarmProgram;
 
 /**
  * Created by giacomo on 04/07/2015.

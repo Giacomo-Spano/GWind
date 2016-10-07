@@ -1,9 +1,10 @@
 package wind.newwindalarm;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import wind.newwindalarm.data.MeteoStationData;
 
 /**
  * Created by Giacomo Spanò on 03/09/2016.

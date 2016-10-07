@@ -20,12 +20,12 @@ import wind.newwindalarm.SpotList;
 /**
  * Created by Giacomo Spanò on 09/09/2016.
  */
-public class SearchSpotFragment extends Fragment implements SearchSpotListener {
+public class SearchMeteoForecastFragment extends Fragment implements SearchSpotListener {
 
     // List view
     private ListView lv;
     // Listview Adapter
-    SearchSpotListener.SearchSpotArrayAdapter adapter;
+    SearchSpotArrayAdapter adapter;
     //SearchSpotListener mListener;
     SpotList mSpotList;
     // Search EditText
@@ -47,10 +47,14 @@ public class SearchSpotFragment extends Fragment implements SearchSpotListener {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
+
+
+
         View v;
-        v = inflater.inflate(R.layout.fragment_searchspot, container, false);
+        v = inflater.inflate(R.layout.fragment_searchmeteoforecast, container, false);
 
         lv = (ListView) v.findViewById(R.id.list_view);
+
         inputSearch = (EditText) v.findViewById(R.id.inputSearch);
 
         inputSearch.addTextChangedListener(new TextWatcher() {
@@ -72,7 +76,20 @@ public class SearchSpotFragment extends Fragment implements SearchSpotListener {
                 // TODO Auto-generated method stub
             }
         });
-    return v;
+
+
+
+        //SpotList spotList = new SpotList();
+        //setSpotList(spotList);
+        mSpotList = new SpotList();;
+        adapter = new SearchSpotArrayAdapter(getActivity(), mSpotList.spotList, this);
+        lv.setAdapter(adapter);
+
+
+
+
+
+        return v;
     }
 
     @Override
@@ -83,11 +100,9 @@ public class SearchSpotFragment extends Fragment implements SearchSpotListener {
 
     public void setSpotList(SpotList spotList) {
 
-        mSpotList = spotList;
-
-        adapter = new SearchSpotListener.SearchSpotArrayAdapter(getActivity(), mSpotList.spotList, this);
-
-        lv.setAdapter(adapter);
+/*        mSpotList = spotList;
+        adapter = new SearchSpotArrayAdapter(getActivity(), mSpotList.spotList, this);
+        lv.setAdapter(adapter);*/
     }
 
     @Override

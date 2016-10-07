@@ -62,12 +62,10 @@ package wind.newwindalarm;
  */
 
 
-import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -81,6 +79,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+
+import wind.newwindalarm.request.registertask;
 
 public class RegistrationIntentService extends IntentService {
 

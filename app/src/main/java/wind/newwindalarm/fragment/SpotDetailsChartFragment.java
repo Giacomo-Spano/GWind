@@ -1,7 +1,6 @@
 package wind.newwindalarm.fragment;
 
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.listener.ChartTouchListener;
@@ -20,14 +18,11 @@ import com.github.mikephil.charting.listener.OnChartGestureListener;
 import java.util.List;
 
 import wind.newwindalarm.FullChartActivity;
-import wind.newwindalarm.MainActivity;
-import wind.newwindalarm.MeteoStationData;
+import wind.newwindalarm.data.MeteoStationData;
 import wind.newwindalarm.R;
 import wind.newwindalarm.cardui.ChartCard;
 import wind.newwindalarm.cardui.ChartCardItem;
 import wind.newwindalarm.cardui.ChartCardListener;
-import wind.newwindalarm.cardui.WebcamCard;
-import wind.newwindalarm.cardui.WebcamCardItem;
 import wind.newwindalarm.chart.HistoryChart;
 
 public class SpotDetailsChartFragment extends Fragment implements SpotDetailsFragmentInterface, ChartCardListener {

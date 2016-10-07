@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:text="Day"
+            android:id="@+id/dayTextView"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="false"
+            android:textAlignment="center" />
+
+        <TextView
+            android:text="Hour"
+            android:id="@+id/hourTextView"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:layout_below="@+id/maxTemperature"
+            android:layout_alignParentStart="true" />
+
+
+        <TextView
+            android:text="20°C"
+            android:layout_width="@dimen/roundtextboxwidth"
+            android:layout_height="wrap_content"
+            android:id="@+id/maxTemperature"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:padding="2dp"
+            android:background="@drawable/rounded_textbox"
+            android:textAlignment="center"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/minTemperature"
+            android:layout_alignParentTop="true" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/weatherImageView"
+            android:src="@drawable/meteo_10d"
+            app:srcCompat="@drawable/m01d"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/dayTextView" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="weather"
+            android:id="@+id/weatherTextView"
+            android:layout_gravity="bottom"
+            android:layout_toEndOf="@+id/weatherImageView"
+            android:layout_marginStart="12dp"
+            android:layout_alignParentTop="true" />
+        <TextView
+            android:text="10°C"
+            android:layout_width="@dimen/roundtextboxwidth"
+            android:layout_height="wrap_content"
+            android:id="@+id/minTemperature"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:padding="2dp"
+            android:background="@drawable/rounded_textbox"
+            android:backgroundTint="@android:color/holo_blue_bright"
+            android:textAlignment="center"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true" />
+
+
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>

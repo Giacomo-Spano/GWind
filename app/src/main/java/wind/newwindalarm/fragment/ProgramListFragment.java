@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.support.v4.app.Fragment;
 //import android.app.Fragment;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -19,7 +18,7 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Switch;
-import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,16 +26,14 @@ import wind.newwindalarm.AlarmPreferences;
 import wind.newwindalarm.AsyncPostProgramResponse;
 import wind.newwindalarm.AsyncRequestProgramResponse;
 import wind.newwindalarm.MainActivity;
-import wind.newwindalarm.MeteoStationData;
-import wind.newwindalarm.ProgramActivity;
+import wind.newwindalarm.data.MeteoStationData;
 import wind.newwindalarm.R;
-import wind.newwindalarm.SplashActivity;
 import wind.newwindalarm.Spot;
 import wind.newwindalarm.WindAlarmProgram;
 import wind.newwindalarm.cardui.AlarmCard;
 import wind.newwindalarm.cardui.AlarmCardSubitem;
-import wind.newwindalarm.postprogramtask;
-import wind.newwindalarm.requestprogramtask;
+import wind.newwindalarm.request.postprogramtask;
+import wind.newwindalarm.request.requestprogramtask;
 
 public class ProgramListFragment extends Fragment implements SpotDetailsFragmentInterface, OnItemSelectedListener {
 

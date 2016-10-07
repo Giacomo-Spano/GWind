@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 
 import com.github.mikephil.charting.charts.LineChart;
 
+import wind.newwindalarm.data.MeteoStationData;
+
 public class FullChartFragment extends Fragment {
 
     private LineChart mLineChart;

@@ -1,19 +1,11 @@
 package wind.newwindalarm.cardui;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
-import com.github.mikephil.charting.charts.LineChart;
-
 import java.io.Serializable;
-
-import wind.newwindalarm.MeteoStationData;
-import wind.newwindalarm.R;
-import wind.newwindalarm.controls.TouchImageView;
 
 
 public class WebcamCardItem implements Serializable {

@@ -1,8 +1,6 @@
 package wind.newwindalarm.fragment;
 
 //import android.app.Fragment;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 //import android.app.ListFragment;
@@ -11,18 +9,17 @@ import android.view.View;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import wind.newwindalarm.AsyncRequestMeteoDataResponse;
 import wind.newwindalarm.MainActivity;
-import wind.newwindalarm.MeteoStationData;
+import wind.newwindalarm.data.Location;
+import wind.newwindalarm.data.MeteoStationData;
 import wind.newwindalarm.R;
 import wind.newwindalarm.Spot;
 import wind.newwindalarm.SpotMeteoListListener;
-import wind.newwindalarm.fragment.SpotDetailsFragment;
-import wind.newwindalarm.requestMeteoDataTask;
+import wind.newwindalarm.data.WindForecast;
+import wind.newwindalarm.request.requestMeteoDataTask;
 
 public class SpotMeteoListFragment extends ListFragment implements SpotMeteoListListener {
 
@@ -98,6 +95,16 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
 
             @Override
             public void processFinishRemoveFavorite(long spotId, boolean error, String errorMessage) {
+
+            }
+
+            @Override
+            public void processFinishForecast(WindForecast forecast, boolean error, String errorMessage) {
+
+            }
+
+            @Override
+            public void processFinishForecastLocation(List<Location> locations, boolean error, String errorMessage) {
 
             }
 

@@ -5,6 +5,11 @@ import android.app.Activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import wind.newwindalarm.data.Location;
+import wind.newwindalarm.data.MeteoStationData;
+import wind.newwindalarm.data.WindForecast;
+import wind.newwindalarm.request.requestMeteoDataTask;
+
 /**
  * Created by giacomo on 06/09/2015.
  */
@@ -113,6 +118,16 @@ public class SpotList {
                         return;
                     }
                 }
+            }
+
+            @Override
+            public void processFinishForecast(WindForecast forecast, boolean error, String errorMessage) {
+
+            }
+
+            @Override
+            public void processFinishForecastLocation(List<Location> locations, boolean error, String errorMessage) {
+
             }
         }, requestType).execute(spotId,userId);
 

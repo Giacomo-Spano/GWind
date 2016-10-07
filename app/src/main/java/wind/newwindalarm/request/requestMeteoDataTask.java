@@ -1,4 +1,4 @@
-package wind.newwindalarm;
+package wind.newwindalarm.request;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -30,6 +30,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import wind.newwindalarm.AlarmPreferences;
+import wind.newwindalarm.AsyncRequestMeteoDataResponse;
+import wind.newwindalarm.SplashActivity;
+import wind.newwindalarm.Spot;
+import wind.newwindalarm.data.Location;
+import wind.newwindalarm.data.MeteoStationData;
+import wind.newwindalarm.data.WindForecast;
+
 /**
  * Created by giacomo on 01/07/2015.
  */
@@ -44,6 +52,12 @@ public class requestMeteoDataTask extends
     public static final int REQUEST_ADDFAVORITES = 6;
     public static final int REQUEST_REMOVEFAVORITE = 7;
     public static final int REQUEST_FAVORITESLASTMETEODATA = 8;
+    public static final int REQUEST_FORECAST = 9;
+    public static final int REQUEST_FORECASTLOCATIONS = 10;
+
+    public static final String FORECAST_WINDFINDER = "Windfinder";
+    public static final String FORECAST_WINDGURU = "Windguru";
+    public static final String FORECAST_OPENWEATHERMAP = "OpenWeathermap";
 
     public static String Spot_All = "all";
     public AsyncRequestMeteoDataResponse delegate = null;//Call back interface
@@ -56,10 +70,12 @@ public class requestMeteoDataTask extends
 
 
     protected class Result {
-        List<MeteoStationData> meteoList;
-        List<Spot> spotList;
-        List<Long> favorites;
-        long spotId;
+        public List<MeteoStationData> meteoList;
+        public List<Spot> spotList;
+        public List<Location> locations;
+        public List<Long> favorites;
+        public long spotId;
+        public WindForecast forecast;
     }
 
     public requestMeteoDataTask(Activity activity, AsyncRequestMeteoDataResponse asyncResponse, int type) {
@@ -152,6 +168,14 @@ public class requestMeteoDataTask extends
                     path += "&spot=" + Spot_All;
                     path += "&userid=" + userid;
 
+                } else if (requestType == REQUEST_FORECASTLOCATIONS) {
+                    String userid = (String) params[0];
+                    String source = (String) params[1];
+                    String filter = (String) params[2];
+                    path += "forecastlocations="+source;
+                    path += "&filter=" + filter;
+                    path += "&userid=" + userid;
+
                 } else if (requestType == REQUEST_FAVORITESLASTMETEODATA) {
                     String userid = (String) params[0];
                     Long windid = (Long) params[1];
@@ -168,6 +192,14 @@ public class requestMeteoDataTask extends
                     path += "&spot=" + Spot_All;
                     path += "&userid=" + userid;
 
+                } else if (requestType == REQUEST_FORECAST) { // OpenWeathermap
+                    String userid = (String) params[0];
+                    long spotId = (long) params[1]; // spotID
+                    String source = (String) params[2];
+                    path = "/forecast?";
+                    path += "userid=" + userid;
+                    path += "&spot=" + spotId;
+                    path += "&source=" + source;
                 }
 
                 String serverUrl = AlarmPreferences.getServerUrl(activity);
@@ -222,6 +254,24 @@ public class requestMeteoDataTask extends
                             list.add(md);
                         }
                         result.meteoList = list;
+                    } else if (requestType == REQUEST_FORECAST) {
+                        WindForecast forecast = new WindForecast(json);
+                        result.forecast = forecast;
+
+                    } else if (requestType == REQUEST_FORECASTLOCATIONS) {
+                        //WindForecast forecast = new WindForecast(json);
+                        //result.forecast = forecast;
+                        ;
+                        JSONObject jobj = new JSONObject(json);
+                        JSONArray jarray = null;
+                        if (jobj.has("locations")) {
+                            jarray = jobj.getJSONArray("locations");
+                            for (int i = 0; i < jarray.length(); i++) {
+                                JSONObject obj = (JSONObject) jarray.get(i);
+                                Location location = new Location(obj);
+                            }
+                        }
+
                     } else if (requestType == REQUEST_LOGMETEODATA) {
                         List<MeteoStationData> list = new ArrayList<MeteoStationData>();
                         JSONObject jObject = new JSONObject(json);
@@ -352,6 +402,10 @@ public class requestMeteoDataTask extends
             delegate.processFinishAddFavorite(result.spotId, error, errorMessage);
         } else if (requestType == REQUEST_REMOVEFAVORITE) {
             delegate.processFinishRemoveFavorite(result.spotId, error, errorMessage);
+        } else if (requestType == REQUEST_FORECAST) {
+            delegate.processFinishForecast(result.forecast, error, errorMessage);
+        } else if (requestType == REQUEST_FORECASTLOCATIONS) {
+            delegate.processFinishForecastLocation(result.locations, error, errorMessage);
         }
 
 

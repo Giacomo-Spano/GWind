@@ -1,4 +1,4 @@
-package wind.newwindalarm;
+package wind.newwindalarm.data;
 
 
 import org.json.JSONException;

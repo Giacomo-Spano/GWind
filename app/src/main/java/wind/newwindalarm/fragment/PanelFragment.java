@@ -3,8 +3,6 @@ package wind.newwindalarm.fragment;
 
 import android.app.Activity;
 //import android.app.Fragment;
-import android.os.Parcelable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.Build;
@@ -22,16 +20,10 @@ import android.widget.LinearLayout;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
-import wind.newwindalarm.AlarmPreferences;
-import wind.newwindalarm.MainActivity;
-import wind.newwindalarm.MeteoStationData;
+import wind.newwindalarm.data.MeteoStationData;
 import wind.newwindalarm.R;
-import wind.newwindalarm.Spot;
-import wind.newwindalarm.SpotList;
 import wind.newwindalarm.cardui.MeteoCardItem;
 import wind.newwindalarm.cardui.MeteoCardListener;
 

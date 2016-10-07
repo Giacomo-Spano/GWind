@@ -17,4 +17,6 @@
 
     <dimen name="margintop">32dp</dimen>
     <dimen name="marginleft">32dp</dimen>
+
+    <dimen name="roundtextboxwidth">60dp</dimen>
 </resources>

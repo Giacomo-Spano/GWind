@@ -2,26 +2,18 @@ package wind.newwindalarm.fragment;
 
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 
-import wind.newwindalarm.MeteoStationData;
+import wind.newwindalarm.data.MeteoStationData;
 import wind.newwindalarm.R;
 import wind.newwindalarm.cardui.InfoCard;
-import wind.newwindalarm.cardui.WebcamCard;
 
 public class SpotDetailsMeteodataFragment extends Fragment implements SpotDetailsFragmentInterface {
 

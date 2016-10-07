@@ -81,6 +81,8 @@ Build number: <xliff:g id="build_number">%s</xliff:g>\n
 
     <string name="options_diagfile">diag file</string>
     <string name="options_searchspot">Cerca</string>
+    <string name="options_searchmeteoforecast">Previsioni meteo</string>
+
 
     <string name="notification_highwind">notifiche vento forte</string>
     <string name="notification_highwind_sum">Visualizza notifiche vento forte</string>

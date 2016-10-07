@@ -2,6 +2,10 @@ package wind.newwindalarm;
 
 import java.util.List;
 
+import wind.newwindalarm.data.Location;
+import wind.newwindalarm.data.MeteoStationData;
+import wind.newwindalarm.data.WindForecast;
+
 /**
  * Created by giacomo on 01/07/2015.
  */
@@ -12,4 +16,7 @@ public interface AsyncRequestMeteoDataResponse {
     void processFinishSpotList(List<Spot> list, List<Long> favorites, boolean error, String errorMessage);
     void processFinishAddFavorite(long spotId,boolean error, String errorMessage);
     void processFinishRemoveFavorite(long spotId,boolean error, String errorMessage);
+    void processFinishForecast(WindForecast forecast, boolean error, String errorMessage);
+
+    void processFinishForecastLocation(List<Location> locations, boolean error, String errorMessage);
 }

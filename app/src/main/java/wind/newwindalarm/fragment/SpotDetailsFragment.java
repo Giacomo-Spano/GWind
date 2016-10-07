@@ -15,19 +15,23 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import wind.newwindalarm.MainActivity;
-import wind.newwindalarm.MeteoStationData;
+import wind.newwindalarm.Spot;
+import wind.newwindalarm.data.MeteoStationData;
 import wind.newwindalarm.R;
 import wind.newwindalarm.WindAlarmProgram;
+import wind.newwindalarm.data.WindForecast;
 
-public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodataFragment.OnClickListener, ProgramListFragment.OnProgramListListener {
+public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodataFragment.OnClickListener, ProgramListFragment.OnProgramListListener, ForecastFragment.OnMeteoForecastClickListener {
 
-    public static final int Pager_MeteodataPage = 0;
-    public static final int Pager_WebcamPage = 1;
-    public static final int Pager_ChartPage = 2;
-    public static final int Pager_ProgramListPage = 3;
+    public static final int Pager_ForecastPage = 0;
+    public static final int Pager_MeteodataPage = 1;
+    public static final int Pager_WebcamPage = 2;
+    public static final int Pager_ChartPage = 3;
+    public static final int Pager_ProgramListPage = 4;
 
     private MeteoStationData meteoData;
     private long spotId;
+    private ForecastFragment forecastFragment;
     private SpotDetailsMeteodataFragment meteodataFragment;
     private SpotDetailsWebcamFragment webcamFragment;
     private SpotDetailsChartFragment chartFragment;
@@ -39,6 +43,15 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
     private TextView lastUpateTextView;
 
     OnClickListener mCallback;
+
+    @Override
+    public void onMeteoForecastClick(Spot spot) {
+
+    }
+
+    public void setForecast(WindForecast forecast) {
+        forecastFragment.setForecast(forecast);
+    }
 
     // Container Activity must implement this interface
     public interface OnClickListener {
@@ -128,6 +141,10 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
                     mCallback.onChangeDetailView(position, spotId, meteoData);
 
                 switch (position) {
+                    case Pager_ForecastPage:
+                        forecastFragment.refreshData();
+                        break;
+
                     case Pager_MeteodataPage:
                         meteodataFragment.refreshData();
                         break;
@@ -153,10 +170,11 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
         });
 
         tabLayout.setupWithViewPager(mPager);
-        tabLayout.getTabAt(0).setIcon(R.drawable.logo);
-        tabLayout.getTabAt(1).setIcon(R.drawable.webcamicon);
-        tabLayout.getTabAt(2).setIcon(R.drawable.graphicon);
-        tabLayout.getTabAt(3).setIcon(R.drawable.graphicon);
+        tabLayout.getTabAt(Pager_ForecastPage).setIcon(R.drawable.logo);
+        tabLayout.getTabAt(Pager_MeteodataPage).setIcon(R.drawable.logo);
+        tabLayout.getTabAt(Pager_WebcamPage).setIcon(R.drawable.webcamicon);
+        tabLayout.getTabAt(Pager_ChartPage).setIcon(R.drawable.graphicon);
+        tabLayout.getTabAt(Pager_ProgramListPage).setIcon(R.drawable.graphicon);
 
         // Updating the action bar title
         if (meteoData != null) {
@@ -178,6 +196,8 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
     }
 
     public SpotDetailsFragment() {
+        forecastFragment = new ForecastFragment();
+        forecastFragment.setListener(this);
         meteodataFragment = new SpotDetailsMeteodataFragment();
         meteodataFragment.setListener(this);
         webcamFragment = new SpotDetailsWebcamFragment();
@@ -193,6 +213,7 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
 
     public void setMeteoData(MeteoStationData data) {
         meteoData = data;
+        forecastFragment.setMeteoData(data);
         meteodataFragment.setMeteoData(data);
         webcamFragment.setMeteoData(data);
         chartFragment.setMeteoData(data);
@@ -200,6 +221,7 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
 
     public void setSpotId(long spotId) {
         this.spotId = spotId;
+        forecastFragment.setSpotId(spotId);
         meteodataFragment.setSpotId(spotId);
         webcamFragment.setSpotId(spotId);
         chartFragment.setSpotId(spotId);
@@ -245,7 +267,7 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
 
     private class SpotDetailPagerAdapter extends FragmentStatePagerAdapter {
 
-        private static final int NUM_PAGES = 4;
+        private static final int NUM_PAGES = 5;
         SparseArray<Fragment> registeredFragments;
 
         public SpotDetailPagerAdapter(android.support.v4.app.FragmentManager fm) {
@@ -260,6 +282,9 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
             SpotDetailsFragmentInterface fragment;
 
             switch (position) {
+                case Pager_ForecastPage:
+                    fragment = forecastFragment;
+                    break;
                 case Pager_MeteodataPage:
                     fragment = meteodataFragment;
                     break;
@@ -282,15 +307,20 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
 
         @Override
         public CharSequence getPageTitle(int position) {
+
             String title = "titolo " + position;
-            if (position == 0) {
-                return "Dati meteo";
-            } else if (position == 1) {
-                return "Webcam";
-            } else if (position == 2) {
-                return "Grafico";
-            } else if (position == 3) {
-                return "Sveglie";
+
+            switch (position) {
+                case Pager_ForecastPage:
+                    return "Previsioni";
+                case Pager_MeteodataPage:
+                    return "Dati meteo";
+                case Pager_WebcamPage:
+                    return "Webcam";
+                case Pager_ChartPage:
+                    return "Grafico";
+                case Pager_ProgramListPage:
+                    return "Sveglie";
             }
             return title;
         }
@@ -311,6 +341,9 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
             Fragment fragment = (Fragment) super.instantiateItem(container, position);
 
             switch (position) {
+                case Pager_ForecastPage:
+                    forecastFragment = (ForecastFragment) fragment;
+                    break;
                 case Pager_MeteodataPage:
                     meteodataFragment = (SpotDetailsMeteodataFragment) fragment;
                     break;

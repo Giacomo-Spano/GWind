@@ -2,10 +2,9 @@ package wind.newwindalarm.cardui;
 
 import android.app.Activity;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import wind.newwindalarm.MeteoStationData;
+import wind.newwindalarm.data.MeteoStationData;
 import wind.newwindalarm.R;
 
 

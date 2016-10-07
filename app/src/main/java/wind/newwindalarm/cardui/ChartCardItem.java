@@ -7,7 +7,7 @@ import android.widget.ProgressBar;
 
 import com.github.mikephil.charting.charts.LineChart;
 
-import wind.newwindalarm.MeteoStationData;
+import wind.newwindalarm.data.MeteoStationData;
 import wind.newwindalarm.R;
 
 

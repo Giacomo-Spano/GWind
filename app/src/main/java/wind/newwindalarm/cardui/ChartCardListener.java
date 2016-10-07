@@ -1,7 +1,5 @@
 package wind.newwindalarm.cardui;
 
-import wind.newwindalarm.MeteoStationData;
-
 /**
  * Created by giacomo on 19/07/2015.
  */

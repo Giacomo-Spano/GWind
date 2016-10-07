@@ -6,7 +6,7 @@ import android.widget.LinearLayout;
 
 import java.text.SimpleDateFormat;
 
-import wind.newwindalarm.MeteoStationData;
+import wind.newwindalarm.data.MeteoStationData;
 import wind.newwindalarm.R;
 
 

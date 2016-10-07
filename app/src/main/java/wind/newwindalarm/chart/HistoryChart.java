@@ -1,8 +1,6 @@
 package wind.newwindalarm.chart;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -19,15 +17,13 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.formatter.AxisValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import wind.newwindalarm.AsyncRequestMeteoDataResponse;
-import wind.newwindalarm.MeteoStationData;
+import wind.newwindalarm.data.MeteoStationData;
 
 /**
  * Created by Giacomo Spanò on 26/06/2016.

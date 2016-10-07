@@ -18,6 +18,11 @@
         android:title="@string/options_searchspot">
     </item>
     <item
+        android:id="@+id/options_searchmeteoforecast"
+        android:icon="@android:drawable/ic_search_category_default"
+        android:title="@string/options_searchmeteoforecast">
+    </item>
+    <item
         android:id="@+id/options_diagfile"
         android:title="@string/options_diagfile">
     </item>

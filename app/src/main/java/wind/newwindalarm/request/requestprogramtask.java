@@ -1,4 +1,4 @@
-package wind.newwindalarm;
+package wind.newwindalarm.request;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -21,6 +21,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import wind.newwindalarm.AlarmPreferences;
+import wind.newwindalarm.AsyncRequestProgramResponse;
+import wind.newwindalarm.WindAlarmProgram;
 
 /**
  * Created by giacomo on 01/07/2015.

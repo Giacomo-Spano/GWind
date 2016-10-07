@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.FloatingActionButton;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +34,7 @@ import wind.newwindalarm.R;
 import wind.newwindalarm.Spot;
 import wind.newwindalarm.WindAlarmProgram;
 import wind.newwindalarm.controls.baseOnClickAndFocusChangeListener;
-import wind.newwindalarm.postprogramtask;
+import wind.newwindalarm.request.postprogramtask;
 
 public class ProgramFragment extends Fragment implements OnItemSelectedListener {
 
