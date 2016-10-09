@@ -1,7 +1,9 @@
 {
   "project_info": {
     "project_number": "931700652688",
-    "project_id": "windalarm-24f03"
+    "firebase_url": "https://windalarm-24f03.firebaseio.com",
+    "project_id": "windalarm-24f03",
+    "storage_bucket": "windalarm-24f03.appspot.com"
   },
   "client": [
     {
@@ -12,6 +14,10 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "931700652688-o1dqr92hqa1521gruk5blf5gc4kc0691.apps.googleusercontent.com",
+          "client_type": 3
+        },
         {
           "client_id": "931700652688-vlqjc9s8klmjeti70p52ssnj4orgsdel.apps.googleusercontent.com",
           "client_type": 3
@@ -31,7 +37,7 @@
           "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     },
@@ -44,6 +50,10 @@
       },
       "oauth_client": [
         {
+          "client_id": "931700652688-o1dqr92hqa1521gruk5blf5gc4kc0691.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
           "client_id": "931700652688-vlqjc9s8klmjeti70p52ssnj4orgsdel.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -62,7 +72,7 @@
           "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     },
@@ -83,6 +93,10 @@
           }
         },
         {
+          "client_id": "931700652688-o1dqr92hqa1521gruk5blf5gc4kc0691.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
           "client_id": "931700652688-vlqjc9s8klmjeti70p52ssnj4orgsdel.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -97,11 +111,16 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "931700652688-o1dqr92hqa1521gruk5blf5gc4kc0691.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

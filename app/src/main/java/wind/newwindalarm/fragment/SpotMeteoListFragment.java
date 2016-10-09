@@ -18,7 +18,7 @@ import wind.newwindalarm.data.MeteoStationData;
 import wind.newwindalarm.R;
 import wind.newwindalarm.Spot;
 import wind.newwindalarm.SpotMeteoListListener;
-import wind.newwindalarm.data.WindForecast;
+import wind.newwindalarm.data.Forecast;
 import wind.newwindalarm.request.requestMeteoDataTask;
 
 public class SpotMeteoListFragment extends ListFragment implements SpotMeteoListListener {
@@ -99,7 +99,7 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
             }
 
             @Override
-            public void processFinishForecast(WindForecast forecast, boolean error, String errorMessage) {
+            public void processFinishForecast(int requestId, Forecast forecast, boolean error, String errorMessage) {
 
             }
 

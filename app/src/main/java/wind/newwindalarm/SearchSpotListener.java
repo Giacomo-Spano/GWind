@@ -35,7 +35,7 @@ public interface SearchSpotListener {
 
         public SearchSpotArrayAdapter(Context context, List<Spot> list, SearchSpotListener listener) {
 
-            super(context, R.layout.searchspotlistrowlayout, list);
+            super(context, R.layout.searchspotlistrowlayout/*, list*/);
             mListener = listener;
             this.context = context;
             this.list = list;

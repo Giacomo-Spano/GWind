@@ -34,9 +34,9 @@ import wind.newwindalarm.AlarmPreferences;
 import wind.newwindalarm.AsyncRequestMeteoDataResponse;
 import wind.newwindalarm.SplashActivity;
 import wind.newwindalarm.Spot;
+import wind.newwindalarm.data.Forecast;
 import wind.newwindalarm.data.Location;
 import wind.newwindalarm.data.MeteoStationData;
-import wind.newwindalarm.data.WindForecast;
 
 /**
  * Created by giacomo on 01/07/2015.
@@ -66,6 +66,7 @@ public class requestMeteoDataTask extends
     private boolean error = false;
     private String errorMessage = "";
     int requestType;
+    int requestId;
     int contentSize;
 
 
@@ -75,7 +76,7 @@ public class requestMeteoDataTask extends
         public List<Location> locations;
         public List<Long> favorites;
         public long spotId;
-        public WindForecast forecast;
+        public Forecast forecast;
     }
 
     public requestMeteoDataTask(Activity activity, AsyncRequestMeteoDataResponse asyncResponse, int type) {
@@ -194,8 +195,9 @@ public class requestMeteoDataTask extends
 
                 } else if (requestType == REQUEST_FORECAST) { // OpenWeathermap
                     String userid = (String) params[0];
-                    long spotId = (long) params[1]; // spotID
+                    String spotId = (String) params[1]; // spotID
                     String source = (String) params[2];
+                    requestId = (int) params[3];
                     path = "/forecast?";
                     path += "userid=" + userid;
                     path += "&spot=" + spotId;
@@ -255,20 +257,23 @@ public class requestMeteoDataTask extends
                         }
                         result.meteoList = list;
                     } else if (requestType == REQUEST_FORECAST) {
-                        WindForecast forecast = new WindForecast(json);
+                        Forecast forecast = new Forecast(json);
                         result.forecast = forecast;
 
                     } else if (requestType == REQUEST_FORECASTLOCATIONS) {
-                        //WindForecast forecast = new WindForecast(json);
+                        //Forecast forecast = new Forecast(json);
                         //result.forecast = forecast;
                         ;
+
                         JSONObject jobj = new JSONObject(json);
                         JSONArray jarray = null;
                         if (jobj.has("locations")) {
+                            result.locations = new ArrayList<>();
                             jarray = jobj.getJSONArray("locations");
                             for (int i = 0; i < jarray.length(); i++) {
                                 JSONObject obj = (JSONObject) jarray.get(i);
                                 Location location = new Location(obj);
+                                result.locations.add(location);
                             }
                         }
 
@@ -369,6 +374,15 @@ public class requestMeteoDataTask extends
             //message = "Richiesta dati storici...";
         else if (requestType == REQUEST_LASTMETEODATA)
             message = "Richiesta dati meteo...";
+        else if (requestType == REQUEST_FORECAST) {
+            message = "caricamento ...";
+            this.dialog.setMessage(message);
+            this.dialog.show();
+        } else if (requestType == REQUEST_FORECASTLOCATIONS) {
+            message = "caricamento...";
+            this.dialog.setMessage(message);
+            this.dialog.show();
+        }
 
         //this.dialog.setMessage(message);
         //this.dialog.show();
@@ -403,7 +417,7 @@ public class requestMeteoDataTask extends
         } else if (requestType == REQUEST_REMOVEFAVORITE) {
             delegate.processFinishRemoveFavorite(result.spotId, error, errorMessage);
         } else if (requestType == REQUEST_FORECAST) {
-            delegate.processFinishForecast(result.forecast, error, errorMessage);
+            delegate.processFinishForecast(requestId, result.forecast, error, errorMessage);
         } else if (requestType == REQUEST_FORECASTLOCATIONS) {
             delegate.processFinishForecastLocation(result.locations, error, errorMessage);
         }

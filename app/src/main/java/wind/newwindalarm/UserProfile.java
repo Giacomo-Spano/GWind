@@ -12,7 +12,7 @@ public class UserProfile implements Serializable {
 
     public String userName;
     public String email;
-    public Bitmap userImage;
+    //public Bitmap userImage;
     public String photoUrl;
     public String personId;
 

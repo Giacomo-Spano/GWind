@@ -7,7 +7,7 @@ import java.util.List;
 
 import wind.newwindalarm.data.Location;
 import wind.newwindalarm.data.MeteoStationData;
-import wind.newwindalarm.data.WindForecast;
+import wind.newwindalarm.data.Forecast;
 import wind.newwindalarm.request.requestMeteoDataTask;
 
 /**
@@ -121,7 +121,7 @@ public class SpotList {
             }
 
             @Override
-            public void processFinishForecast(WindForecast forecast, boolean error, String errorMessage) {
+            public void processFinishForecast(int requestId, Forecast forecast, boolean error, String errorMessage) {
 
             }
 

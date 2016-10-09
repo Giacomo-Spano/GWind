@@ -93,7 +93,7 @@ public class registertask extends AsyncTask<Object, Boolean, String> {
                 String personId = (String) params[2];
                 String personName = (String) params[3];
                 String personEmail = (String) params[4];
-                Uri personPhoto = (Uri) params[5];
+                String personPhoto = (String) params[5];
                 String authCode = (String) params[6];
 
                 postData = URLEncoder.encode("registerdevice", "UTF-8") + "=" +

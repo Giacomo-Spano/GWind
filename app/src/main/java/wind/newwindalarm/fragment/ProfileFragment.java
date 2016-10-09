@@ -3,6 +3,7 @@ package wind.newwindalarm.fragment;
 
 import android.app.Activity;
 //import android.app.Fragment;
+import android.graphics.Bitmap;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.Build;
@@ -19,6 +20,7 @@ import com.google.android.gms.common.SignInButton;
 
 import wind.newwindalarm.AlarmPreferences;
 import wind.newwindalarm.BuildConfig;
+import wind.newwindalarm.MainActivity;
 import wind.newwindalarm.R;
 import wind.newwindalarm.SplashActivity;
 import wind.newwindalarm.UserProfile;
@@ -152,8 +154,12 @@ public class ProfileFragment extends Fragment {
             mUserIdTextView.setVisibility(View.VISIBLE);
             mEMailTextView.setText(mProfile.email);
             mEMailTextView.setVisibility(View.VISIBLE);
+
             mUserImageView.setVisibility(View.VISIBLE);
-            mUserImageView.setImageBitmap(mProfile.userImage);
+            MainActivity ma = (MainActivity) getActivity();
+            Bitmap bitmap = ma.loadBitmapFromUrl(mProfile.photoUrl);
+            mUserImageView.setImageBitmap(bitmap/*mProfile.userImage*/);
+
             mRegIdTextView.setVisibility(View.VISIBLE);
             mSignonButton.setVisibility(View.GONE);
             mSignoutButton.setVisibility(View.VISIBLE);

@@ -27,6 +27,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -40,6 +41,13 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -57,21 +65,26 @@ public class SplashActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         LogoutFragment.OnSignInClickListener {
 
+    private static final String TAG = "SplashActivity";
+
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private boolean isReceiverRegistered;
 
-    private static GoogleApiClient mGoogleApiClient;
+    public static GoogleApiClient mGoogleApiClient;
     private UserProfile mProfile = null;
     private static final int RC_SIGN_IN = 9001;
     public static final int RC_SHOWMAINACTIVITY = 1;
-    private static final int RC_SIGNOUT = 2;
-    private static final int RC_DISCONNECT = 3;
+    //private static final int RC_SIGNOUT = 2;
+    //private static final int RC_DISCONNECT = 3;
 
     public static final int RESULT_SIGN_OUT = 1;
     public static final int RESULT_DISCONNECT = 2;
     public static final int RESULT_EXIT = 3;
     protected static GoogleSignInAccount acct;
+
+    // Firebase instance variables
+    private FirebaseAuth mFirebaseAuth;
 
     private static SplashActivity instance;
 
@@ -88,7 +101,6 @@ public class SplashActivity extends AppCompatActivity implements
         else
             return null;
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,32 +123,29 @@ public class SplashActivity extends AppCompatActivity implements
             finish();
         }*/
 
-        long deviceId = AlarmPreferences.getDeviceId(getContext());
-        long userId = AlarmPreferences.getUserId(getContext());
-        String personId = AlarmPreferences.getPersonId(getContext());
-        String photoURL = AlarmPreferences.getPhotoURL(getContext());
-        String email = AlarmPreferences.getEmail(getContext());
-        String username = AlarmPreferences.getUserName(getContext());
-        if (/*deviceId != -1 && userId != -1 && */personId != null) {
+        initGoogleSignin();
+
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        if (mFirebaseUser != null) {
 
             mProfile = new UserProfile();
-            mProfile.userName = username;
-            mProfile.email = email;
-            mProfile.personId = personId;
-            if (photoURL != null)
-                mProfile.photoUrl = photoURL;
-
+            mProfile.userName = mFirebaseUser.getDisplayName();
+            //String personGivenName = acct.getGivenName();
+            //String personFamilyName = acct.getFamilyName();
+            mProfile.email = mFirebaseUser.getEmail();
+            mProfile.personId = mFirebaseUser.getUid();
+            if (mFirebaseUser.getPhotoUrl() != null) {
+                mProfile.photoUrl = mFirebaseUser.getPhotoUrl().toString();
+            }
             Intent intent = new Intent(this, RegistrationIntentService.class);
+            intent.putExtra("userProfile", mProfile); //
             startService(intent);
-            //sendRegistrationToServer(personId, username, email, photoURL, null);
-
             startMainActivity(mProfile);
+
+        } else {
+            showLoginFragment();
         }
-
-
-        initGoogleSignin();
-        //silentSignIn();
-        signIn();
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -198,9 +207,14 @@ public class SplashActivity extends AppCompatActivity implements
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(new Scope(Scopes.DRIVE_APPFOLDER))
                 .requestServerAuthCode(serverClientId, false)
+                .requestIdToken(serverClientId)
                 .requestEmail()
                 .requestId()
                 .build();
+        /*GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();*/
 
         // [END configure_signin]
 
@@ -225,31 +239,6 @@ public class SplashActivity extends AppCompatActivity implements
         //signInButton.setSize(SignInButton.SIZE_STANDARD);
         //signInButton.setScopes(gso.getScopeArray());
         // [END customize_button]
-    }
-
-    private void silentSignIn() {
-
-        OptionalPendingResult<GoogleSignInResult> pendingResult =
-                Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-        if (pendingResult.isDone()) {
-            // There's immediate result available.
-            //updateButtonsAndStatusFromSignInResult(pendingResult.get());
-            int i = 0;
-            i++;
-        } else {
-            // There's no immediate result ready, displays some progress indicator and waits for the
-            // async callback.
-            //showProgressIndicator();
-            pendingResult.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-                @Override
-                public void onResult(@NonNull GoogleSignInResult result) {
-                    //updateButtonsAndStatusFromSignInResult(result);
-                    //hideProgressIndicator();
-
-                    handleSignInResult(result);
-                }
-            });
-        }
     }
 
     private void startMainActivity(UserProfile profile) {
@@ -324,7 +313,6 @@ public class SplashActivity extends AppCompatActivity implements
 
     private void signIn() {
 
-        //mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -354,13 +342,13 @@ public class SplashActivity extends AppCompatActivity implements
                 unregisterReceiver();
                 finish();
             }
-        } else if (requestCode == RC_SIGNOUT) {
+        } /*else if (requestCode == RC_SIGNOUT) {
             Auth.GoogleSignInApi.signOut(mGoogleApiClient);
             showLoginFragment();
         } else if (requestCode == RC_DISCONNECT) {
             Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient);
             showLoginFragment();
-        }
+        }*/
     }
 
     public static GoogleSignInAccount getAcct() {
@@ -379,22 +367,29 @@ public class SplashActivity extends AppCompatActivity implements
 
             acct = result.getSignInAccount();
 
+            firebaseAuthWithGoogle(acct);
+
+            /*mFirebaseAuth = FirebaseAuth.getInstance();
+            FirebaseUser mFirebaseUser = mFirebaseAuth.getCurrentUser();
+
             mProfile = new UserProfile();
-            mProfile.userName = acct.getDisplayName();
-            mProfile.email = acct.getEmail();
-            mProfile.personId = acct.getId();
-            if (acct.getPhotoUrl() != null)
-                mProfile.photoUrl = acct.getPhotoUrl().toString();
+            mProfile.userName = mFirebaseUser.getDisplayName();
+            //String personGivenName = acct.getGivenName();
+            //String personFamilyName = acct.getFamilyName();
+            mProfile.email = mFirebaseUser.getEmail();
+            mProfile.personId = mFirebaseUser.getUid();
+            if (mFirebaseUser.getPhotoUrl() != null) {
+                mProfile.photoUrl = mFirebaseUser.getPhotoUrl().toString();
+            }*/
 
             // Registering BroadcastReceiver
             registerReceiver();
             if (checkPlayServices()) {
                 // Start IntentService to register this application with GCM.
                 Intent intent = new Intent(this, RegistrationIntentService.class);
+                intent.putExtra("userProfile", mProfile); //
                 startService(intent);
             }
-
-            startMainActivity(mProfile);
 
         } else {
             mProfile = null;
@@ -437,14 +432,70 @@ public class SplashActivity extends AppCompatActivity implements
 
     private void revokeAccess() {
 
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_DISCONNECT);
+        //mFirebaseAuth = FirebaseAuth.getInstance();
+        //mFirebaseAuth.signOut();
+
+        //Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        //startActivityForResult(signInIntent, RC_DISCONNECT);
+
+        OptionalPendingResult<GoogleSignInResult> pendingResult =
+                Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+        if (pendingResult.isDone()) {
+            // There's immediate result available.
+            //updateButtonsAndStatusFromSignInResult(pendingResult.get());
+            int i = 0;
+            i++;
+        } else {
+            // There's no immediate result ready, displays some progress indicator and waits for the
+            // async callback.
+            //showProgressIndicator();
+            pendingResult.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                @Override
+                public void onResult(@NonNull GoogleSignInResult result) {
+                    //updateButtonsAndStatusFromSignInResult(result);
+                    //hideProgressIndicator();
+                    Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient);
+
+                    //handleSignInResult(result);
+                    mFirebaseAuth = FirebaseAuth.getInstance();
+                    mFirebaseAuth.signOut();
+
+                    showLoginFragment();
+
+                }
+            });
+        }
     }
 
     private void signOut() {
 
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGNOUT);
+        OptionalPendingResult<GoogleSignInResult> pendingResult =
+                Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+        if (pendingResult.isDone()) {
+            // There's immediate result available.
+            //updateButtonsAndStatusFromSignInResult(pendingResult.get());
+            int i = 0;
+            i++;
+        } else {
+            // There's no immediate result ready, displays some progress indicator and waits for the
+            // async callback.
+            //showProgressIndicator();
+            pendingResult.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                @Override
+                public void onResult(@NonNull GoogleSignInResult result) {
+                    //updateButtonsAndStatusFromSignInResult(result);
+                    //hideProgressIndicator();
+                    Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+
+                    //handleSignInResult(result);
+                    mFirebaseAuth = FirebaseAuth.getInstance();
+                    mFirebaseAuth.signOut();
+
+                    showLoginFragment();
+
+                }
+            });
+        }
     }
 
     private void registerReceiver() {
@@ -460,5 +511,45 @@ public class SplashActivity extends AppCompatActivity implements
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         isReceiverRegistered = false;
         super.onPause();
+    }
+
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d(TAG, "firebaseAuthWithGooogle:" + acct.getId());
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mFirebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "signInWithCredential", task.getException());
+                            //Toast.makeText(SignInActivity.this, "Authentication failed.",
+                            //        Toast.LENGTH_SHORT).show();
+                        } else {
+                            //startActivity(new Intent(SignInActivity.this, MainActivity.class));
+                            //finish();
+                            mFirebaseAuth = FirebaseAuth.getInstance();
+                            FirebaseUser mFirebaseUser = mFirebaseAuth.getCurrentUser();
+
+                            mProfile = new UserProfile();
+                            mProfile.userName = mFirebaseUser.getDisplayName();
+                            //String personGivenName = acct.getGivenName();
+                            //String personFamilyName = acct.getFamilyName();
+                            mProfile.email = mFirebaseUser.getEmail();
+                            mProfile.personId = mFirebaseUser.getUid();
+                            if (mFirebaseUser.getPhotoUrl() != null) {
+                                mProfile.photoUrl = mFirebaseUser.getPhotoUrl().toString();
+                            }
+
+
+
+                            startMainActivity(mProfile);
+                        }
+                    }
+                });
     }
 }

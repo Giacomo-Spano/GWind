@@ -14,13 +14,15 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import wind.newwindalarm.data.Location;
+
 /**
  * Created by giacomo on 19/07/2015.
  */
 public interface SearchMeteoForecastListener {
 
-    public void onClickCheckBox(Spot spot, boolean selected);
-    public void onClick(Spot spot);
+    //public void onClickCheckBox(Spot spot, boolean selected);
+    void onClick(Location location);
 
     //void setListener(MainActivity mainActivity);
 
@@ -28,16 +30,16 @@ public interface SearchMeteoForecastListener {
 
     class SearchSpotArrayAdapter extends ArrayAdapter<Spot> implements Filterable {
         private final Context context;
-        private List<Spot> list;
-        private List<Spot> filteredList;
+        private List<Location> list;
+        private List<Location> filteredList;
         SearchMeteoForecastListener mListener;
 
-        public SearchSpotArrayAdapter(Context context, List<Spot> list, SearchMeteoForecastListener listener) {
+        public SearchSpotArrayAdapter(Context context, List<Location> list, SearchMeteoForecastListener listener) {
 
-            super(context, R.layout.searchspotlistrowlayout, list);
+            super(context, R.layout.searchspotlistrowlayout/*, list*/);
             mListener = listener;
             this.context = context;
-            this.list = list;
+            this.list = new ArrayList<>();
             filteredList = list;
         }
 
@@ -47,8 +49,20 @@ public interface SearchMeteoForecastListener {
             return filteredList.size();
         }
 
+        public void setList(List<Location> list) {
+
+            this.list = list;
+            filteredList = list;
+
+            if (list.size() == 0)
+                notifyDataSetInvalidated();
+            else {
+                notifyDataSetChanged();
+            }
+        }
+
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
 
 
             if (position >= filteredList.size())
@@ -63,19 +77,16 @@ public interface SearchMeteoForecastListener {
 
             TextView textView = (TextView) rowView.findViewById(R.id.spotNameTextView);
             //textView.setText(getItem(position).spotName);
-            textView.setText(filteredList.get(position).spotName);
+            textView.setText(filteredList.get(position).name);
 
             CheckBox checkBox = (CheckBox) rowView.findViewById((R.id.favoritecheckBox));
             checkBox.setTag(position);
-            checkBox.setChecked(filteredList.get(position).favorites);
+            checkBox.setChecked(false/*filteredList.get(position).favorites*/);
             checkBox.setTag(filteredList.get(position).id);
             checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                    long spotId = (long) buttonView.getTag();
-                    Spot s = getSpotFromId(spotId);
-                    if (s != null)
-                        mListener.onClickCheckBox(s, isChecked);
+
                 }
             });
 
@@ -83,22 +94,14 @@ public interface SearchMeteoForecastListener {
 
                 @Override
                 public void onClick(View v) {
-                    long spotId = (long) v.getTag();
-                    Spot s = getSpotFromId(spotId);
-                    if (s != null)
-                        mListener.onClick(s);
+                    Location l = filteredList.get(position);
+                    mListener.onClick(l);
                 }
             });
             return rowView;
         }
 
-        private Spot getSpotFromId(long spotId) {
-            for (Spot s : filteredList) {
-                if (s.id == spotId)
-                    return s;
-            }
-            return null;
-        }
+
 
         @Override
         public Filter getFilter() {
@@ -124,8 +127,8 @@ public interface SearchMeteoForecastListener {
                         // We perform filtering operation
                         /*List<Spot> */filteredList = new ArrayList<>();
 
-                        for (Spot s : list) {
-                            if (s.spotName.toUpperCase().contains(constraint.toString().toUpperCase()))
+                        for (Location s : list) {
+                            if (s.name.toUpperCase().contains(constraint.toString().toUpperCase()))
                                 filteredList.add(s);
                         }
 
@@ -147,7 +150,7 @@ public interface SearchMeteoForecastListener {
                     if (results.count == 0)
                         notifyDataSetInvalidated();
                     else {
-                        filteredList = (List<Spot>) results.values;
+                        filteredList = (List<Location>) results.values;
                         notifyDataSetChanged();
                     }
                 }

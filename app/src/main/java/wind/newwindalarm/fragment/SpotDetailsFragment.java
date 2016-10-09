@@ -14,12 +14,13 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+
 import wind.newwindalarm.MainActivity;
 import wind.newwindalarm.Spot;
+import wind.newwindalarm.data.Forecast;
 import wind.newwindalarm.data.MeteoStationData;
 import wind.newwindalarm.R;
 import wind.newwindalarm.WindAlarmProgram;
-import wind.newwindalarm.data.WindForecast;
 
 public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodataFragment.OnClickListener, ProgramListFragment.OnProgramListListener, ForecastFragment.OnMeteoForecastClickListener {
 
@@ -49,14 +50,16 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
 
     }
 
-    public void setForecast(WindForecast forecast) {
+    public void setForecast(Forecast forecast) {
         forecastFragment.setForecast(forecast);
     }
 
     // Container Activity must implement this interface
     public interface OnClickListener {
         void onRefreshDetailViewRequest(int position); // chiamta per sesempio quand si cambia view nella tabview
+
         void onChangeDetailView(int position, long spotId, MeteoStationData md); // cambiamento Tab pager attivo. chiamata per cambiare ilfab button
+
         void onEditProgram(WindAlarmProgram program);
     }
 
@@ -72,7 +75,7 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
         //SpotDetailsWebcamFragment webcamFragment = (SpotDetailsWebcamFragment) getPagerFragment(Pager_WebcamPage);
 
         if (webcamFragment != null) {
-            webcamFragment.setWebCamImage(n,bmp,lastWebcamWindId);
+            webcamFragment.setWebCamImage(n, bmp, lastWebcamWindId);
             webcamFragment.refreshData();
         }
     }
@@ -111,7 +114,7 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
 
             MainActivity ma = (MainActivity) getActivity();
             ma.setSpotDetailsFragment(this);
-            mCallback = ma;
+            mCallback = ma.getSpotDetailsListener();
             int position = savedInstanceState.getInt("position");
             mCallback.onChangeDetailView(position, spotId, meteoData);
         }
@@ -234,7 +237,7 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
             return;
 
         spotNameTextView.setText(meteoData.spotName);
-        speedTextView.setText(""+meteoData.speed);
+        speedTextView.setText("" + meteoData.speed);
         SimpleDateFormat df = new SimpleDateFormat("d/MM/yyyy HH:mm");
         lastUpateTextView.setText(df.format(meteoData.date));
 

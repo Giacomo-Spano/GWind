@@ -118,7 +118,10 @@ public class RegistrationIntentService extends IntentService {
             String personId, personName, personEmail, authCode;
             Uri personPhoto = null;
 
-            if (SplashActivity.getAcct() == null) {
+
+            UserProfile profile = (UserProfile) intent.getSerializableExtra("userProfile");
+
+            /*if (SplashActivity.getAcct() == null) {
                 personId = AlarmPreferences.getPersonId(SplashActivity.getContext());;
                 personName = null;
                 personEmail = null;
@@ -130,9 +133,9 @@ public class RegistrationIntentService extends IntentService {
                 personEmail = SplashActivity.getAcct().getEmail();
                 personPhoto = SplashActivity.getAcct().getPhotoUrl();
                 authCode = SplashActivity.getAcct().getServerAuthCode();
-            }
+            }*/
 
-            sendRegistrationToServer(personId, personName, personEmail, personPhoto, authCode);
+            sendRegistrationToServer(profile.personId, profile.userName, profile.email, profile.photoUrl, null);
 
             // Subscribe to topic channels
             subscribeTopics(token);
@@ -173,7 +176,7 @@ public class RegistrationIntentService extends IntentService {
      *
      * @param token The new token.
      */
-    private void sendRegistrationToServer(final String personId, final String personName, final String personEmail, Uri personPhoto, String authCode) {
+    private void sendRegistrationToServer(final String personId, final String personName, final String personEmail, String personPhoto, String authCode) {
         // Add custom implementation, as needed.
         //ServerUtilities.register(token, serverURL);
         String model = Build.MODEL;
@@ -193,21 +196,22 @@ public class RegistrationIntentService extends IntentService {
                     int userId = -1;
                     if (json.has("deviceid")) {
                         deviceId = json.getInt("deviceid");
-                        long old_deviceId = AlarmPreferences.getDeviceId(SplashActivity.getContext());
-                        AlarmPreferences.setDeviceId(SplashActivity.getContext(), deviceId);
+                        //long old_deviceId = AlarmPreferences.getDeviceId(SplashActivity.getContext());
+                        //AlarmPreferences.setDeviceId(SplashActivity.getContext(), deviceId);
                     }
                     if (json.has("userid")) {
                         userId = json.getInt("userid");
-                        AlarmPreferences.setUserId(SplashActivity.getContext(), userId);
+                        //AlarmPreferences.setUserId(SplashActivity.getContext(), userId);
                     }
-                    AlarmPreferences.setPersonId(SplashActivity.getContext(), personId);
+                    /*AlarmPreferences.setPersonId(SplashActivity.getContext(), personId);
                     if (personEmail != null)
                         AlarmPreferences.setEmail(SplashActivity.getContext(), personEmail);
                     if (personName != null)
-                        AlarmPreferences.setUserName(SplashActivity.getContext(), personName);
+                        AlarmPreferences.setUserName(SplashActivity.getContext(), personName);*/
                     CommonUtilities.sendMessageToMainActivity(SplashActivity.getContext(), "title", "Registrazione utente completata: deviceid=" + deviceId + "userId=" + userId);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    CommonUtilities.sendMessageToMainActivity(SplashActivity.getContext(), "title", "impossibile registrare device");
                 }
             }
         }, registertask.POST_REGISTERDEVICE).execute(AlarmPreferences.getRegId(this), model, personId, personName, personEmail, personPhoto, authCode);

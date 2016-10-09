@@ -7,16 +7,37 @@
 <!-- Editext for Search -->
 
     <!-- List View -->
-    <TextView
-        android:text="TextView"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView16"
-        android:textAppearance="@android:style/TextAppearance.Material.Large" />
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="LocationName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/locationTextView"
+            android:textAppearance="@android:style/TextAppearance.Material.Large"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:text="Lat, lon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/postitionTextView"
+            android:layout_alignParentTop="false"
+            android:layout_below="@+id/locationTextView" />
+
+        <TextView
+            android:text="--/--/"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lastUpdateTextView"
+            android:layout_alignParentRight="true" />
+    </RelativeLayout>
 
     <ListView
     android:id="@+id/list_view"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content" />
+    android:layout_height="match_parent" />
 
 </LinearLayout>

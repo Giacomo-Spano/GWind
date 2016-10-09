@@ -12,10 +12,12 @@
         <TextView
             android:text="Day"
             android:id="@+id/dayTextView"
-            android:layout_width="100dp"
+            android:textStyle="bold"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="false"
-            android:textAlignment="center" />
+            android:textAlignment="viewStart"
+            android:textSize="18sp" />
 
 
     </RelativeLayout>

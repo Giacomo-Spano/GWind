@@ -1,12 +1,9 @@
 package wind.newwindalarm.fragment;
 
 
-import android.app.Activity;
 //import android.app.Fragment;
 import android.support.v4.app.Fragment;
-import android.content.Context;
-import android.os.Build;
-import android.os.Bundle;
+        import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,6 +19,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
+import wind.newwindalarm.MainActivity;
 import wind.newwindalarm.data.MeteoStationData;
 import wind.newwindalarm.R;
 import wind.newwindalarm.cardui.MeteoCardItem;
@@ -30,7 +28,7 @@ import wind.newwindalarm.cardui.MeteoCardListener;
 public class PanelFragment extends Fragment implements OnItemSelectedListener, MeteoCardListener {
 
     private boolean viewCreated = false;
-    OnSpotClickListener mCallback;
+    OnListener mCallback;
     private LinearLayout mcontainer;
     private MeteoDataList meteoDataList = new MeteoDataList();
 
@@ -39,23 +37,27 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
     }
 
     // Container Activity must implement this interface
-    public interface OnSpotClickListener {
+    public interface OnListener {
         void onSpotClick(long spotId);
         void onEnablePanelRefreshButtonRequest();
+    }
+
+    public void setListener(OnListener listener) {
+        mCallback = listener;
     }
 
     public void setMeteoDataList(List<MeteoStationData> list) {
         meteoDataList.list = list;
     }
 
-    @Override
+    /*@Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
-            mCallback = (OnSpotClickListener) context;
+            mCallback = (OnListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
                     + " must implement OnAlarmListener");
@@ -68,13 +70,13 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
         super.onAttach(activity);
         if (Build.VERSION.SDK_INT < 23) {
             try {
-                mCallback = (OnSpotClickListener) activity;
+                mCallback = (OnListener) activity;
             } catch (ClassCastException e) {
                 throw new ClassCastException(activity.toString()
                         + " must implement OnAlarmListener");
             }
         }
-    }
+    }*/
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +97,8 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
             Gson gson = new Gson();
             String gsonString = savedInstanceState.getString("meteoDataList");
             meteoDataList = gson.fromJson(gsonString, MeteoDataList.class);
+            MainActivity ma = (MainActivity) getActivity();
+            mCallback = ma.getPanelListener();
             mCallback.onEnablePanelRefreshButtonRequest();
         }
 
