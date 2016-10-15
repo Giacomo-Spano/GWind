@@ -194,14 +194,16 @@ public class requestMeteoDataTask extends
                     path += "&userid=" + userid;
 
                 } else if (requestType == REQUEST_FORECAST) { // OpenWeathermap
-                    String userid = (String) params[0];
+                    String userid = (String) params[0];  // user
                     String spotId = (String) params[1]; // spotID
-                    String source = (String) params[2];
-                    requestId = (int) params[3];
+                    String source = (String) params[2]; // source
+                    requestId = (int) params[3]; // request id
+                    long forecastId = (long) params[4]; // request id
                     path = "/forecast?";
                     path += "userid=" + userid;
                     path += "&spot=" + spotId;
                     path += "&source=" + source;
+                    path += "&lastforecastid=" + forecastId;
                 }
 
                 String serverUrl = AlarmPreferences.getServerUrl(activity);
@@ -376,8 +378,8 @@ public class requestMeteoDataTask extends
             message = "Richiesta dati meteo...";
         else if (requestType == REQUEST_FORECAST) {
             message = "caricamento ...";
-            this.dialog.setMessage(message);
-            this.dialog.show();
+            //this.dialog.setMessage(message);
+            //this.dialog.show();
         } else if (requestType == REQUEST_FORECASTLOCATIONS) {
             message = "caricamento...";
             this.dialog.setMessage(message);

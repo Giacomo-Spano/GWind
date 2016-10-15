@@ -5,12 +5,26 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.util.SparseArray;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.OverScroller;
 import android.widget.TextView;
+
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -22,7 +36,9 @@ import wind.newwindalarm.data.MeteoStationData;
 import wind.newwindalarm.R;
 import wind.newwindalarm.WindAlarmProgram;
 
-public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodataFragment.OnClickListener, ProgramListFragment.OnProgramListListener, ForecastFragment.OnMeteoForecastClickListener {
+import static android.R.attr.y;
+
+public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodataFragment.OnClickListener, ProgramListFragment.OnProgramListListener, ForecastFragment.OnMeteoForecastClickListener, OnMapReadyCallback {
 
     public static final int Pager_ForecastPage = 0;
     public static final int Pager_MeteodataPage = 1;
@@ -32,6 +48,8 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
 
     private MeteoStationData meteoData;
     private long spotId;
+    double lat, lon;
+
     private ForecastFragment forecastFragment;
     private SpotDetailsMeteodataFragment meteodataFragment;
     private SpotDetailsWebcamFragment webcamFragment;
@@ -43,6 +61,9 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
     private TextView speedTextView;
     private TextView lastUpateTextView;
 
+    private GoogleMap mMap;
+    public SupportMapFragment mapFragment;
+
     OnClickListener mCallback;
 
     @Override
@@ -52,6 +73,26 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
 
     public void setForecast(Forecast forecast) {
         forecastFragment.setForecast(forecast);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+        // Add a marker in Sydney, Australia, and move the camera.
+
+        if (meteoData != null && meteoData.lat != null && meteoData.lat > 0 && meteoData.lon != null && meteoData.lon > 0) {
+
+            // Move the camera instantly to Sydney with a zoom of 15.
+            //map.moveCamera(CameraUpdateFactory.newLatLngZoom(SYDNEY, 15));
+
+            LatLng spotLatLng = new LatLng(meteoData.lat, meteoData.lon);
+            mMap.addMarker(new MarkerOptions().position(spotLatLng).title("Marker in " + meteoData.spotName));
+            //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(spotLatLng, 12));
+        }
     }
 
     // Container Activity must implement this interface
@@ -122,6 +163,25 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
         View v;
         v = inflater.inflate(R.layout.fragment_spotdetail, container, false);
 
+        ////////////
+        mContainerView = (LinearLayout) v;
+
+        v.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                /*if(event.getAction() == MotionEvent.ACTION_MOVE){
+                    //do something
+                }
+                return true;*/
+
+                boolean retVal = mGestureDetector.onTouchEvent(event);
+                return retVal;
+            }
+        });
+
+        mGestureDetector = new GestureDetectorCompat(getActivity(), mGestureListener);
+        mScroller = new OverScroller(getActivity());
+///////////////////
+
         spotNameTextView = (TextView) v.findViewById(R.id.spotNameTextView);
         speedTextView = (TextView) v.findViewById(R.id.speedTextView);
         lastUpateTextView = (TextView) v.findViewById(R.id.lastUpdateTextView);
@@ -191,7 +251,52 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
 
         refreshData();
 
+        // Add the fragment to the 'fragment_container' FrameLayout
+        /*mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);*/
+
         return v;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        //setUpMapIfNeeded();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setUpMapIfNeeded();
+    }
+
+    private void setUpMapIfNeeded() {
+        // Do a null check to confirm that we have not already instantiated the map.
+        if (mMap == null) {
+            // Try to obtain the map from the SupportMapFragment.
+            //mMap = ((SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+            //mMap = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map)).getMap();
+
+            //mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
+            mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+
+            // Check if we were successful in obtaining the map.
+            /*if (mMap != null) {
+                setUpMap();
+            }*/
+        }
+    }
+
+    /**
+     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
+     * just add a marker near Africa.
+     * <p/>
+     * This should only be called once and when we are sure that {@link #mMap} is not null.
+     */
+    private void setUpMap() {
+        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
     }
 
     public void setListener(OnClickListener listener) {
@@ -374,4 +479,115 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
             return registeredFragments.get(position);
         }
     }
+
+
+
+
+    private GestureDetectorCompat mGestureDetector;
+    private OverScroller mScroller;
+    LinearLayout mContainerView;
+    /**
+     * The gesture listener, used for handling simple gestures such as double touches, scrolls,
+     * and flings.
+     */
+    private final GestureDetector.SimpleOnGestureListener mGestureListener
+            = new GestureDetector.SimpleOnGestureListener() {
+        @Override
+        public boolean onDown(MotionEvent e) {
+
+            // Initiates the decay phase of any active edge effects.
+            //releaseEdgeEffects();
+            //mScrollerStartViewport.set(mCurrentViewport);
+            // Aborts any active scroll animations and invalidates.
+            mScroller.forceFinished(true);
+
+            ViewCompat.postInvalidateOnAnimation(mContainerView);
+            return true;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            /*mZoomer.forceFinished(true);
+            if (hitTest(e.getX(), e.getY(), mZoomFocalPoint)) {
+                mZoomer.startZoom(ZOOM_AMOUNT);
+            }
+            ViewCompat.postInvalidateOnAnimation(InteractiveLineGraphView.this);*/
+            return true;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            // Scrolling uses math based on the viewport (as opposed to math using pixels).
+            /**
+             * Pixel offset is the offset in screen pixels, while viewport offset is the
+             * offset within the current viewport. For additional information on surface sizes
+             * and pixel offsets, see the docs for {@link computeScrollSurfaceSize()}. For
+             * additional information about the viewport, see the comments for
+             * {@link mCurrentViewport}.
+             */
+
+            /*yy += distanceY;
+            MainActivity ma = (MainActivity) getActivity();
+            resizeFragment(ma.spotDetailsFragment, xx,yy);
+            */
+
+            MainActivity ma = (MainActivity) getActivity();
+            //ma.spotDetailsFragment.bringToFront();
+
+            resizeFragment(ma.spotDetailsFragment, distanceX,distanceY);
+
+
+            return true;
+        }
+
+        @Override
+        public boolean onFling (MotionEvent e1,
+                                         MotionEvent e2,
+                                float velocityX,
+                                float velocityY) {
+
+
+
+
+            return true;
+
+        }
+
+        private int xx = 100, yy = 100;
+
+
+    };
+
+    private void resizeFragment(Fragment f, float newWidth, float newHeight) {
+        if (f != null) {
+            View view = f.getView();
+
+
+            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(view.getWidth(), view.getHeight());
+
+            int delta = -(int)newHeight;
+            if (newHeight < 0) {
+                p.topMargin = view.getTop() + delta;
+                p.height += delta;
+            } else {
+                p.topMargin = view.getTop() + delta;
+                p.height += delta;
+            }
+
+
+            /*LayoutParams layoutParams=new LayoutParams(width, height);
+            layoutParams.leftMargin = newLeft;
+            layoutParams.topMargin = newTop;
+            imageView.setLayoutParams(layoutParams);*/
+
+
+
+            view.setLayoutParams(p);
+            view.requestLayout();
+
+
+        }
+    }
+
+
 }

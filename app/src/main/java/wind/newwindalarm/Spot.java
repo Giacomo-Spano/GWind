@@ -19,12 +19,18 @@ public class Spot {
     public String date = "";
     public boolean offline = false;
     public boolean favorites;
+    public double lat = 0.0;
+    public double lon = 0.0;
 
 
     public Spot(JSONObject jObject) throws JSONException {
 
         if (!jObject.isNull("id"))
             id = jObject.getLong("id");
+        if (!jObject.isNull("lat"))
+            lat = jObject.getDouble("lat");
+        if (!jObject.isNull("lon"))
+            lon = jObject.getDouble("lon");
         if (!jObject.isNull("spotname"))
             spotName = jObject.getString("spotname");
         if (!jObject.isNull("sourceurl"))

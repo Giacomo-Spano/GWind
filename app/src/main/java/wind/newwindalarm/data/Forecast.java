@@ -42,6 +42,7 @@ public class Forecast implements Serializable {
 
     public String sourceSpotCountry;
     public long id;
+    public long forecastId;
 
     public Forecast() {
     }
@@ -57,6 +58,18 @@ public class Forecast implements Serializable {
             JSONObject jobj = new JSONObject(json);
 
             JSONArray jarray = null;
+
+            if (jobj.has("id")) {
+                id = jobj.getLong("id");
+            }
+
+            if (jobj.has("forecastid")) {
+                forecastId = jobj.getLong("forecastid");
+            }
+
+            if (jobj.has("spotid")) {
+                spotId = jobj.getLong("spotid");
+            }
 
             if (jobj.has("name")) {
                 sourceSpotName = jobj.getString("name");

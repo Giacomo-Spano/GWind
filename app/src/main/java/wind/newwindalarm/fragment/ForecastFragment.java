@@ -38,6 +38,11 @@ public class ForecastFragment extends Fragment implements MeteoForecastListener,
     OnMeteoForecastClickListener mCallback;
 
     public void refreshData() {
+        if (mForecast != null && getActivity() != null) {
+            adapter = new MeteoForecastArrayAdapter(getActivity(), mForecast, this);
+            lv.setAdapter(adapter);
+            updateHeader();
+        }
     }
 
     public void setSpotId(long spotId) {
@@ -101,7 +106,7 @@ public class ForecastFragment extends Fragment implements MeteoForecastListener,
         }
 
         if (mForecast != null && mForecast.lat != null && mForecast.lon != null) {
-            mPositionTextView.setText("" + mForecast.lat + "°," + mForecast.lon + "°,");
+            mPositionTextView.setText("" + mForecast.lat + "°," + mForecast.lon + "°" + " id:" + mForecast.forecastId);
         } else {
             mPositionTextView.setText("---");
         }
@@ -117,13 +122,15 @@ public class ForecastFragment extends Fragment implements MeteoForecastListener,
 
     public void setForecast(Forecast forecast) {
 
+        if (forecast == null)
+            return;
+
+        /*if (mForecast != null && mForecast.forecastId == forecast.forecastId)
+            return;*/
+
         mForecast = forecast;
 
-        if (forecast != null && getActivity() != null) {
-            adapter = new MeteoForecastArrayAdapter(getActivity(), mForecast, this);
-            lv.setAdapter(adapter);
-            updateHeader();
-        }
+        refreshData();
     }
 
 

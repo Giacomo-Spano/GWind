@@ -32,9 +32,8 @@ public class MeteoStationData implements Serializable {
     public Double trend = 0.0;
     public String source = null;
     public List<String> webcamurlList = new ArrayList<>();
-    /*public String webcamurl = null;
-    public String webcamurl2 = null;
-    public String webcamurl3 = null;*/
+    public Double lat = null;
+    public Double lon = null;
     public boolean offline = false;
 
 
@@ -122,6 +121,10 @@ public class MeteoStationData implements Serializable {
             offline = jObject.getBoolean("offline");
         if (!jObject.isNull("source"))
             source = jObject.getString("source");
+        if (!jObject.isNull("lat"))
+            lat = jObject.getDouble("lat");
+        if (!jObject.isNull("lon"))
+            lon = jObject.getDouble("lon");
     }
 
     public String toJson() {

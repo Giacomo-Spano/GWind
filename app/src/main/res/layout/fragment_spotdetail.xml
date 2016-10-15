@@ -2,15 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:background="@color/colorPrimary"
-        android:padding="0dp"
-        android:layout_alignParentTop="true">
+        android:orientation="vertical"
+        android:padding="0dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -20,130 +20,145 @@
                 android:id="@+id/spotNameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="--------"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="false"
                 android:layout_alignParentEnd="false"
-                android:textColor="#FFFFFF"
-                android:layout_gravity="left"
                 android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="false"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="left"
                 android:background="@android:color/transparent"
-                />
+                android:text="--------"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFFFF" />
 
 
             <TextView
                 android:id="@+id/speedTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="--,-"
-                android:layout_alignParentTop="false"
-                android:layout_alignParentRight="false"
                 android:layout_alignParentEnd="false"
-                android:textColor="#FFFFFF"
                 android:layout_alignParentLeft="false"
-                android:background="@android:color/transparent"
+                android:layout_alignParentRight="false"
+                android:layout_alignParentTop="false"
                 android:layout_gravity="bottom|right"
+                android:layout_toLeftOf="@+id/speedUnitTextView"
+                android:background="@android:color/transparent"
                 android:gravity="right"
-                android:layout_toLeftOf="@+id/speedUnitTextView" />
+                android:text="--,-"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFFFF" />
 
             <TextView
                 android:id="@+id/speedUnitTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="km/h"
-                android:layout_alignParentTop="false"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="false"
-                android:textColor="#FFFFFF"
                 android:layout_alignParentLeft="false"
-                android:background="@android:color/transparent"
-                android:textIsSelectable="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="false"
                 android:layout_gravity="bottom|right"
-                android:gravity="right" />
+                android:background="@android:color/transparent"
+                android:gravity="right"
+                android:text="km/h"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFFFF"
+                android:textIsSelectable="true" />
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
-                android:gravity="right">
+                android:gravity="right"
+                android:orientation="horizontal">
 
             </LinearLayout>
         </RelativeLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="right">
+            android:gravity="right"
+            android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Ultimo aggiornamento: "
-                android:textColor="#FFFFFF"
                 android:id="@+id/textView18"
-                android:layout_gravity="right"
-                android:layout_alignParentTop="false"
-                android:layout_alignParentRight="true"
-                android:textSize="10dp"
-                android:layout_alignParentBottom="false" />
-
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="01/01/2015"
-                android:textColor="#FFFFFF"
-                android:id="@+id/lastUpdateTextView"
-                android:layout_gravity="right"
-                android:layout_alignParentTop="false"
+                android:layout_alignParentBottom="false"
                 android:layout_alignParentRight="true"
-                android:textSize="10dp"
-                android:layout_alignParentBottom="false" />
+                android:layout_alignParentTop="false"
+                android:layout_gravity="right"
+                android:text="Ultimo aggiornamento: "
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#FFFFFF"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/lastUpdateTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="false"
+                android:layout_gravity="right"
+                android:text="01/01/2015"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#FFFFFF"
+                android:textSize="10dp" />
         </LinearLayout>
 
     </LinearLayout>
 
-<android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/pager"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-
-    >
-
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tablayout"
+    <LinearLayout
+        android:id="@+id/mapframe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:orientation="horizontal">
+
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:map="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="104dp"
+            tools:context=".MainActivity" />
+
+    </LinearLayout>
+
+    <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
         >
 
-        <android.support.design.widget.TabItem
-            android:layout_width="wrap_content"
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tablayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:icon="@drawable/logo"
-            android:text="prova1" />
+            android:background="@color/colorPrimary">
 
-<!--        <android.support.design.widget.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:icon="@drawable/logo"
-            android:text="prova2" />
+            <android.support.design.widget.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/logo"
+                android:text="prova1" />
 
-        <android.support.design.widget.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:icon="@drawable/logo"
-            android:text="prova3" />
--->
+            <!--        <android.support.design.widget.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:icon="@drawable/logo"
+                        android:text="prova2" />
 
-    </android.support.design.widget.TabLayout>
+                    <android.support.design.widget.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:icon="@drawable/logo"
+                        android:text="prova3" />
+            -->
+
+        </android.support.design.widget.TabLayout>
 
 
-</android.support.v4.view.ViewPager>
+    </android.support.v4.view.ViewPager>
 </LinearLayout>

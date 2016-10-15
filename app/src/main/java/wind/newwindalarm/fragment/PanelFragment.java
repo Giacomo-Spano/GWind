@@ -160,20 +160,26 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
 
         mcontainer.removeAllViews();
 
-        if (meteoDataList == null || meteoDataList.list == null || meteoDataList.list.size() == 0)
-            return;
+        synchronized (meteoDataList) {
+            if (meteoDataList == null || meteoDataList.list == null || meteoDataList.list.size() == 0)
+                return;
 
-        for (MeteoStationData md : meteoDataList.list) {
-            MeteoCardItem carditem = new MeteoCardItem(this, getActivity(), mcontainer);
-            mcontainer.addView(carditem.getCard());
-            carditem.setSourceUrl(md.source);
-            carditem.setTitle(md.spotName);
+            for (MeteoStationData md : meteoDataList.list) {
+                if (md == null) {
+                    // qui c'è un bug. Per qualche motivo quanlche volta al riavvio ci può essere un elemento null
+                    continue;
+                }
+                MeteoCardItem carditem = new MeteoCardItem(this, getActivity(), mcontainer);
+                mcontainer.addView(carditem.getCard());
+                carditem.setSourceUrl(md.source);
+                carditem.setTitle(md.spotName);
             /*if (md.offline) {
                  carditem.card.setTitle("offline");
             }*/
-            carditem.update(md);
-            carditem.setSpotId(md.spotID);
+                carditem.update(md);
+                carditem.setSpotId(md.spotID);
+            }
+            mcontainer.invalidate();
         }
-        mcontainer.invalidate();
     }
 }

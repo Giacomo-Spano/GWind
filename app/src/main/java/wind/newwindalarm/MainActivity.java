@@ -25,6 +25,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.Time;
+import android.transition.Scene;
+import android.transition.Transition;
 import android.view.Display;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -35,20 +37,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.gson.Gson;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -79,19 +89,16 @@ import static wind.newwindalarm.request.requestMeteoDataTask.FORECAST_OPENWEATHE
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         ProfileFragment.OnSignInClickListener,
-        //PanelFragment.OnListener,
-        //SpotDetailsFragment.OnClickListener,
         ProgramListFragment.OnProgramListListener,
         SearchSpotFragment.OnSearchSpotClickListener,
-        DownloadImageTask.AsyncDownloadImageResponse//,
-        /*SearchMeteoForecastFragment.OnSearchSpotClickListener,*/
-        /*ForecastFragment.OnMeteoForecastClickListener*/ {
+        DownloadImageTask.AsyncDownloadImageResponse//,//,
+        /*OnMapReadyCallback*/ {
 
     private static final int FORECAST_REQUESTID_METEOSTATION = 99;
     private static final int FORECAST_REQUESTID_LOCATION = 88;
 
-
-    private List<MeteoStationData> meteoDataList = new ArrayList<>();
+    /*private GoogleMap mMap;
+    public SupportMapFragment mapFragment;*/
 
     CountDownTimer countDownTimer;
     ProgressBar progressBar;
@@ -170,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void onSearchLocationSelectLocation(Location location) {
 
-            new requestMeteoDataTask(/*getParent()*/activity, new requestDataResponse(), requestMeteoDataTask.REQUEST_FORECAST).execute(mProfile.personId, location.id, FORECAST_OPENWEATHERMAP, FORECAST_REQUESTID_LOCATION);
+            new requestMeteoDataTask(activity, new requestDataResponse(), requestMeteoDataTask.REQUEST_FORECAST).execute(mProfile.personId, location.id, FORECAST_OPENWEATHERMAP, FORECAST_REQUESTID_LOCATION);
         }
     }
 
@@ -209,8 +216,6 @@ public class MainActivity extends AppCompatActivity implements
     private FirebaseUser mFirebaseUser;
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> mFirebaseAdapter;
-    private String mUsername;
-    private String mPhotoUrl;
     public static final String ANONYMOUS = "anonymous";
 
     private TextView mInformationTextView;
@@ -226,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements
     private final ForecastListener forecastListener;
 
     private PanelFragment panelFragment;
-    private SpotDetailsFragment spotDetailsFragment;
+    public/*private*/ SpotDetailsFragment spotDetailsFragment;
     private SearchMeteoForecastFragment searchMeteoForecastFragment;
     private ProgramFragment programFragment;
     private ProgramListFragment programListFragment;
@@ -234,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements
     private ProfileFragment profileFragment;
     private SpotMeteoListFragment spotMeteoListFragment;
     private SearchSpotFragment searchSpotFragment;
-    private SpotMeteoDataList spotMeteoDataList = new SpotMeteoDataList();
+    private SpotMeteoDataList spotMeteoDataList;
 
     private IntentFilter filter = new IntentFilter(DISPLAY_MESSAGE_ACTION);
     // google properties
@@ -247,6 +252,13 @@ public class MainActivity extends AppCompatActivity implements
     private UserProfile mProfile = null;
     static boolean signedIn = false;
     static int nextFragment = -1;
+
+    //scenes to transition
+    private Scene scene1, scene2;
+    //transition to move between scenes
+    private Transition transition;
+    //flag to swap between scenes
+    private boolean start;
 
     public List<Spot> getFavorites() {
         return mSpotList.getSpotFavorites();
@@ -284,9 +296,8 @@ public class MainActivity extends AppCompatActivity implements
                 spotId = Long.valueOf(str);
         }
 
-
         // Set default username is anonymous.
-        mUsername = ANONYMOUS;
+        //mUsername = ANONYMOUS;
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
@@ -296,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements
             //finish();
             //return;
         } else {
-            mUsername = mFirebaseUser.getDisplayName();
+            //mUsername = mFirebaseUser.getDisplayName();
 
             /*if (mFirebaseUser.getPhotoUrl() != null) {
                 mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
@@ -310,9 +321,7 @@ public class MainActivity extends AppCompatActivity implements
             if (mFirebaseUser.getPhotoUrl() != null) {
                 mProfile.photoUrl = mFirebaseUser.getPhotoUrl().toString();
             }
-
         }
-
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -327,7 +336,6 @@ public class MainActivity extends AppCompatActivity implements
         toggle.syncState();
 
         //getSupportActionBar().setElevation(0);
-
         //drawer.setScrimColor(Color.TRANSPARENT);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -351,14 +359,8 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-
-        // carica la spot list per la combo dei programmmi
-        //getSpotListFromServer();
-        getLastMeteoData();
-
         panelFragment = new PanelFragment();
         panelFragment.setListener(panelListener);
-
         programFragment = new ProgramFragment();
         programListFragment = new ProgramListFragment();
         programListFragment.setListener(this);
@@ -367,6 +369,15 @@ public class MainActivity extends AppCompatActivity implements
         profileFragment = new ProfileFragment();
         spotMeteoListFragment = new SpotMeteoListFragment();
         //searchSpotFragment = new SearchSpotFragment();
+
+        // non serve perchè già chiamata nella onResume
+        //getLastMeteoData();
+        spotMeteoDataList = new SpotMeteoDataList();
+        SpotMeteoDataList s =  spotMeteoDataList.loadFromFile(getApplicationContext());
+        if (s != null) {
+            spotMeteoDataList = s;
+            updateFavoritesMeteoData(s.getMeteoDataList());
+        }
 
         mInformationTextView = (TextView) findViewById(R.id.informationTextView);
 
@@ -380,6 +391,12 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             showFragment(R.id.nav_favorites, false);
         }
+
+        // Add the fragment to the 'fragment_container' FrameLayout
+        /*mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);*/
+
     }
 
     @Override
@@ -621,12 +638,24 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
+    /*@Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney, Australia, and move the camera.
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }*/
+
+
 
     private void showSpotDetailsFragment(long spotId) {
         this.spotId = spotId;
 
         spotDetailsFragment = new SpotDetailsFragment(); // questo fragment deve essere creato qui altrimenti in certi casi non lo ridisegna
         spotDetailsFragment.setListener(spotDetailsListener);
+
 
         MeteoStationData md = spotMeteoDataList.getLastMeteoData(spotId);
         spotDetailsFragment.setMeteoData(spotMeteoDataList.getLastMeteoData(spotId));
@@ -684,9 +713,14 @@ public class MainActivity extends AppCompatActivity implements
 
     public void getForecast() {
 
-        //Forecast f = spotMeteoDataList.getForecast(spotId);
+        Forecast f = spotMeteoDataList.getForecast(spotId);
+        long forecastid = 0;
+        if (f != null) {
+            forecastid = f.forecastId;
+            spotDetailsFragment.setForecast(f);
+        }
 
-        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_FORECAST).execute(mProfile.personId, "" + spotId, FORECAST_OPENWEATHERMAP, FORECAST_REQUESTID_METEOSTATION);
+        new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_FORECAST).execute(mProfile.personId, "" + spotId, FORECAST_OPENWEATHERMAP, FORECAST_REQUESTID_METEOSTATION,forecastid);
     }
 
     private void startProgressBar() {
@@ -1034,15 +1068,11 @@ public class MainActivity extends AppCompatActivity implements
             // aggiorna i dati archiviati
             for (MeteoStationData md : list)
                 spotMeteoDataList.setLastMeteoData(md.spotID, md);
-            // aggiorna tutte le schede dei favorites
-            panelFragment.setMeteoDataList(list);
-            panelFragment.refreshMeteoData();
-            // aggiorna la spotdetailview
-            if (spotDetailsFragment != null) {
-                MeteoStationData md = spotMeteoDataList.getLastMeteoData(spotId);
-                spotDetailsFragment.setMeteoData(md);
-                spotDetailsFragment.refreshData();
-            }
+
+            updateFavoritesMeteoData(list);
+
+            spotMeteoDataList.saveToFile(getApplicationContext());
+
             //disattiva la progress bar
             progressBar.setVisibility(View.GONE);
             mInformationTextView.setVisibility(View.GONE);
@@ -1102,6 +1132,7 @@ public class MainActivity extends AppCompatActivity implements
 
             if (requestId == FORECAST_REQUESTID_METEOSTATION) {
                 spotDetailsFragment.setForecast(forecast);
+                spotMeteoDataList.setForecast(forecast.spotId, forecast);
             } else if (requestId == FORECAST_REQUESTID_LOCATION) {
                 showLocationForecast(forecast);
             }
@@ -1120,6 +1151,20 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
 
+    }
+
+    private void updateFavoritesMeteoData(List<MeteoStationData> list) {
+
+        if (panelFragment == null || list == null || list.size() == 0) return;
+        // aggiorna tutte le schede dei favorites
+        panelFragment.setMeteoDataList(list);
+        panelFragment.refreshMeteoData();
+        // aggiorna i dati di spotDetailsFragment
+        if (spotDetailsFragment != null) {
+            MeteoStationData md = spotMeteoDataList.getLastMeteoData(spotId);
+            spotDetailsFragment.setMeteoData(md);
+            spotDetailsFragment.refreshData();
+        }
     }
 
     private class LoadImagefromUrl extends AsyncTask<Object, Void, Bitmap> {
@@ -1207,148 +1252,24 @@ public class MainActivity extends AppCompatActivity implements
         return circuleBitmap;
     }
 
-    private class SpotMeteoData {
-        private MeteoStationData md;
-        private List<MeteoStationData> history = new ArrayList<MeteoStationData>();
-        private Bitmap[] webcamBitmap = new Bitmap[3];
-        private long[] webcamWindId = new long[3];
-        private long[] webcamImageRequestInprogress = new long[3]; // windid dell'immagine richiesta
-        private Forecast forecast;
-    }
-
-    private class SpotMeteoDataList {
-        List<SpotMeteoData> lastMeteoData = new ArrayList<SpotMeteoData>();
 
 
-        private SpotMeteoData getFromId(long spotId) {
-            if (lastMeteoData == null) return null;
-            for (SpotMeteoData smd : lastMeteoData) {
-                if (smd.md.spotID == spotId)
-                    return smd;
-            }
-            return null;
-        }
-
-        public MeteoStationData getLastMeteoData(long spotId) {
-            SpotMeteoData smd = getFromId(spotId);
-            if (smd == null)
-                return null;
-            else
-                return smd.md;
-        }
-
-        public void setLastMeteoData(long spotId, MeteoStationData md) {
-            SpotMeteoData smd = getFromId(spotId);
-            if (smd == null) {
-                smd = new SpotMeteoData();
-                lastMeteoData.add(smd);
-            }
-            smd.md = md;
-        }
-
-        public List<MeteoStationData> getHistory(long spotId) {
-            SpotMeteoData smd = getFromId(spotId);
-            if (smd == null || smd.history == null || smd.history.size() == 0)
-                return null;
-            return smd.history;
-        }
-
-        public long getLastHistoryId(long spotId) {
-            List<MeteoStationData> list = getHistory(spotId);
-            if (list == null) return -1;
-            return list.get(list.size() - 1).id;
-        }
-
-        public void setHistory(long spotId, List<MeteoStationData> history) {
-            SpotMeteoData smd = getFromId(spotId);
-            if (smd == null) {
-                smd = new SpotMeteoData();
-            }
-
-            for (MeteoStationData md : history) {
-                smd.history.add(md);
-            }
-        }
-
-        private long getLastWindId() {
-
-            long windId = 0;
-            for (SpotMeteoData smd : lastMeteoData) {
-                if (smd.md.id > windId)
-                    windId = smd.md.id;
-            }
-            return windId;
-        }
-
-        public Bitmap getWebCamImage(long spotId, int index) {
-
-            SpotMeteoData smd = getFromId(spotId);
-            if (index < 1 || index > smd.webcamBitmap.length)
-                return null;
-            return smd.webcamBitmap[index - 1];
-        }
-
-        public long getWebCamWindId(long spotId, int index) {
-
-            SpotMeteoData smd = getFromId(spotId);
-            if (index < 1 || index > smd.webcamBitmap.length)
-                return -1;
-            return smd.webcamWindId[index - 1];
-        }
-
-        public void setWebCamImage(long spotId, int index, Bitmap bmp, long windId) {
-            SpotMeteoData smd = getFromId(spotId);
-            if (smd == null) {
-                smd = new SpotMeteoData();
-            }
-            if (index < 1 || index > smd.webcamBitmap.length)
-                return;
-            smd.webcamBitmap[index - 1] = bmp;
-            smd.webcamWindId[index - 1] = windId;
-            smd.webcamImageRequestInprogress[index - 1] = 0;
-        }
-
-        public void setWebCamImageRequestInProgress(long spotId, int index, long requestedWindId) {
-            SpotMeteoData smd = getFromId(spotId);
-            if (smd == null) {
-                smd = new SpotMeteoData();
-            }
-            if (index < 1 || index > smd.webcamBitmap.length)
-                return;
-            smd.webcamImageRequestInprogress[index - 1] = requestedWindId;
-        }
-
-        public long getWebCamImageRequestInProgressId(long spotId, int index) {
-            SpotMeteoData smd = getFromId(spotId);
-            if (smd == null) {
-                smd = new SpotMeteoData();
-            }
-            if (index < 1 || index > smd.webcamBitmap.length)
-                return 0;
-            return smd.webcamImageRequestInprogress[index - 1];
-        }
-
-        /*public long getLastForecastId(long spotId) {
-            SpotMeteoData smd = getFromId(spotId);
-            if (smd == null) {
-                return -1;
-            }
-            return smd.forecast.id;
-        }*/
-        public Forecast getForecast(long spotId) {
-            SpotMeteoData smd = getFromId(spotId);
-            if (smd == null)
-                return null;
-            else
-                return smd.forecast;
-        }
-
-        public void setForecast(long spotId, Forecast f) {
-            SpotMeteoData smd = getFromId(spotId);
-            if (smd == null) {
-                smd = new SpotMeteoData();
-            }
-            smd.forecast = f;
+    public void saveToFile(Context context) {
+        String fileName = "SpotMeteoDataListClass";
+        FileOutputStream fos = null;
+        try {
+            fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(spotMeteoDataList/*.get(0).md*/);
+            os.close();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
+
+
+
