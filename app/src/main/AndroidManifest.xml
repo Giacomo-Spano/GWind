@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="wind.newwindalarm">
+    package="gwind.windalarm">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -50,7 +50,7 @@
 
 
         <activity
-            android:name=".MainActivity"
+            android:name="gwind.windalarm.MainActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.NoActionBar">
@@ -65,7 +65,7 @@
 
 
         <activity
-            android:name=".SplashActivity"
+            android:name="gwind.windalarm.SplashActivity"
             android:label="@string/app_name"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -89,7 +89,7 @@
 
         <!-- [START gcm_listener] -->
         <service
-            android:name=".WindAlarmGcmListenerService"
+            android:name="gwind.windalarm.WindAlarmGcmListenerService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -98,7 +98,7 @@
         <!-- [END gcm_listener] -->
         <!-- [START instanceId_listener] -->
         <service
-            android:name="wind.newwindalarm.MyInstanceIDListenerService"
+            android:name="gwind.windalarm.MyInstanceIDListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID"/>
@@ -106,24 +106,24 @@
         </service>
         <!-- [END instanceId_listener] -->
         <service
-            android:name="wind.newwindalarm.RegistrationIntentService"
+            android:name="gwind.windalarm.RegistrationIntentService"
             android:exported="false">
         </service>
 
         <activity
-            android:name=".PlayAlarmActivity"
+            android:name="gwind.windalarm.PlayAlarmActivity"
             android:label="@string/title_activity_play_alarm" >
         </activity>
         <activity
-            android:name=".ProgramActivity"
+            android:name="gwind.windalarm.ProgramActivity"
             android:label="@string/title_activity_program" >
         </activity>
         <activity
-            android:name=".SendLogActivity"
+            android:name="gwind.windalarm.SendLogActivity"
             android:label="@string/title_activity_sendlog" >
         </activity>
         <activity
-            android:name=".FullChartActivity"
+            android:name="gwind.windalarm.FullChartActivity"
             android:label="@string/title_activity_fullchart" >
         </activity>
 

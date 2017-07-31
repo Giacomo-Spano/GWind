@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<wind.newwindalarm.cardui.InfoCard xmlns:android="http://schemas.android.com/apk/res/android"
+<gwind.windalarm.cardui.InfoCard xmlns:android="http://schemas.android.com/apk/res/android"
 			  android:orientation="vertical"
 android:layout_width="match_parent"
 android:layout_height="wrap_content"
@@ -15,6 +15,6 @@ android:background="@drawable/card_holder" android:layout_gravity="right"
 <!-- Card Contents go here -->
 	<include layout="@layout/card_infocontents" />
 
-</wind.newwindalarm.cardui.InfoCard>
+</gwind.windalarm.cardui.InfoCard>
 
 

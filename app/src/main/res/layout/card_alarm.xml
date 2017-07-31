@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<wind.newwindalarm.cardui.AlarmCard xmlns:android="http://schemas.android.com/apk/res/android"
+<gwind.windalarm.cardui.AlarmCard xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="right"
@@ -17,6 +17,6 @@
     <include layout="@layout/card_alarmcontents" />
 
 
-</wind.newwindalarm.cardui.AlarmCard>
+</gwind.windalarm.cardui.AlarmCard>
 
 

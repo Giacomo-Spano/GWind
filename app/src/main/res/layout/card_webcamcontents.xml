@@ -19,7 +19,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
 
-        <wind.newwindalarm.controls.TouchImageView
+        <gwind.windalarm.controls.TouchImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

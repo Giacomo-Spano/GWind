@@ -1,109 +1,35 @@
 {
   "project_info": {
-    "project_number": "931700652688",
-    "firebase_url": "https://windalarm-24f03.firebaseio.com",
-    "project_id": "windalarm-24f03",
-    "storage_bucket": "windalarm-24f03.appspot.com"
+    "project_number": "546111443616",
+    "firebase_url": "https://gwind-175310.firebaseio.com",
+    "project_id": "gwind-175310",
+    "storage_bucket": "gwind-175310.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:931700652688:android:5a6fc49defa5caff",
+        "mobilesdk_app_id": "1:546111443616:android:0a596073ec635af6",
         "android_client_info": {
-          "package_name": "com.windalarm"
+          "package_name": "gwind.windalarm"
         }
       },
       "oauth_client": [
         {
-          "client_id": "931700652688-o1dqr92hqa1521gruk5blf5gc4kc0691.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "931700652688-vlqjc9s8klmjeti70p52ssnj4orgsdel.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA7zONNzAVXFfCyS_hStAPmOcs_Ii-l6iE"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:931700652688:android:73fa346eaf221e72",
-        "android_client_info": {
-          "package_name": "com.windalarm.clientapp"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "931700652688-o1dqr92hqa1521gruk5blf5gc4kc0691.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "931700652688-vlqjc9s8klmjeti70p52ssnj4orgsdel.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA7zONNzAVXFfCyS_hStAPmOcs_Ii-l6iE"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:931700652688:android:a943e618d0d55efe",
-        "android_client_info": {
-          "package_name": "wind.newwindalarm"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "931700652688-a6olptrhi13t1ss1mepffu39t7ue183v.apps.googleusercontent.com",
+          "client_id": "546111443616-4k67vjuk18gtgkcsbmt22e6ov0hmd6s6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "wind.newwindalarm",
-            "certificate_hash": "64CB8388E307E5A7A0A8442235438CDCBB3C0824"
+            "package_name": "gwind.windalarm",
+            "certificate_hash": "3bf621df88fd06129b5cd09cc2e657675c5ac3bf"
           }
         },
         {
-          "client_id": "931700652688-o1dqr92hqa1521gruk5blf5gc4kc0691.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "931700652688-vlqjc9s8klmjeti70p52ssnj4orgsdel.apps.googleusercontent.com",
+          "client_id": "546111443616-6k2ubm9q79k44oee8ihidnmjrvlptpuo.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA7zONNzAVXFfCyS_hStAPmOcs_Ii-l6iE"
+          "current_key": "AIzaSyDTcDGrhEov3u3eJTSWJeM13IxyKW9XvAk"
         }
       ],
       "services": {
@@ -114,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "931700652688-o1dqr92hqa1521gruk5blf5gc4kc0691.apps.googleusercontent.com",
+              "client_id": "546111443616-6k2ubm9q79k44oee8ihidnmjrvlptpuo.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
