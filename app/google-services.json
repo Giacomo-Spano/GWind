@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "546111443616-557bnbbcf3u6o1vuo11pghi99708u3er.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "gwind.windalarm",
+            "certificate_hash": "6e75bb026b077e3aeaa97f50c7b26795051cbc41"
+          }
+        },
+        {
           "client_id": "546111443616-4k67vjuk18gtgkcsbmt22e6ov0hmd6s6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

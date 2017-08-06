@@ -26,7 +26,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="registering_message"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:text="Prova" />
 
 
     </LinearLayout>

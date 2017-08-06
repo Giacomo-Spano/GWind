@@ -30,10 +30,15 @@ import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import static gwind.windalarm.CommonUtilities.sendMessageToMainActivity;
 
-public class WindAlarmGcmListenerService extends GcmListenerService {
+public class MyFirebaseMessagingService extends FirebaseMessagingService/*GcmListenerService*/ {
 
     private static final String TAG = "WindAlarmGcmListener";
 
@@ -46,7 +51,81 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
      */
     // [START receive_message]
     @Override
-    public void onMessageReceived(String from, Bundle data) {
+    public void onMessageReceived(RemoteMessage remoteMessage) {
+        // ...
+
+        // TODO(developer): Handle FCM messages here.
+        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
+        Log.i(TAG, "RICEVUTO MESSAGGGIO________________**************************************************");
+        Log.d(TAG, "From: " + remoteMessage.getFrom());
+
+        // Check if message contains a data payload.
+        if (remoteMessage.getData().size() > 0) {
+            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+
+            if (/* Check if data needs to be processed by long running job */ true) {
+                // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
+                //scheduleJob();
+            } else {
+                // Handle message within 10 seconds
+                //handleNow();
+            }
+
+            try {
+                JSONObject data = new JSONObject(remoteMessage.getData());
+                String notificationType = data.getString("notificationtype");
+                // notifies user
+                if (notificationType != null && notificationType.equals("Alarm")) {
+
+                    Log.i(TAG, "Alarm received");
+                    playAlarm(getApplicationContext(), data);
+                    return;
+                } else {
+
+                    String spotId = data.getString("spotID");
+                    //if (spotId != null) {
+                    if (!AlarmPreferences.getHighWindNotification(getApplicationContext())
+                            || !AlarmPreferences.getWindIncreaseNotification(getApplicationContext())) {
+
+                        Log.i(TAG, "Notification disabled");
+                        return;
+                    }
+                    // TODO riaggiungere controllo notifiche non favorites
+
+                    String title = data.getString("title");
+                    String message = data.getString("message");
+                    //CommonUtilities.sendMessageToMainActivity(getApplicationContext(), title, "messagetext", notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
+                    //generateUINotification(getApplicationContext(), message, title); // questo genera la notifica nella barra notifica
+                    //notifyUser(getApplicationContext(), message, title, spotId);
+
+                    //}
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+
+        }
+
+        // Check if message contains a notification payload.
+        if (remoteMessage.getNotification() != null) {
+            String body = remoteMessage.getNotification().getBody();
+            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+
+        }
+
+        // Also if you intend on generating your own notifications as a result of a received FCM
+        // message, here is where that should be initiated. See sendNotification method below.
+    }
+
+
+
+
+
+    //@Override
+    public void _onMessageReceived(String from, Bundle data) {
         Log.i(TAG, "onMessageReceived");
         String message = data.getString("message");
         Log.i(TAG, "From: " + from);
@@ -68,17 +147,17 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
 
         String notificationType = data.getString("notificationtype");
         // notifies user
-        if (notificationType.equals("Alarm")) {
+        if (notificationType != null && notificationType.equals("Alarm")) {
 
             Log.i(TAG, "Alarm received");
-            playAlarm(getApplicationContext(), data);
+            //playAlarm(getApplicationContext(), data);
 
             return;
 
         } else {
 
             String spotId = data.getString("spotID");
-            if (spotId != null) {
+            //if (spotId != null) {
                 if (!AlarmPreferences.getHighWindNotification(getApplicationContext())
                         || !AlarmPreferences.getWindIncreaseNotification(getApplicationContext())) {
 
@@ -96,9 +175,9 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
                 message = data.getString("message");
                 //CommonUtilities.sendMessageToMainActivity(getApplicationContext(), title, "messagetext", notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
                 //generateUINotification(getApplicationContext(), message, title); // questo genera la notifica nella barra notifica
-                notifyUser(getApplicationContext(), message, title, spotId);
+                //notifyUser(getApplicationContext(), message, title, spotId);
 
-            }
+            //}
         }
 
 
@@ -138,57 +217,63 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
 
-    private void playAlarm(Context context, Bundle alarmData) {
+    private void playAlarm(Context context, JSONObject alarmData) {
         Intent resultIntent = new Intent(context, PlayAlarmActivity.class);
 
-        String spotId = alarmData.getString("spotID");
-        String spotName = alarmData.getString("spotName");
-        String alarmId = alarmData.getString("alarmId");
-        String curDate = alarmData.getString("curDate");
-        String curspeed = alarmData.getString("curspeed");
-        String curavspeed = alarmData.getString("curavspeed");
-        String windid = alarmData.getString("windid");
+        String spotId = null;
+        try {
+            spotId = alarmData.getString("spotID");
+            String spotName = alarmData.getString("spotName");
+            String alarmId = alarmData.getString("alarmId");
+            String curDate = alarmData.getString("curDate");
+            String curspeed = alarmData.getString("curspeed");
+            String curavspeed = alarmData.getString("curavspeed");
+            String windid = alarmData.getString("windid");
 
-        Bundle b = new Bundle();
-        b.putString("spotid", spotId);
-        b.putString("spotName", spotName);
-        b.putString("alarmid", alarmId);
-        b.putString("curspeed", curspeed);
-        b.putString("curavspeed", curavspeed);
-        b.putString("curdate", curDate);
-        b.putString("windid", windid);
-        resultIntent.putExtras(b); //Put your id to your next Intent
+            Bundle b = new Bundle();
+            b.putString("spotid", spotId);
+            b.putString("spotName", spotName);
+            b.putString("alarmid", alarmId);
+            b.putString("curspeed", curspeed);
+            b.putString("curavspeed", curavspeed);
+            b.putString("curdate", curDate);
+            b.putString("windid", windid);
+            resultIntent.putExtras(b); //Put your id to your next Intent
 
-        // The stack builder object will contain an artificial back stack for the
-        // started Activity.
-        // This ensures that navigating backward from the Activity leads out of
-        // your application to the Home screen.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        // Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(MainActivity.class);
-        // Adds the Intent that starts the Activity to the top of the stack
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
+            // The stack builder object will contain an artificial back stack for the
+            // started Activity.
+            // This ensures that navigating backward from the Activity leads out of
+            // your application to the Home screen.
+            TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+            // Adds the back stack for the Intent (but not the Intent itself)
+            stackBuilder.addParentStack(MainActivity.class);
+            // Adds the Intent that starts the Activity to the top of the stack
+            stackBuilder.addNextIntent(resultIntent);
+            PendingIntent resultPendingIntent =
+                    stackBuilder.getPendingIntent(
+                            0,
+                            PendingIntent.FLAG_UPDATE_CURRENT
+                    );
 
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        getApplication().startActivity(resultIntent);
+            resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplication().startActivity(resultIntent);
         /*generateUINotification(getApplicationContext(), curDate.toString()
                 + "\nSveglia vento attivata"
                 + "\nIntensità vento " + curspeed
                 + "\nIntensità media " + curavspeed
                 + "\nwindid " + windid,
                 "" + spotName);*/
-        notifyUser(SplashActivity.getInstance(), curDate.toString()
-                        + "\nSveglia vento attivata"
-                        + "\nIntensità vento " + curspeed
-                        + "\nIntensità media " + curavspeed
-                        + "\nwindid " + windid,
-                "" + spotName, spotId);
-        //sendMessageToMainActivity(getApplicationContext(), "title", "messagetext", notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
+            /*notifyUser(SplashActivity.getInstance(), curDate.toString()
+                            + "\nSveglia vento attivata"
+                            + "\nIntensità vento " + curspeed
+                            + "\nIntensità media " + curavspeed
+                            + "\nwindid " + windid,
+                    "" + spotName, spotId);*/
+            //sendMessageToMainActivity(getApplicationContext(), "title", "messagetext", notificationType); // questto fa in modo che venga mandato un messaggio alla main actrivitik che poi puo fare qualcosa in base al tipo
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
 
     }
@@ -240,7 +325,7 @@ public class WindAlarmGcmListenerService extends GcmListenerService {
         mNotificationManager.notify(mId, notification/*mBuilder.build()*/);
     }
 
-    public static void notifyUser(Context context, String header,
+    public static void xnotifyUser(Context context, String header,
                                   String message, String spotId) {
 
         NotificationManager notificationManager = (NotificationManager) context

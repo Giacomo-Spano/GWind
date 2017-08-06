@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -82,6 +83,8 @@ public class SplashActivity extends AppCompatActivity implements
             return null;
     }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +105,9 @@ public class SplashActivity extends AppCompatActivity implements
         } else {
             finish();
         }*/
+
+
+
 
         initGoogleSignin();
 
@@ -339,7 +345,7 @@ public class SplashActivity extends AppCompatActivity implements
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d("TAG", "handleSignInResult:" + result.isSuccess());
+        Log.i("TAG", "handleSignInResult:" + result.isSuccess());
         boolean signedIn;
         if (result.isSuccess()) {
 
@@ -375,6 +381,8 @@ public class SplashActivity extends AppCompatActivity implements
             }
 
         } else {
+
+            Log.i("TAG", "handleSignInResult: error" + result.toString());
             mProfile = null;
             showLoginFragment();
         }

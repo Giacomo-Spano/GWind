@@ -6,6 +6,7 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
             storeFile file('C:/Users/giaco/.android/debug.keystore')
+            //storeFile file('C:/Users/giaco/Documents/AndroidStudio/NewWindAlarm/app/debug.keystore')
             storePassword 'android'
         }
     }
@@ -15,8 +16,8 @@ android {
         applicationId "gwind.windalarm"
         minSdkVersion 21
         targetSdkVersion 24
-        versionCode 42
-        versionName "0.9 Build 42"
+        versionCode 48
+        versionName "0.91 Build 48"
         multiDexEnabled true
     }
     buildTypes {
@@ -25,7 +26,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-            debuggable false
+            debuggable true
         }
     }
     useLibrary 'org.apache.http.legacy'
@@ -55,6 +56,7 @@ dependencies {
     compile 'com.google.firebase:firebase-crash:9.6.0'
     compile 'com.firebaseui:firebase-ui-database:0.4.0'
     //compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.squareup.picasso:picasso:2.5.2'
 }
 
 apply plugin: 'com.google.gms.google-services'

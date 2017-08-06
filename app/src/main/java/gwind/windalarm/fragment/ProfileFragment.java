@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.common.SignInButton;
+import com.squareup.picasso.Picasso;
 
 import gwind.windalarm.AlarmPreferences;
 import gwind.windalarm.BuildConfig;
@@ -157,8 +158,9 @@ public class ProfileFragment extends Fragment {
 
             mUserImageView.setVisibility(View.VISIBLE);
             MainActivity ma = (MainActivity) getActivity();
-            Bitmap bitmap = ma.loadBitmapFromUrl(mProfile.photoUrl);
-            mUserImageView.setImageBitmap(bitmap/*mProfile.userImage*/);
+            //Bitmap bitmap = ma.loadBitmapFromUrl(mProfile.photoUrl);
+            //mUserImageView.setImageBitmap(bitmap/*mProfile.userImage*/);
+            Picasso.with(getContext()).load(mProfile.photoUrl).into(mUserImageView);
 
             mRegIdTextView.setVisibility(View.VISIBLE);
             mSignonButton.setVisibility(View.GONE);
