@@ -8,9 +8,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.common.SignInButton;
 
+import org.w3c.dom.Text;
+
+import gwind.windalarm.BuildConfig;
 import gwind.windalarm.R;
 
 public class LogoutFragment extends android.support.v4.app.Fragment {
@@ -63,6 +67,9 @@ public class LogoutFragment extends android.support.v4.app.Fragment {
         View v;
         v = inflater.inflate(R.layout.fragment_logout, container, false);
 
+        TextView tv = (TextView) v.findViewById(R.id.textView16);
+        tv.setText("pppp2");
+
         mSignonButton = (SignInButton) v.findViewById(R.id.sign_in_button);
         mSignonButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +77,7 @@ public class LogoutFragment extends android.support.v4.app.Fragment {
                 mCallback.onSignInClick();
             }
         });
+
 
         return v;
     }

@@ -70,13 +70,47 @@ public class registertask extends AsyncTask<Object, Boolean, String> {
             if (postType == POST_REGISTERDEVICE) {
                 String regId = (String) params[0];
                 String name = (String) params[1];
+                /*String personId = (String) params[2];
+                String personName = (String) params[3];
+                String personEmail = (String) params[4];
+                String personPhoto = (String) params[5];
+                String authCode = (String) params[6];*/
+
+                postData = URLEncoder.encode("registerdevice", "UTF-8") + "=" +
+                        URLEncoder.encode("true", "UTF-8") + "&" +
+                        URLEncoder.encode("regId", "UTF-8") + "=" +
+                        URLEncoder.encode(regId, "UTF-8") + "&" +
+                        URLEncoder.encode("devicename", "UTF-8") + "=" +
+                        URLEncoder.encode(name, "UTF-8");// + "&" +
+                        /*URLEncoder.encode("personId", "UTF-8") + "=" +
+                        URLEncoder.encode(personId, "UTF-8") + "&";
+
+                        if (personName != null) {
+                            postData += URLEncoder.encode("personName", "UTF-8") + "=" +
+                            URLEncoder.encode(personName, "UTF-8") + "&";
+                        }
+                        if (personEmail != null) {
+                            postData += URLEncoder.encode("personEmail", "UTF-8") + "=" +
+                                        URLEncoder.encode(personEmail, "UTF-8") + "&";
+                        }
+                        if (personPhoto != null) {
+                            postData += URLEncoder.encode("personPhoto", "UTF-8") + "=" +
+                                        URLEncoder.encode(personPhoto.toString(), "UTF-8") + "&";
+                        }
+                        if (authCode != null) {
+                            postData += URLEncoder.encode("authCode", "UTF-8") + "=" +
+                                    URLEncoder.encode(authCode, "UTF-8") + "&";
+                        }*/
+            } else if (postType == POST_REGISTERUSER) {
+                String regId = (String) params[0];
+                String name = (String) params[1];
                 String personId = (String) params[2];
                 String personName = (String) params[3];
                 String personEmail = (String) params[4];
                 String personPhoto = (String) params[5];
                 String authCode = (String) params[6];
 
-                postData = URLEncoder.encode("registerdevice", "UTF-8") + "=" +
+                postData = URLEncoder.encode("registeruser", "UTF-8") + "=" +
                         URLEncoder.encode("true", "UTF-8") + "&" +
                         URLEncoder.encode("regId", "UTF-8") + "=" +
                         URLEncoder.encode(regId, "UTF-8") + "&" +

@@ -66,6 +66,7 @@ import gwind.windalarm.data.Location;
 import gwind.windalarm.data.MeteoStationData;
 import gwind.windalarm.data.Forecast;
 import gwind.windalarm.fragment.ForecastFragment;
+import gwind.windalarm.fragment.MeteoItemListFragment;
 import gwind.windalarm.fragment.PanelFragment;
 import gwind.windalarm.fragment.ProfileFragment;
 import gwind.windalarm.fragment.ProgramFragment;
@@ -231,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements
     private SettingsFragment settingsFragment;
     private ProfileFragment profileFragment;
     private SpotMeteoListFragment spotMeteoListFragment;
+    //private MeteoItemListFragment meteoItemListFragment;
     private SearchSpotFragment searchSpotFragment;
     private SpotMeteoDataList spotMeteoDataList;
 
@@ -361,6 +363,8 @@ public class MainActivity extends AppCompatActivity implements
         settingsFragment.setSettings(mSettings);
         profileFragment = new ProfileFragment();
         spotMeteoListFragment = new SpotMeteoListFragment();
+        spotMeteoListFragment.setUserId(mProfile.personId);
+
         //searchSpotFragment = new SearchSpotFragment();
 
         // non serve perchè già chiamata nella onResume
@@ -742,7 +746,7 @@ public class MainActivity extends AppCompatActivity implements
         Date end = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(end);
-        cal.add(Calendar.HOUR_OF_DAY, -10); //minus number would decrement the hours
+        cal.add(Calendar.HOUR_OF_DAY, -3); //minus number would decrement the hours
         Date start = cal.getTime();
 
         startProgressBar();
@@ -1058,9 +1062,8 @@ public class MainActivity extends AppCompatActivity implements
             if (list == null)
                 return;
 
-            // aggiorna i dati archiviati
-            for (MeteoStationData md : list)
-                spotMeteoDataList.setLastMeteoData(md.spotID, md);
+            // rimuovi spot non più tra i favoriti
+            spotMeteoDataList.update(list);
 
             updateFavoritesMeteoData(list);
 
@@ -1078,8 +1081,10 @@ public class MainActivity extends AppCompatActivity implements
                 showError(errorMessage);
 
             if (spotDetailsFragment != null) {
+                // aggiorna la history in memoria con i dati aggiornati
                 spotMeteoDataList.setHistory(spotId, list);
-                spotDetailsFragment.setHistoryMeteoData(spotMeteoDataList.getHistory(spotId));
+                //spotDetailsFragment.setHistoryMeteoData(spotMeteoDataList.getHistory(spotId));
+                spotDetailsFragment.setHistoryMeteoData(list);
             }
 
             progressBar.setVisibility(View.GONE);

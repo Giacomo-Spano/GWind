@@ -30,13 +30,14 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import gwind.windalarm.MainActivity;
+import gwind.windalarm.MeteoItemListListener;
 import gwind.windalarm.Spot;
 import gwind.windalarm.data.Forecast;
 import gwind.windalarm.data.MeteoStationData;
 import gwind.windalarm.R;
 import gwind.windalarm.WindAlarmProgram;
 
-public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodataFragment.OnClickListener, ProgramListFragment.OnProgramListListener, ForecastFragment.OnMeteoForecastClickListener, OnMapReadyCallback {
+public class SpotDetailsFragment extends Fragment implements /*SpotDetailsMeteodataFragment.OnClickListener,*/ ProgramListFragment.OnProgramListListener, ForecastFragment.OnMeteoForecastClickListener, MeteoItemListListener/*, OnMapReadyCallback*/ {
 
     public static final int Pager_ForecastPage = 0;
     public static final int Pager_MeteodataPage = 1;
@@ -49,7 +50,8 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
     double lat, lon;
 
     private ForecastFragment forecastFragment;
-    private SpotDetailsMeteodataFragment meteodataFragment;
+    //private SpotDetailsMeteodataFragment meteodataFragment;
+    private MeteoItemListFragment meteoItemListFragment;
     private SpotDetailsWebcamFragment webcamFragment;
     private SpotDetailsChartFragment chartFragment;
     private ProgramListFragment programListFragment;
@@ -59,7 +61,7 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
     private TextView speedTextView;
     private TextView lastUpateTextView;
 
-    private GoogleMap mMap;
+    //private GoogleMap mMap;
     public SupportMapFragment mapFragment;
 
     OnClickListener mCallback;
@@ -74,24 +76,31 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
     }
 
     @Override
+    public void onClickCheckBox(int position, boolean selected) {
+
+    }
+
+    @Override
+    public void onClick(long spotId) {
+
+    }
+
+    /*@Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
         // Add a marker in Sydney, Australia, and move the camera.
-
         if (meteoData != null && meteoData.lat != null && meteoData.lat > 0 && meteoData.lon != null && meteoData.lon > 0) {
-
             // Move the camera instantly to Sydney with a zoom of 15.
             //map.moveCamera(CameraUpdateFactory.newLatLngZoom(SYDNEY, 15));
-
             LatLng spotLatLng = new LatLng(meteoData.lat, meteoData.lon);
             mMap.addMarker(new MarkerOptions().position(spotLatLng).title("Marker in " + meteoData.spotName));
             //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(spotLatLng, 12));
         }
-    }
+    }*/
 
     // Container Activity must implement this interface
     public interface OnClickListener {
@@ -207,7 +216,7 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
                         break;
 
                     case Pager_MeteodataPage:
-                        meteodataFragment.refreshData();
+                        meteoItemListFragment.refreshData();
                         break;
 
                     case Pager_WebcamPage:
@@ -270,32 +279,16 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
     }
 
     private void setUpMapIfNeeded() {
-        // Do a null check to confirm that we have not already instantiated the map.
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            //mMap = ((SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-            //mMap = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map)).getMap();
-
-            //mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
+        // RIMOSSO
+        /*if (mMap == null) {
             mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
-
-            // Check if we were successful in obtaining the map.
-            /*if (mMap != null) {
-                setUpMap();
-            }*/
-        }
+        }*/
     }
 
-    /**
-     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
-     * just add a marker near Africa.
-     * <p/>
-     * This should only be called once and when we are sure that {@link #mMap} is not null.
-     */
-    private void setUpMap() {
+    /*private void setUpMap() {
         mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
-    }
+    }*/
 
     public void setListener(OnClickListener listener) {
         mCallback = listener;
@@ -304,8 +297,8 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
     public SpotDetailsFragment() {
         forecastFragment = new ForecastFragment();
         forecastFragment.setListener(this);
-        meteodataFragment = new SpotDetailsMeteodataFragment();
-        meteodataFragment.setListener(this);
+        meteoItemListFragment = new MeteoItemListFragment();
+        meteoItemListFragment.setListener(this);
         webcamFragment = new SpotDetailsWebcamFragment();
         chartFragment = new SpotDetailsChartFragment();
         programListFragment = new ProgramListFragment();
@@ -320,7 +313,7 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
     public void setMeteoData(MeteoStationData data) {
         meteoData = data;
         forecastFragment.setMeteoData(data);
-        meteodataFragment.setMeteoData(data);
+        meteoItemListFragment.setMeteoData(data);
         webcamFragment.setMeteoData(data);
         chartFragment.setMeteoData(data);
     }
@@ -328,7 +321,7 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
     public void setSpotId(long spotId) {
         this.spotId = spotId;
         forecastFragment.setSpotId(spotId);
-        meteodataFragment.setSpotId(spotId);
+        meteoItemListFragment.setSpotId(spotId);
         webcamFragment.setSpotId(spotId);
         chartFragment.setSpotId(spotId);
         programListFragment.setSpotId(spotId);
@@ -344,7 +337,7 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
         SimpleDateFormat df = new SimpleDateFormat("d/MM/yyyy HH:mm");
         lastUpateTextView.setText(df.format(meteoData.date));
 
-        meteodataFragment.refreshData();
+        meteoItemListFragment.refreshData();
         webcamFragment.refreshData();
         //chartFragment.refreshData();
         //programListFragment.refreshData();
@@ -364,12 +357,12 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
         return chartFragment.getLastHistoryMeteoData();
     }*/
 
-    @Override
+    /*@Override
     public void onRefreshMeteoDataRequest() {
 
         int position = mPager.getCurrentItem();
         mCallback.onRefreshDetailViewRequest(position);
-    }
+    }*/
 
     private class SpotDetailPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -392,7 +385,7 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
                     fragment = forecastFragment;
                     break;
                 case Pager_MeteodataPage:
-                    fragment = meteodataFragment;
+                    fragment = meteoItemListFragment;
                     break;
                 case Pager_WebcamPage:
                     fragment = webcamFragment;
@@ -451,7 +444,7 @@ public class SpotDetailsFragment extends Fragment implements SpotDetailsMeteodat
                     forecastFragment = (ForecastFragment) fragment;
                     break;
                 case Pager_MeteodataPage:
-                    meteodataFragment = (SpotDetailsMeteodataFragment) fragment;
+                    meteoItemListFragment = (MeteoItemListFragment) fragment;
                     break;
                 case Pager_WebcamPage:
                     webcamFragment = (SpotDetailsWebcamFragment) fragment;

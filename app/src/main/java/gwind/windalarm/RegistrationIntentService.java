@@ -197,7 +197,7 @@ public class RegistrationIntentService extends IntentService {
                     if (json.has("deviceid")) {
                         deviceId = json.getInt("deviceid");
                         //long old_deviceId = AlarmPreferences.getDeviceId(SplashActivity.getContext());
-                        //AlarmPreferences.setDeviceId(SplashActivity.getContext(), deviceId);
+                        AlarmPreferences.setDeviceId(SplashActivity.getContext(), deviceId);
                     }
                     if (json.has("userid")) {
                         userId = json.getInt("userid");
@@ -214,7 +214,7 @@ public class RegistrationIntentService extends IntentService {
                     CommonUtilities.sendMessageToMainActivity(SplashActivity.getContext(), "title", "impossibile registrare device");
                 }
             }
-        }, registertask.POST_REGISTERDEVICE).execute(AlarmPreferences.getRegId(this), model, personId, personName, personEmail, personPhoto, authCode);
+        }, registertask.POST_REGISTERUSER).execute(AlarmPreferences.getRegId(this), model, personId, personName, personEmail, personPhoto, authCode);
 
     }
 

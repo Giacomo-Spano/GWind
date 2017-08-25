@@ -12,6 +12,13 @@
         android:showAsAction="ifRoom"
         android:title="@string/options_refresh">
     </item>-->
+    <!-- "Mark Favorite", should appear as action button if possible -->
+    <item
+        android:id="@+id/action_favorite"
+        android:icon="@drawable/add"
+        android:title=""
+        app:showAsAction="ifRoom"/>
+
     <item
         android:id="@+id/options_searchspot"
         android:icon="@android:drawable/ic_search_category_default"

@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -82,6 +83,8 @@ public class SplashActivity extends AppCompatActivity implements
             return null;
     }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,14 +97,12 @@ public class SplashActivity extends AppCompatActivity implements
             spotId = Integer.valueOf(spotIdStr);
         }
 
-        /*if (!sendLogToMail()) {
+        if (checkPlayServices()) {
+            Log.i("TAG", "checkPlayServices ok");
+        }
 
-            initGoogleSignin();
-            silentSignIn();
 
-        } else {
-            finish();
-        }*/
+
 
         initGoogleSignin();
 
@@ -118,10 +119,13 @@ public class SplashActivity extends AppCompatActivity implements
             if (mFirebaseUser.getPhotoUrl() != null) {
                 mProfile.photoUrl = mFirebaseUser.getPhotoUrl().toString();
             }
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            intent.putExtra("userProfile", mProfile); //
-            startService(intent);
-            startMainActivity(mProfile);
+            if (checkPlayServices()) {
+                Intent intent = new Intent(this, RegistrationIntentService.class);
+                intent.putExtra("userProfile", mProfile); //
+                startService(intent);
+                startMainActivity(mProfile);
+            }
+
 
         } else {
             showLoginFragment();
@@ -339,7 +343,7 @@ public class SplashActivity extends AppCompatActivity implements
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d("TAG", "handleSignInResult:" + result.isSuccess());
+        Log.i("TAG", "handleSignInResult:" + result.isSuccess());
         boolean signedIn;
         if (result.isSuccess()) {
 
@@ -352,10 +356,9 @@ public class SplashActivity extends AppCompatActivity implements
 
             firebaseAuthWithGoogle(acct);
 
-            /*mFirebaseAuth = FirebaseAuth.getInstance();
+            mFirebaseAuth = FirebaseAuth.getInstance();
             FirebaseUser mFirebaseUser = mFirebaseAuth.getCurrentUser();
-
-            mProfile = new UserProfile();
+            /*mProfile = new UserProfile();
             mProfile.userName = mFirebaseUser.getDisplayName();
             //String personGivenName = acct.getGivenName();
             //String personFamilyName = acct.getFamilyName();
@@ -363,18 +366,19 @@ public class SplashActivity extends AppCompatActivity implements
             mProfile.personId = mFirebaseUser.getUid();
             if (mFirebaseUser.getPhotoUrl() != null) {
                 mProfile.photoUrl = mFirebaseUser.getPhotoUrl().toString();
-            }*/
-
+            }
             // Registering BroadcastReceiver
             registerReceiver();
             if (checkPlayServices()) {
-                // Start IntentService to register this application with GCM.
                 Intent intent = new Intent(this, RegistrationIntentService.class);
-                intent.putExtra("userProfile", mProfile); //
+                intent.putExtra("userProfile", mProfile);
                 startService(intent);
-            }
+                startMainActivity(mProfile);
+            }*/
 
         } else {
+
+            Log.i("TAG", "handleSignInResult: error" + result.toString());
             mProfile = null;
             showLoginFragment();
         }
@@ -394,12 +398,13 @@ public class SplashActivity extends AppCompatActivity implements
                         .show();
             } else {
                 Log.i("TAG", "This device is not supported.");
-                finish();
+                //finish();
             }
             return false;
         }
         return true;
     }
+
 
 
     private void showLoginFragment() {

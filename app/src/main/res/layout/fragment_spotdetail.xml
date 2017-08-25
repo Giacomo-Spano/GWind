@@ -108,7 +108,7 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <!-- <LinearLayout
         android:id="@+id/mapframe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -123,7 +123,7 @@
             android:layout_height="104dp"
             tools:context=".MainActivity" />
 
-    </LinearLayout>
+    </LinearLayout>  -->
 
     <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/pager"
@@ -144,18 +144,7 @@
                 android:icon="@drawable/logo"
                 android:text="prova1" />
 
-            <!--        <android.support.design.widget.TabItem
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:icon="@drawable/logo"
-                        android:text="prova2" />
 
-                    <android.support.design.widget.TabItem
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:icon="@drawable/logo"
-                        android:text="prova3" />
-            -->
 
         </android.support.design.widget.TabLayout>
 
