@@ -104,6 +104,9 @@ public class SplashActivity extends AppCompatActivity implements
 
 
 
+
+
+
         initGoogleSignin();
 
         mFirebaseAuth = FirebaseAuth.getInstance();

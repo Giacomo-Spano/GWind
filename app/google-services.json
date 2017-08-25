@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "546111443616",
+    "firebase_url": "https://gwind-175310.firebaseio.com",
+    "project_id": "gwind-175310",
+    "storage_bucket": "gwind-175310.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546111443616:android:0a596073ec635af6",
+        "android_client_info": {
+          "package_name": "gwind.windalarm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "546111443616-557bnbbcf3u6o1vuo11pghi99708u3er.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "gwind.windalarm",
+            "certificate_hash": "6e75bb026b077e3aeaa97f50c7b26795051cbc41"
+          }
+        },
+        {
+          "client_id": "546111443616-4k67vjuk18gtgkcsbmt22e6ov0hmd6s6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "gwind.windalarm",
+            "certificate_hash": "3bf621df88fd06129b5cd09cc2e657675c5ac3bf"
+          }
+        },
+        {
+          "client_id": "546111443616-6k2ubm9q79k44oee8ihidnmjrvlptpuo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTcDGrhEov3u3eJTSWJeM13IxyKW9XvAk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "546111443616-6k2ubm9q79k44oee8ihidnmjrvlptpuo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
