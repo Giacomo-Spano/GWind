@@ -19,6 +19,31 @@ import gwind.windalarm.data.MeteoStationData;
 
 public class SpotMeteoDataList implements Serializable {
 
+    public void update(List<MeteoStationData> list) {
+
+        if (lastMeteoData.size() > 0) {
+            int count = 0;
+            while (count < lastMeteoData.size()) {
+                SpotMeteoData smd = lastMeteoData.get(count);
+                boolean found = false;
+                for (MeteoStationData meteodata : list) {
+                    if (meteodata.spotID == smd.spotId) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    lastMeteoData.remove(count);
+                } else {
+                    count++;
+                }
+            }
+        }
+
+        for (MeteoStationData md : list)
+            setLastMeteoData(md.spotID, md);
+    }
+
     public class SpotMeteoData implements Serializable {
         public  long spotId;
         public MeteoStationData md;
@@ -83,8 +108,11 @@ public class SpotMeteoDataList implements Serializable {
             smd = addSpotMeteoData(spotId);
         }
 
+        long lastId = getLastHistoryId(spotId);
         for (MeteoStationData md : history) {
-            smd.history.add(md);
+
+            if (md.id > lastId)
+                smd.history.add(md);
         }
     }
 

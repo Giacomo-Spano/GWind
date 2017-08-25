@@ -53,10 +53,10 @@ public class HistoryChart {
         return windData;
     }
 
-    public void drawChart(List<MeteoStationData> meteoDataList) {
+    public boolean drawChart(List<MeteoStationData> meteoDataList) {
 
-        if (meteoDataList == null )
-            return;
+        if (meteoDataList == null || meteoDataList.size() == 0)
+            return false;
         List<Entry> valsCompSpeed = new ArrayList<Entry>();
         List<Entry> valsCompAvSpeed = new ArrayList<Entry>();
         List<Entry> valsCompDirection = new ArrayList<Entry>();
@@ -308,6 +308,8 @@ public class HistoryChart {
         mWindChart.invalidate(); // refresh
         mTemperatureChart.invalidate(); // refresh
         mTrendChart.invalidate(); // refresh
+
+        return true;
     }
 
     private final String[] directionSymbols = {

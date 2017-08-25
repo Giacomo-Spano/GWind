@@ -85,7 +85,7 @@ public class SpotDetailsChartFragment extends Fragment implements SpotDetailsFra
         //mWindProgressBar = mWindCard.getProgressBar();
 
         hc = new HistoryChart(getActivity(), mWindChart, mTrendChart, mTemperatureChart);
-        if (meteoDataList != null) {
+        if (meteoDataList != null && meteoDataList.size() != 0) {
 
             refreshData();
             //hc.drawChart(meteoDataList);

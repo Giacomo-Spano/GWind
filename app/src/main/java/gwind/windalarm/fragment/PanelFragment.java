@@ -153,7 +153,7 @@ public class PanelFragment extends Fragment implements OnItemSelectedListener, M
         return null;
     }*/
 
-    public void refreshMeteoData() {
+    public void refreshMeteoData() { /// chi kla chiama
 
         if (viewCreated == false)
             return;

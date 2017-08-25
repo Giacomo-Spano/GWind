@@ -23,6 +23,7 @@ import gwind.windalarm.request.requestMeteoDataTask;
 
 public class SpotMeteoListFragment extends ListFragment implements SpotMeteoListListener {
 
+    private String userid;
     // Container Activity must implement this interface
     public interface OnSpotMeteoListListener {
         void onSpotListChangeSelection(List<Long> list);
@@ -30,6 +31,10 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
 
     OnSpotMeteoListListener mListener;
     List<Spot> mSpotList;
+
+    public void setUserId(String userid) {
+        this.userid = userid;
+    }
 
     public void setListener(OnSpotMeteoListListener listener) {
         mListener = listener;
@@ -39,6 +44,8 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
 
         mSpotList = list;
     }
+
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -108,7 +115,7 @@ public class SpotMeteoListFragment extends ListFragment implements SpotMeteoList
 
             }
 
-        },requestMeteoDataTask.REQUEST_SPOTLIST_FULLINFO).execute("");
+        },requestMeteoDataTask.REQUEST_SPOTLIST_FULLINFO).execute(userid);
     }
 
     @Override

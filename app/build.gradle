@@ -5,7 +5,7 @@ android {
         config {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
-            storeFile file('C:/Users/giaco/.android/debug.keystore')
+            storeFile file('C:/Users/gs163400/.android/debug.keystore')
             //storeFile file('C:/Users/giaco/Documents/AndroidStudio/NewWindAlarm/app/debug.keystore')
             storePassword 'android'
         }
@@ -16,8 +16,8 @@ android {
         applicationId "gwind.windalarm"
         minSdkVersion 21
         targetSdkVersion 24
-        versionCode 48
-        versionName "0.91 Build 48"
+        versionCode 49
+        versionName "0.91 Build 49"
         multiDexEnabled true
     }
     buildTypes {
