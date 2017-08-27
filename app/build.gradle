@@ -16,8 +16,8 @@ android {
         applicationId "gwind.windalarm"
         minSdkVersion 21
         targetSdkVersion 24
-        versionCode 49
-        versionName "0.91 Build 49"
+        versionCode 51
+        versionName "0.91 Build 51"
         multiDexEnabled true
     }
     buildTypes {
