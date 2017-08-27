@@ -5,8 +5,8 @@ android {
         config {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
-            storeFile file('C:/Users/gs163400/.android/debug.keystore')
-            //storeFile file('C:/Users/giaco/Documents/AndroidStudio/NewWindAlarm/app/debug.keystore')
+            //storeFile file('C:/Users/gs163400/.android/debug.keystore')
+            storeFile file('C:/Users/giaco/Documents/AndroidStudio/NewWindAlarm/app/debug.keystore')
             storePassword 'android'
         }
     }

@@ -39,11 +39,12 @@ import gwind.windalarm.WindAlarmProgram;
 
 public class SpotDetailsFragment extends Fragment implements /*SpotDetailsMeteodataFragment.OnClickListener,*/ ProgramListFragment.OnProgramListListener, ForecastFragment.OnMeteoForecastClickListener, MeteoItemListListener/*, OnMapReadyCallback*/ {
 
-    public static final int Pager_ForecastPage = 0;
-    public static final int Pager_MeteodataPage = 1;
+
+    public static final int Pager_MeteodataPage = 0;
+    public static final int Pager_ChartPage = 1;
     public static final int Pager_WebcamPage = 2;
-    public static final int Pager_ChartPage = 3;
-    public static final int Pager_ProgramListPage = 4;
+    public static final int Pager_ProgramListPage = 3;
+    public static final int Pager_ForecastPage = 4;
 
     private MeteoStationData meteoData;
     private long spotId;

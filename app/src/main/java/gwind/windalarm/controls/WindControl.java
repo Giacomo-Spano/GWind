@@ -7,8 +7,11 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
+
+import gwind.windalarm.R;
 
 
 /**
@@ -16,8 +19,6 @@ import android.widget.LinearLayout;
  */
 public class WindControl extends LinearLayout {
 
-    private String Id;
-    //private String SpotName;
 
     public WindControl(Context context) {
         super(context);
@@ -35,8 +36,6 @@ public class WindControl extends LinearLayout {
     private float cosval[] = {1F,0.938F,0.649F,0.346F,0,-0.346F,-0.649F,-0.938F,-1F,-0.938F,-0.649F,-0.346F,0,0.346F,0.649F,0.938F};
     private float lineStrokesize = 6F;
 
-    private int maxpower = 10;
-    private int power = 5;
     private float width = 200;
     private float height = 200;
     private Double mAngle = 0.0;
@@ -99,11 +98,6 @@ public class WindControl extends LinearLayout {
 
     private void drawArrow(Canvas canvas, Double degangle, Double power) {
 
-        /*final RectF rectF = new RectF();
-        final Paint paint = new Paint();
-        paint.setARGB(128, 255, 255, 255);
-        rectF.set(0,0, getMeasuredWidth(), getMeasuredHeight());
-        canvas.drawRect(drawRect, paint);*/
         Paint paint = new Paint();
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
 
@@ -112,7 +106,9 @@ public class WindControl extends LinearLayout {
         Paint p = new Paint();
         // smooths
         p.setAntiAlias(true);
-        p.setColor(Color.BLUE);
+        //p.setColor(Color.BLUE);
+        int color = ContextCompat.getColor(getContext(), R.color.colorPrimary); // new
+        p.setColor(color);
         p.setStyle(Paint.Style.STROKE);
         p.setStrokeWidth(lineStrokesize);
         // opacity
@@ -121,15 +117,6 @@ public class WindControl extends LinearLayout {
         if (degangle < 0F || degangle >= 360) return;
 
         int angle = (int)(degangle/22.5);
-
-        /*canvas.drawLine(0,0,width,0,p);
-        canvas.drawLine(0,height,width,height,p);
-        canvas.drawLine(0,0,0,height,p);
-        canvas.drawLine(width,0,width,height,p);
-
-        canvas.drawLine(width/2,0,width/2,height,p);
-        canvas.drawLine(0,height/2,width,height/2,p);
-*/
 
         float totalelength = 2 * getCircleRadius() + getLineLength(); // lunghezza totale cerchio + coda
         // calcolo centro cerchio freccia
@@ -187,27 +174,5 @@ public class WindControl extends LinearLayout {
             String textToDraw = mDirectionSymbol;//+" "+mAngle;
             textPaint.getTextBounds(textToDraw, 0, textToDraw.length(), bounds);
         }
-        //canvas.drawText(textToDraw, cxText, cyText + (bounds.bottom-bounds.top)/2, textPaint);
-
-
-/*        // calcolo centro scritta2
-        angleText = angle + 4; // ruota di 90 gradi = 22.5 * 4 /22.5
-        if (angleText >= sinval.length) {
-            angleText = angleText - sinval.length;
-        }
-        cxText = getCX() - (totalelength / 2 - getCircleRadius()) * cosval[angleText];
-        cyText = getCY() + (totalelength / 2 - getCircleRadius()) * sinval[angleText];
-        //canvas.drawCircle(cxText, cyText, getCircleRadius(), p);
-
-        textPaint.setColor(Color.BLACK);
-        textPaint.setTextAlign(Paint.Align.CENTER);
-        textPaint.setTextSize(35);
-        bounds = new Rect();
-        textToDraw = ""+mPower+"km/h";
-        textPaint.getTextBounds(textToDraw, 0, textToDraw.length(), bounds);
-        //canvas.drawText(textToDraw, cxText, cyText + (bounds.bottom-bounds.top)/2, textPaint);
-
-
-        //canvas.drawText("Some Text", cxText, cyText + 70/2, textPaint);*/
     }
 }

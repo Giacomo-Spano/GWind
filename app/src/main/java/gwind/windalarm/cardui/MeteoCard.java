@@ -1,6 +1,7 @@
 package gwind.windalarm.cardui;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,140 +18,147 @@ import gwind.windalarm.controls.WindControl;
  */
 public class MeteoCard extends LinearLayout {
 
-    private boolean mDetailsHidden = false;
-    private ImageView mDetailsImage;
-    private TextView mTitle;
-    private RelativeLayout mDetailsLinearLayout;
-    private Space mBottomSpace;
     private TextView mSourceUrl;
     private TextView mSpotName;
 
-    public MeteoCard(Context context, AttributeSet attrs) {
+    View[] coloredbar = new View[11];
+    private String[] windcolors = {"#9600FE","#0032FE","#0064FE","#0096FE","#00C8FE","#25C192","#00FA00","#FEE100","#FE9600","#DC4A1D","#AA001D","#FE0096"};
+    private int[] windvalues = {0,4,8,12,16,19,23,27,31,35,39};
+
+public MeteoCard(Context context, AttributeSet attrs) {
+
         super(context, attrs);
     }
 
     public void init() {
 
-        mDetailsLinearLayout = (RelativeLayout) findViewById(R.id.detailView);
-        mBottomSpace = (Space) findViewById(R.id.bottomspace);
-        //mTitle = (TextView) findViewById(R.id.spotNameTextView);
         mSpotName = (TextView) findViewById(R.id.spotNameTextView);
-        /*mSpotName.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openclose();
-            }
-        });*/
-
-        mDetailsImage = (ImageView) findViewById(R.id.opencloseImageView);
-        mDetailsImage.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openclose();
-            }
-        });
 
         mSourceUrl = (TextView) findViewById(R.id.sourceTextView);
 
-    }
+        coloredbar[0] = (View) findViewById(R.id.colored_bar0);
+        coloredbar[1] = (View) findViewById(R.id.colored_bar1);
+        coloredbar[2] = (View) findViewById(R.id.colored_bar2);
+        coloredbar[3] = (View) findViewById(R.id.colored_bar3);
+        coloredbar[4] = (View) findViewById(R.id.colored_bar4);
+        coloredbar[5] = (View) findViewById(R.id.colored_bar5);
+        coloredbar[6] = (View) findViewById(R.id.colored_bar6);
+        coloredbar[7] = (View) findViewById(R.id.colored_bar7);
+        coloredbar[8] = (View) findViewById(R.id.colored_bar8);
+        coloredbar[9] = (View) findViewById(R.id.colored_bar9);
+        coloredbar[10] = (View) findViewById(R.id.colored_bar10);
 
-    private void openclose() {
-        if (mDetailsHidden) {
-            mDetailsImage.setImageResource(R.drawable.close);
-            mDetailsHidden = false;
-            mDetailsLinearLayout.setVisibility(View.VISIBLE);
-            mBottomSpace.setVisibility(View.VISIBLE);
-
-        } else if (!mDetailsHidden) {
-            mDetailsImage.setImageResource(R.drawable.open);
-            mDetailsHidden = true;
-            mDetailsLinearLayout.setVisibility(View.GONE);
-            mBottomSpace.setVisibility(View.GONE);
+        for (int i = 0; i < coloredbar.length; i++) {
+            coloredbar[i].setBackgroundColor(Color.parseColor(windcolors[i]));
         }
     }
 
     public void setTitle(String name) {
-
-        if (name == null) return;
-        mSpotName.setText(name);
+        if (name == null)
+            return;
+        if (mSpotName != null)
+            mSpotName.setText(name);
     }
 
     public void setSourceUrl(String url) {
         if (url == null) return;
-        mSourceUrl.setText(url);
-    }
-
-    public void setSpeed(String speed) {
-
-        if (speed == null) return;
-        TextView tv = (TextView) findViewById(R.id.speedTextView);
-        tv.setText(speed);
+        if (mSourceUrl != null)
+            mSourceUrl.setText(url);
     }
 
     public void setSpeed(Double speed) {
 
         if (speed == null) return;
-        WindControl wc = (WindControl) findViewById(R.id.windcontrol);
-        wc.setPower(speed);
 
-        TextView tv = (TextView) findViewById(R.id.speedTitleTextView);
-        tv.setText(speed.toString());
+        TextView tv = (TextView) findViewById(R.id.speedTextView);
+        if (tv != null)
+            tv.setText(""+speed);
+
+        WindControl wc = (WindControl) findViewById(R.id.windcontrol);
+        if (wc!=null)
+            wc.setPower(speed);
+
+        tv = (TextView) findViewById(R.id.speedTextView);
+        if (tv != null)
+            tv.setText(speed.toString());
+
+        for (int i = 0; i < coloredbar.length; i++) {
+            if (coloredbar[i] == null)
+                continue;
+            if (speed >= windvalues[i])
+                coloredbar[i].setBackgroundColor(Color.parseColor(windcolors[i]));
+            else
+                coloredbar[i].setBackgroundColor(Color.WHITE);
+        }
     }
+
+
     public void setDirection(Double angle, String directionSymbol) {
 
         if (angle == null) return;
         if (directionSymbol == null) return;
         WindControl wc = (WindControl) findViewById(R.id.windcontrol);
-        wc.setDirection(angle, directionSymbol);
+        if (wc != null)
+            wc.setDirection(angle, directionSymbol);
 
-        TextView tv = (TextView) findViewById(R.id.directiontextView);
-        tv.setText(directionSymbol);
+        TextView tv = (TextView) findViewById(R.id.directionTextView);
+        if (tv != null)
+            tv.setText(directionSymbol+" "); // lo spazio serve perchè con direction W è brutto
     }
     public void setAvSpeed(String avspeed) {
 
         if (avspeed == null) return;
         TextView tv = (TextView) findViewById(R.id.avspeedTextView);
-        tv.setText(avspeed);
+        if (tv != null)
+            tv.setText("(" + avspeed + ")");
     }
     public void setTrend(Double trend) {
 
-        if (trend == null) return;
+       /*if (trend == null) return;
         ImageView iv = (ImageView) findViewById(R.id.trendImageView);
+        if (iv == null)
+            return;
         if (trend >= 1)
             iv.setImageResource(R.drawable.up);
         else if (trend <= -1)
             iv.setImageResource(R.drawable.down);
         else
             iv.setImageResource(R.drawable.flat);
+            */
     }
     public void setTemperature(String temperature) {
 
         if (temperature == null) return;
         TextView tv = (TextView) findViewById(R.id.temperatureTextView);
-        tv.setText(temperature);
+        if (tv != null)
+            tv.setText(temperature);
     }
     public void setPressure(String pressure) {
 
         if (pressure == null) return;
         TextView tv = (TextView) findViewById(R.id.pressureTextView);
-        tv.setText(pressure);
+        if (tv != null)
+            tv.setText(pressure);
     }
     public void setHumidity(String humidity) {
 
         if (humidity == null) return;
         TextView tv = (TextView) findViewById(R.id.humidityTextView);
-        tv.setText(humidity);
+        if (tv != null)
+            tv.setText(humidity);
     }
     public void setRainRate(String rainrate) {
 
-        if (rainrate == null) return;
+        /*if (rainrate == null) return;
         TextView tv = (TextView) findViewById(R.id.rainrateTextView);
-        tv.setText(rainrate);
+        if (tv != null)
+            tv.setText(rainrate);*/
     }
     public void setDate(String date) {
 
         if (date == null) return;
         TextView tv = (TextView) findViewById(R.id.dateTextView);
-        tv.setText(date);
+        if (tv != null)
+            tv.setText(date);
     }
 }

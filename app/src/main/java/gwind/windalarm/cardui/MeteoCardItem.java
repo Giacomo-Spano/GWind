@@ -9,8 +9,6 @@ import java.text.SimpleDateFormat;
 import gwind.windalarm.data.MeteoStationData;
 import gwind.windalarm.R;
 
-
-
 public class MeteoCardItem {
 
     private long spotID;
@@ -34,7 +32,6 @@ public class MeteoCardItem {
         card.init();
     }
 
-
     public void setTitle(String title) {
         card.setTitle(title);
     }
@@ -55,11 +52,6 @@ public class MeteoCardItem {
 
         meteoStationData = new MeteoStationData(data);
 
-        if (data.speed != null) {
-            card.setSpeed("" + data.speed);
-        } else {
-            card.setSpeed("--");
-        }
         card.setSpeed(data.speed);
 
         if (data.directionangle != null) {
