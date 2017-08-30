@@ -16,6 +16,8 @@ import java.util.List;
  */
 public class MeteoStationData implements Serializable {
 
+    public Date maxTodaySpeedDatetime;
+    public Double maxTodaySpeed;
     public long id;
     public Double speed = null;
     public Double averagespeed = null;
@@ -35,7 +37,6 @@ public class MeteoStationData implements Serializable {
     public Double lat = null;
     public Double lon = null;
     public boolean offline = false;
-
 
     public MeteoStationData() {
     }
@@ -125,12 +126,23 @@ public class MeteoStationData implements Serializable {
             lat = jObject.getDouble("lat");
         if (!jObject.isNull("lon"))
             lon = jObject.getDouble("lon");
+        if (!jObject.isNull("maxtodayspeed") && !jObject.isNull("maxtodayspeeddatetime")) {
+            maxTodaySpeed = jObject.getDouble("maxtodayspeed");
+            String strDate;
+            strDate = jObject.getString("datetime");
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy-HH:mm:ss");
+            try {
+                maxTodaySpeedDatetime = df.parse(strDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     public String toJson() {
 
         JSONObject obj = new JSONObject();
-
         try {
             obj.put("speed", id);
             obj.put("speed", speed);

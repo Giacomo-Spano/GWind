@@ -1,19 +1,28 @@
 package gwind.windalarm.fragment;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.LightingColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.OverScroller;
 import android.widget.TextView;
@@ -196,6 +205,55 @@ public class SpotDetailsFragment extends Fragment implements /*SpotDetailsMeteod
 
 
         TabLayout tabLayout = (TabLayout) v.findViewById(R.id.tablayout);
+
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            /*@Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                //viewPager.setCurrentItem(tab.getPosition());
+                //Log.i("TAG", "onTabSelected: " + tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                //Log.i("TAG", "onTabUnselected: " + tab.getPosition());
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                //Log.i("TAG", "onTabReselected: " + tab.getPosition());
+            }*/
+
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab == null) return;
+                //super.onTabSelected(tab);
+                //int tabIconColor = ContextCompat.getColor(getContext(), Color.parseColor("#ff0000"));
+                Drawable icon = tab.getIcon();
+                if (icon != null)
+                    icon.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                if (tab == null) return;
+                //super.onTabUnselected(tab);
+                //int tabIconColor = ContextCompat.getColor(getContext(), Color.parseColor("#00ff00"));
+                Drawable icon = tab.getIcon();
+                if (icon != null)
+                    icon.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorTextPrimaryDark), PorterDuff.Mode.SRC_IN);
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                //super.onTabReselected(tab);
+            }
+
+
+        });
+
+
+
         mPager = (ViewPager) v.findViewById(R.id.pager);
         mPagerAdapter = new SpotDetailPagerAdapter(((MainActivity) getActivity()).getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
@@ -240,12 +298,34 @@ public class SpotDetailsFragment extends Fragment implements /*SpotDetailsMeteod
             }
         });
 
+        /*ImageView image = new ImageView(this.getContext());
+        image.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.logo, null));
+        image.setColorFilter(new LightingColorFilter(Color.parseColor("#ff0000"), Color.parseColor("#ff0000")));
+        image,getI*/
+
         tabLayout.setupWithViewPager(mPager);
-        tabLayout.getTabAt(Pager_ForecastPage).setIcon(R.drawable.logo);
-        tabLayout.getTabAt(Pager_MeteodataPage).setIcon(R.drawable.logo);
-        tabLayout.getTabAt(Pager_WebcamPage).setIcon(R.drawable.webcamicon);
-        tabLayout.getTabAt(Pager_ChartPage).setIcon(R.drawable.graphicon);
-        tabLayout.getTabAt(Pager_ProgramListPage).setIcon(R.drawable.graphicon);
+
+
+
+        Drawable icon = ResourcesCompat.getDrawable(getResources(), R.drawable.logo, null);;
+        icon.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(Pager_MeteodataPage).setIcon(icon);
+
+        icon = ResourcesCompat.getDrawable(getResources(), R.drawable.graphicon, null);
+        icon.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorTextPrimaryDark), PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(Pager_ChartPage).setIcon(icon);
+
+        icon = ResourcesCompat.getDrawable(getResources(), R.drawable.webcamicon, null);;
+        icon.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorTextPrimaryDark), PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(Pager_WebcamPage).setIcon(icon);
+
+        icon = ResourcesCompat.getDrawable(getResources(), R.drawable.bell, null);;
+        icon.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorTextPrimaryDark), PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(Pager_ProgramListPage).setIcon(icon);
+
+        icon = ResourcesCompat.getDrawable(getResources(), R.drawable.m02n, null);;
+        icon.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorTextPrimaryDark), PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(Pager_ForecastPage).setIcon(icon);
 
         // Updating the action bar title
         if (meteoData != null) {
@@ -408,9 +488,9 @@ public class SpotDetailsFragment extends Fragment implements /*SpotDetailsMeteod
         @Override
         public CharSequence getPageTitle(int position) {
 
-            String title = "titolo " + position;
+            String title = "";
 
-            switch (position) {
+            /*switch (position) {
                 case Pager_ForecastPage:
                     return "Previsioni";
                 case Pager_MeteodataPage:
@@ -421,7 +501,7 @@ public class SpotDetailsFragment extends Fragment implements /*SpotDetailsMeteod
                     return "Grafico";
                 case Pager_ProgramListPage:
                     return "Sveglie";
-            }
+            }*/
             return title;
         }
 

@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import gwind.windalarm.fragment.MeteoItem;
@@ -53,23 +55,27 @@ public interface MeteoItemListListener {
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 if (type == 0) {
                     // Inflate the layout with image
-                    v = inflater.inflate(R.layout.meteoitemrowlayout, parent, false);
+                    v = inflater.inflate(R.layout.meteoitemheaderrowlayout, parent, false);
                     TextView descriptioTextView = (TextView) v.findViewById(R.id.descriptionTextView);
                     descriptioTextView.setText(item.description);
                 }
                 else {
-                    v = inflater.inflate(R.layout.meteoitemheaderrowlayout, parent, false);
+                    v = inflater.inflate(R.layout.meteoitemrowlayout, parent, false);
                     TextView descriptioTextView = (TextView) v.findViewById(R.id.descriptionTextView);
                     descriptioTextView.setText(item.description);
                     TextView valueTextView = (TextView) v.findViewById(R.id.valueTextView);
                     valueTextView.setText(item.value);
+                    TextView commentTextView = (TextView) v.findViewById(R.id.commentTextView);
+                    //DateFormat df = new SimpleDateFormat("ddMMyyyyHHmm");
+                    if (item.date != null) {
+                        DateFormat df = new SimpleDateFormat("HH:mm");
+                        commentTextView.setText(df.format(item.date));
+                    } else {
+                        commentTextView.setText("");
+                    }
                 }
             }
             //
-
-
-
-
             return v;
         }
     }

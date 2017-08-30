@@ -1,6 +1,8 @@
 package gwind.windalarm.fragment;
 
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
@@ -9,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,16 +28,6 @@ public class MeteoItemListFragment extends ListFragment implements /*MeteoItemLi
     private long spotID;
     private MeteoStationData meteoData;
 
-    private InfoCard speedInfoCard;
-    private InfoCard avspeedInfoCard;
-    private InfoCard temperatureInfoCard;
-    private InfoCard pressureInfoCard;
-    private InfoCard humidityInfoCard;
-    private InfoCard rainrateInfoCard;
-    private InfoCard lastupdateInfoCard;
-    private InfoCard sourceInfoCard;
-    private InfoCard windIdInfoCard;
-
     /*@Override
     public void onClickCheckBox(int position, boolean selected) {
 
@@ -44,6 +37,15 @@ public class MeteoItemListFragment extends ListFragment implements /*MeteoItemLi
     public void onClick(long spotId) {
 
     }*/
+
+    /*@Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ListView listView = getListView();
+        listView.setDivider(new ColorDrawable(Color.YELLOW));
+        listView.setDividerHeight(3); // 3 pixels height
+    }*/
+
     public boolean adaptercreated = false;
 
     public interface OnMeteoItemListListener {
@@ -70,7 +72,6 @@ public class MeteoItemListFragment extends ListFragment implements /*MeteoItemLi
         getListView().setDividerHeight(0);
         createAdapter();
         refreshData();
-
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -129,7 +130,7 @@ public class MeteoItemListFragment extends ListFragment implements /*MeteoItemLi
         // wind av speed
         mi = new MeteoItem();
         mi.type = 1;
-        mi.description = "Velocità vento";
+        mi.description = "Velocità media";
         mi.value = "" + meteoData.speed + " " + unit;
         list.add(mi);
         // wind direction
@@ -141,11 +142,16 @@ public class MeteoItemListFragment extends ListFragment implements /*MeteoItemLi
         // wind max
         mi = new MeteoItem();
         mi.type = 1;
-        mi.description = "Raffica massima odierna";
+        mi.description = "Raffica max odierna";
+        if (meteoData.maxTodaySpeed != null && meteoData.maxTodaySpeedDatetime != null) {
+            mi.value = "" + meteoData.maxTodaySpeed + " " + unit;;
+            mi.date = meteoData.maxTodaySpeedDatetime;
+        }
+        list.add(mi);
         // wind max
         mi = new MeteoItem();
         mi.type = 1;
-        mi.description = "Raffica massima mese";
+        mi.description = "Raffica max mese";
         //mi.date
         mi.value = "";
         list.add(mi);
@@ -165,19 +171,19 @@ public class MeteoItemListFragment extends ListFragment implements /*MeteoItemLi
         // temperatura massima
         mi = new MeteoItem();
         mi.type = 1;
-        mi.description = "Temperatura massima";
+        mi.description = "Temperatura max";
         mi.value = "" + 0 + " " + unit;
         list.add(mi);
         // temperatura minima
         mi = new MeteoItem();
         mi.type = 1;
-        mi.description = "Temperatura minima";
+        mi.description = "Temperatura min.";
         mi.value = "" + 0 + " " + unit;
         list.add(mi);
         // Humidity and pressure
         mi = new MeteoItem();
         mi.type = 0;
-        mi.description = "Temperatura";
+        mi.description = "Umidità e pressione";
         list.add(mi);
         // Humidity
         unit = "%";

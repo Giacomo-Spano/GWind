@@ -10,6 +10,6 @@ public class MeteoItem {
     public int type;
     public String description;
     public String value;
-    public Date date;
+    public Date date = null;
 }
 

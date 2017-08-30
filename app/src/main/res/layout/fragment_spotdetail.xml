@@ -130,7 +130,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
 
-        >
+        android:background="@color/colorPrimary">
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tablayout"
@@ -143,7 +143,6 @@
                 android:layout_height="wrap_content"
                 android:icon="@drawable/logo"
                 android:text="prova1" />
-
 
 
         </android.support.design.widget.TabLayout>

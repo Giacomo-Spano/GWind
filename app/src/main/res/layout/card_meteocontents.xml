@@ -16,7 +16,7 @@
             android:id="@+id/spotNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="7"
+            android:layout_weight="2"
             android:background="@android:color/transparent"
             android:text="Valmadrera"
             android:textAppearance="?android:attr/textAppearanceLarge"
@@ -26,7 +26,7 @@
             android:id="@+id/directionTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="7"
+            android:layout_weight="0.25"
             android:background="@android:color/transparent"
             android:gravity="right"
             android:text="N-NE"
@@ -39,9 +39,9 @@
             layout="@layout/windcontrol_main"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="0.25"
             android:background="@android:color/transparent"
-            android:gravity="center_vertical|center" />
+            android:gravity="center_vertical" />
 
     </LinearLayout>
 
@@ -173,13 +173,13 @@
             <TextView
                 android:id="@+id/avspeedTextView"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:background="@android:color/transparent"
-                android:gravity="right"
-                android:text="(19.2)"
+                android:text="19.2"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@color/colorPrimary"
-                android:textIsSelectable="true" />
+                android:textIsSelectable="true"
+                android:textSize="@dimen/averageSpeedTextSize" />
 
         </LinearLayout>
 

@@ -22,4 +22,6 @@
 
     <dimen name="barwidth">32dp</dimen>
     <dimen name="barheight">30dp</dimen>
+
+    <dimen name="averageSpeedTextSize">10dp</dimen>
 </resources>
