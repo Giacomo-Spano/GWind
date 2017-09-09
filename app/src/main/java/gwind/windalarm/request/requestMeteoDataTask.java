@@ -45,15 +45,16 @@ public class requestMeteoDataTask extends
         AsyncTask<Object, Long, requestMeteoDataTask.Result> {
 
     public static final int REQUEST_LASTMETEODATA = 1;
-    //public static final int REQUEST_HISTORYMETEODATA = 2;
     public static final int REQUEST_SPOTLIST = 3;
     public static final int REQUEST_SPOTLIST_FULLINFO = 4;
     public static final int REQUEST_LOGMETEODATA = 5;
-    public static final int REQUEST_ADDFAVORITES = 6;
+    public static final int REQUEST_ADDFAVORITE = 6;
     public static final int REQUEST_REMOVEFAVORITE = 7;
     public static final int REQUEST_FAVORITESLASTMETEODATA = 8;
     public static final int REQUEST_FORECAST = 9;
     public static final int REQUEST_FORECASTLOCATIONS = 10;
+    public static final int REQUEST_FAVORITESSORDER = 11;
+    public static final int REQUEST_FAVORITES = 11;
 
     public static final String FORECAST_WINDFINDER = "Windfinder";
     public static final String FORECAST_WINDGURU = "Windguru";
@@ -91,12 +92,12 @@ public class requestMeteoDataTask extends
         requestMeteoDataTask.Result result = new requestMeteoDataTask.Result();
         URL url;
 
-        if (requestType == REQUEST_ADDFAVORITES || requestType == REQUEST_REMOVEFAVORITE) {
+        if (requestType == REQUEST_ADDFAVORITE || requestType == REQUEST_REMOVEFAVORITE) {
 
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost;
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
-            String regId = AlarmPreferences.getRegId(activity.getApplicationContext());
+            //String regId = AlarmPreferences.getRegId(activity.getApplicationContext());
 
             long spotId = (long) params[0];
             String userid = (String) params[1];
@@ -123,6 +124,40 @@ public class requestMeteoDataTask extends
             }
 
             result.spotId = spotId;
+            return result;
+
+        } else if (requestType == REQUEST_FAVORITESSORDER) {
+
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost;
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
+            //String regId = AlarmPreferences.getRegId(activity.getApplicationContext());
+
+            String userid = (String) params[1];
+            String spotList = (String) params[2];
+
+            String serverUrl = AlarmPreferences.getServerUrl(activity);
+            httppost = new HttpPost(serverUrl + "/meteo");
+            nameValuePairs.add(new BasicNameValuePair("spotlist", "" + spotList));
+            nameValuePairs.add(new BasicNameValuePair("userid", userid));
+            nameValuePairs.add(new BasicNameValuePair("reorder", "true"));
+            try {
+                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+                HttpResponse response = httpclient.execute(httppost);
+
+            } catch (ClientProtocolException e) {
+                error = true;
+                e.printStackTrace();
+                errorMessage = e.toString();
+                return null;
+            } catch (IOException e) {
+                error = true;
+                e.printStackTrace();
+                errorMessage = e.toString();
+                return null;
+            }
+
+            //result.spotId = spotId;
             return result;
 
         } else {
@@ -173,7 +208,7 @@ public class requestMeteoDataTask extends
                     String userid = (String) params[0];
                     String source = (String) params[1];
                     String filter = (String) params[2];
-                    path += "forecastlocations="+source;
+                    path += "forecastlocations=" + source;
                     path += "&filter=" + filter;
                     path += "&userid=" + userid;
 
@@ -183,6 +218,11 @@ public class requestMeteoDataTask extends
                     path += "favoriteslastdata=true";
                     path += "&userid=" + userid;
                     path += "&lastwindid=" + windid;
+
+                } else if (requestType == REQUEST_FAVORITES) {
+                    String userid = (String) params[0];
+                    path += "favorites=true";
+                    path += "&userid=" + userid;
 
                 } else if (requestType == REQUEST_SPOTLIST_FULLINFO) {
                     String userid = (String) params[0];
@@ -248,7 +288,7 @@ public class requestMeteoDataTask extends
                             }
                         }
                         // TODO add favorites list
-                    } else if (requestType == REQUEST_FAVORITESLASTMETEODATA || requestType == REQUEST_LASTMETEODATA/*|| requestType == REQUEST_HISTORYMETEODATA*/) {
+                    } else if (requestType == REQUEST_FAVORITESLASTMETEODATA || requestType == REQUEST_LASTMETEODATA) {
                         List<MeteoStationData> list = new ArrayList<MeteoStationData>();
                         JSONObject jObject = new JSONObject(json);
                         JSONArray jArray = jObject.getJSONArray("meteodata");
@@ -258,6 +298,15 @@ public class requestMeteoDataTask extends
                             list.add(md);
                         }
                         result.meteoList = list;
+                    } else if (requestType == REQUEST_FAVORITES) {
+                        List<Long> list = new ArrayList<>();
+                        JSONObject jObject = new JSONObject(json);
+                        JSONArray jArray = jObject.getJSONArray("favorites");
+                        for (int i = 0; i < jArray.length(); i++) {
+                            Long id = jArray.getLong(i);
+                            list.add(id);
+                        }
+                        result.favorites = list;
                     } else if (requestType == REQUEST_FORECAST) {
                         Forecast forecast = new Forecast(json);
                         result.forecast = forecast;
@@ -364,6 +413,8 @@ public class requestMeteoDataTask extends
         }
     }
 
+
+
     protected void onPreExecute() {
 
         //progressBar.setProgress(10);
@@ -411,10 +462,10 @@ public class requestMeteoDataTask extends
                     data.add(new MeteoStationData((MeteoStationData) obj));
                 }
             }
-            delegate.processFinishHistory(result.spotId,data, error, errorMessage);
+            delegate.processFinishHistory(result.spotId, data, error, errorMessage);
         } else if (requestType == REQUEST_LASTMETEODATA || requestType == REQUEST_FAVORITESLASTMETEODATA) {
             delegate.processFinish(result.meteoList, error, errorMessage);
-        } else if (requestType == REQUEST_ADDFAVORITES) {
+        } else if (requestType == REQUEST_ADDFAVORITE) {
             delegate.processFinishAddFavorite(result.spotId, error, errorMessage);
         } else if (requestType == REQUEST_REMOVEFAVORITE) {
             delegate.processFinishRemoveFavorite(result.spotId, error, errorMessage);

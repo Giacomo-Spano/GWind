@@ -59,7 +59,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="regID"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:visibility="invisible" />
 
         <com.google.android.gms.common.SignInButton
             android:id="@+id/sign_in_button"

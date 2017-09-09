@@ -2,8 +2,6 @@ package gwind.windalarm.fragment;
 
 
 import android.app.Activity;
-//import android.app.Fragment;
-import android.graphics.Bitmap;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.Build;
@@ -151,7 +149,7 @@ public class ProfileFragment extends Fragment {
         if (mProfile != null) {
             mUserNameTextView.setText(mProfile.userName);
             mUserNameTextView.setVisibility(View.VISIBLE);
-            mUserIdTextView.setText(mProfile.personId);
+            //mUserIdTextView.setText(mProfile.personId);
             mUserIdTextView.setVisibility(View.VISIBLE);
             mEMailTextView.setText(mProfile.email);
             mEMailTextView.setVisibility(View.VISIBLE);
@@ -162,7 +160,7 @@ public class ProfileFragment extends Fragment {
             //mUserImageView.setImageBitmap(bitmap/*mProfile.userImage*/);
             Picasso.with(getContext()).load(mProfile.photoUrl).into(mUserImageView);
 
-            mRegIdTextView.setVisibility(View.VISIBLE);
+            //mRegIdTextView.setVisibility(View.VISIBLE);
             mSignonButton.setVisibility(View.GONE);
             mSignoutButton.setVisibility(View.VISIBLE);
             mDisconnectButton.setVisibility(View.VISIBLE);

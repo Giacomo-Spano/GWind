@@ -17,20 +17,12 @@ import gwind.windalarm.SearchSpotListener;
 import gwind.windalarm.Spot;
 import gwind.windalarm.SpotList;
 
-/**
- * Created by Giacomo Spanò on 09/09/2016.
- */
 public class SearchSpotFragment extends Fragment implements SearchSpotListener {
 
-    // List view
     private ListView lv;
-    // Listview Adapter
     SearchSpotListener.SearchSpotArrayAdapter adapter;
-    //SearchSpotListener mListener;
     SpotList mSpotList;
-    // Search EditText
     EditText inputSearch;
-
     OnSearchSpotClickListener mCallback;
 
     // Container Activity must implement this interface
@@ -78,16 +70,17 @@ public class SearchSpotFragment extends Fragment implements SearchSpotListener {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
     }
 
     public void setSpotList(SpotList spotList) {
 
         mSpotList = spotList;
 
-        adapter = new SearchSpotListener.SearchSpotArrayAdapter(getActivity(), mSpotList.spotList, this);
+        if (getActivity() != null) {
+            adapter = new SearchSpotListener.SearchSpotArrayAdapter(getActivity(), mSpotList.spotList, this);
 
-        lv.setAdapter(adapter);
+            lv.setAdapter(adapter);
+        }
     }
 
     @Override

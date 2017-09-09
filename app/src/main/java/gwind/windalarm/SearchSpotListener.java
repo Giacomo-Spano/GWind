@@ -9,6 +9,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public interface SearchSpotListener {
 
         public SearchSpotArrayAdapter(Context context, List<Spot> list, SearchSpotListener listener) {
 
-            super(context, R.layout.searchspotlistrowlayout/*, list*/);
+            super(context, R.layout.searchspotlistrowlayout);
             mListener = listener;
             this.context = context;
             this.list = list;
@@ -55,18 +56,17 @@ public interface SearchSpotListener {
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             View rowView = inflater.inflate(R.layout.searchspotlistrowlayout, parent, false);
-            //rowView.setTag(getItem(position).id);
             rowView.setTag(filteredList.get(position).id);
 
             TextView textView = (TextView) rowView.findViewById(R.id.spotNameTextView);
-            //textView.setText(getItem(position).spotName);
             textView.setText(filteredList.get(position).spotName);
 
+
             CheckBox checkBox = (CheckBox) rowView.findViewById((R.id.favoritecheckBox));
-            checkBox.setTag(position);
+            //checkBox.setTag(position);
             checkBox.setChecked(filteredList.get(position).favorites);
-            checkBox.setTag(filteredList.get(position).id);
-            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            //checkBox.setTag(filteredList.get(position).id);
+            /*checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                     long spotId = (long) buttonView.getTag();
@@ -74,7 +74,7 @@ public interface SearchSpotListener {
                     if (s != null)
                         mListener.onClickCheckBox(s, isChecked);
                 }
-            });
+            });*/
 
             rowView.setOnClickListener(new View.OnClickListener() {
 

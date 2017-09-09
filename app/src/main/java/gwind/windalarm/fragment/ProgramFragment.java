@@ -41,10 +41,6 @@ public class ProgramFragment extends Fragment implements OnItemSelectedListener 
     WindAlarmProgram program = new WindAlarmProgram();
     private String[] arraySpinner;
 
-    /**
-     * This handles the message send from DatePickerDialogFragment on setting
-     * date
-     */
     @SuppressLint("HandlerLeak")
     Handler mstartDateHandler = new Handler() {
         @Override

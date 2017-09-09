@@ -77,7 +77,7 @@ Kernel version: <xliff:g id="kernel_version">%s</xliff:g>\n
 Build number: <xliff:g id="build_number">%s</xliff:g>\n
     </string>
 
-    <string name="options_diagfile">diag file</string>
+    <string name="options_spotorder">Gestione preferiti</string>
     <string name="options_searchspot">Cerca</string>
     <string name="options_searchmeteoforecast">Previsioni meteo</string>
 
@@ -90,5 +90,19 @@ Build number: <xliff:g id="build_number">%s</xliff:g>\n
 
     <string name="notification_changedirection">notification_changedirection</string>
     <string name="notification_changedirection_summ">Abilita notifiche per cambio direzione del</string>
+
+
+    <array name="dummy_items">
+        <item>One</item>
+        <item>Two</item>
+        <item>Three</item>
+        <item>Four</item>
+        <item>Five</item>
+        <item>Six</item>
+        <item>Seven</item>
+        <item>Eight</item>
+        <item>Nine</item>
+        <item>Ten</item>
+    </array>
 
 </resources>

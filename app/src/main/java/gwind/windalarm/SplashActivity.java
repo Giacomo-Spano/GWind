@@ -39,6 +39,8 @@ import java.io.InputStreamReader;
 
 import gwind.windalarm.fragment.LogoutFragment;
 
+//import gwind.windalarm.fragment.LogoutFragment;
+
 /**
  * Created by Giacomo Spanò on 29/07/2016.
  */

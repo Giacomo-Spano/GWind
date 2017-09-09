@@ -20,9 +20,9 @@ import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.Time;
 import android.transition.Scene;
@@ -48,15 +48,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.gson.Gson;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -66,43 +64,63 @@ import gwind.windalarm.data.Location;
 import gwind.windalarm.data.MeteoStationData;
 import gwind.windalarm.data.Forecast;
 import gwind.windalarm.fragment.ForecastFragment;
-import gwind.windalarm.fragment.MeteoItemListFragment;
-import gwind.windalarm.fragment.PanelFragment;
+//import gwind.windalarm.fragment.PanelFragment;
+//import gwind.windalarm.fragment.PanelFragment;
 import gwind.windalarm.fragment.ProfileFragment;
 import gwind.windalarm.fragment.ProgramFragment;
 import gwind.windalarm.fragment.ProgramListFragment;
+//import gwind.windalarm.fragment.RecyclerMeteoCardListFragment;
+//import gwind.windalarm.fragment.RecyclerSpotListOrderFragment;
+//import gwind.windalarm.fragment.RecyclerMeteoCardListFragment;
+//import gwind.windalarm.fragment.RecyclerMeteoCardListFragment;
+//import gwind.windalarm.fragment.RecyclerMeteoCardListFragment;
+import gwind.windalarm.fragment.RecyclerMeteoCardListFragment;
+import gwind.windalarm.fragment.RecyclerSpotListOrderFragment;
 import gwind.windalarm.fragment.SearchMeteoForecastFragment;
 import gwind.windalarm.fragment.SearchSpotFragment;
 import gwind.windalarm.fragment.SpotDetailsFragment;
 import gwind.windalarm.fragment.SpotMeteoListFragment;
 import gwind.windalarm.request.requestMeteoDataTask;
+//import gwind.windalarm.request.requestMeteoDataTask;
+//import gwind.windalarm.request.requestMeteoDataTask;
 
 import static gwind.windalarm.CommonUtilities.DISPLAY_MESSAGE_ACTION;
+import static gwind.windalarm.fragment.SearchSpotFragment.*;
 import static gwind.windalarm.request.requestMeteoDataTask.FORECAST_OPENWEATHERMAP;
 
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         ProfileFragment.OnSignInClickListener,
         ProgramListFragment.OnProgramListListener,
-        SearchSpotFragment.OnSearchSpotClickListener,
-        DownloadImageTask.AsyncDownloadImageResponse//,//,
+        OnSearchSpotClickListener,
+        DownloadImageTask.AsyncDownloadImageResponse, SpotListFragment.OnSpotListListener, RecyclerSpotListOrderFragment.OnListener//,//,
         /*OnMapReadyCallback*/ {
 
     private static final int FORECAST_REQUESTID_METEOSTATION = 99;
     private static final int FORECAST_REQUESTID_LOCATION = 88;
 
+    private final static String TAG_FRAGMENT_SEARCHSPOT = "TAG_FRAGMENT_SEARCHSPOT";
+    private final static String TAG_FRAGMENT_ORDERSPOT = "TAG_FRAGMENT_ORDERSPOT";
+
+    private Fragment currentFragment = null;
     /*private GoogleMap mMap;
     public SupportMapFragment mapFragment;*/
 
     CountDownTimer countDownTimer;
     ProgressBar progressBar;
     private long spotId;
+    private RecyclerMeteoCardListFragment recyclerMeteoCardListFragment;
+    private SpotListFragment spotListFragment;
+
 
     public MainActivity() {
         searchMeteoForecastListener = new SearchMeteoForecastListener(this);
-        panelListener = new PanelListener();
+        searchSpotListener = new SearchSpotListener(this);
+        recyclerMeteoCardListListener = new RecyclerMeteoCardListListener();
         spotDetailsListener = new SpotDetailsListener();
         forecastListener = new ForecastListener();
+        recyclerSpotOrderListListener = new RecyclerSpotOrderListListener();
+        ///recyclerMeteocardListener = new RecyclerMeteoCardListListener();
     }
 
     @Override
@@ -110,50 +128,24 @@ public class MainActivity extends AppCompatActivity implements
         super.onDestroy();
     }
 
-    private void startSendLogActivity() {
-        Intent resultIntent = new Intent(this, SendLogActivity.class);
-        //startActivityForResult(resultIntent, 1);
-        startActivity(resultIntent);
-        finish();
-    }
-
-    public void SendLoagcatMail() {
-
-
-        DateFormat df = new SimpleDateFormat("ddMMyyyyHHmm");
-        String date = df.format(Calendar.getInstance().getTime());
-
-        // save logcat in file
-        File outputFile = new File(Environment.getExternalStorageDirectory(),
-                "logcat" /*-+ date*/ + ".txt");
-        try {
-            Runtime.getRuntime().exec(
-                    "logcat -f " + outputFile.getAbsolutePath());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        //send file using email
-        /*Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        // Set type to "email"
-        emailIntent.setType("vnd.android.cursor.dir/email");
-        String to[] = {"giaggi70@gmail.com"};
-        emailIntent .putExtra(Intent.EXTRA_EMAIL, to);
-        // the attachment
-        emailIntent .putExtra(Intent.EXTRA_STREAM, outputFile.getAbsolutePath());
-        // the mail subject
-
-
-
-        String str = outputFile.getAbsolutePath();
-
-        emailIntent .putExtra(Intent.EXTRA_SUBJECT, "Subject " + str);
-        startActivity(Intent.createChooser(emailIntent , "Send email..."));*/
-    }
-
     public SearchMeteoForecastListener getSearchMeteoForecastListener() {
         return searchMeteoForecastListener;
+    }
+
+    @Override
+    public void onSpotListChangeSelection(List<Long> list) {
+    }
+
+    @Override
+    public void onAddSpot(long spotId) {
+    }
+
+    @Override
+    public void onRemoveSpot(long spotId) {
+    }
+
+    @Override
+    public void onEnableAddFavoriteSpotButtonRequest() {
     }
 
     private class SearchMeteoForecastListener implements SearchMeteoForecastFragment.OnSearchSpotClickListener {
@@ -175,6 +167,19 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    private class SearchSpotListener implements OnSearchSpotClickListener {
+
+        public SearchSpotListener(MainActivity activity) {
+
+        }
+
+        @Override
+        public void onSearchSpotClick(Spot spot) {
+            addToFavorites(spot.id);
+            showSetSpotOrder();
+        }
+    }
+
     public ForecastListener getForecastListener() {
         return forecastListener;
     }
@@ -182,7 +187,6 @@ public class MainActivity extends AppCompatActivity implements
     private class ForecastListener implements ForecastFragment.OnMeteoForecastClickListener {
         @Override
         public void onMeteoForecastClick(Spot spot) {
-
         }
     }
 
@@ -220,11 +224,13 @@ public class MainActivity extends AppCompatActivity implements
 
     // questi listener devono essere dichiasrati final altrimento quando c'è una rotazione si perde il riferimento
     private final SearchMeteoForecastListener searchMeteoForecastListener;
-    private final PanelListener panelListener;
+    private final SearchSpotListener searchSpotListener;
+    private final RecyclerMeteoCardListListener recyclerMeteoCardListListener;
+    private final RecyclerSpotOrderListListener recyclerSpotOrderListListener;
     private final SpotDetailsListener spotDetailsListener;
     private final ForecastListener forecastListener;
 
-    private PanelFragment panelFragment;
+    //private PanelFragment panelFragment;
     public/*private*/ SpotDetailsFragment spotDetailsFragment;
     private SearchMeteoForecastFragment searchMeteoForecastFragment;
     private ProgramFragment programFragment;
@@ -232,9 +238,9 @@ public class MainActivity extends AppCompatActivity implements
     private SettingsFragment settingsFragment;
     private ProfileFragment profileFragment;
     private SpotMeteoListFragment spotMeteoListFragment;
-    //private MeteoItemListFragment meteoItemListFragment;
     private SearchSpotFragment searchSpotFragment;
     private SpotMeteoDataList spotMeteoDataList;
+    private RecyclerSpotListOrderFragment spotOrderFragment;
 
     private IntentFilter filter = new IntentFilter(DISPLAY_MESSAGE_ACTION);
     // google properties
@@ -244,7 +250,12 @@ public class MainActivity extends AppCompatActivity implements
 
     FloatingActionButton fabButton;
 
-    private UserProfile mProfile = null;
+    private static UserProfile mProfile = null;
+
+    public static UserProfile getUserProfile() {
+        return mProfile;
+    }
+
     static boolean signedIn = false;
     static int nextFragment = -1;
 
@@ -354,8 +365,10 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        panelFragment = new PanelFragment();
-        panelFragment.setListener(panelListener);
+        //panelFragment = new PanelFragment();
+        //panelFragment.setListener(panelListener);
+        recyclerMeteoCardListFragment = new RecyclerMeteoCardListFragment();
+        recyclerMeteoCardListFragment.setListener(recyclerMeteoCardListListener);
         programFragment = new ProgramFragment();
         programListFragment = new ProgramListFragment();
         programListFragment.setListener(this);
@@ -364,6 +377,9 @@ public class MainActivity extends AppCompatActivity implements
         profileFragment = new ProfileFragment();
         spotMeteoListFragment = new SpotMeteoListFragment();
         spotMeteoListFragment.setUserId(mProfile.personId);
+
+        //recyclerMeteoCardListFragment.setListener(recyclerSpotOrderListListener);
+
 
         //searchSpotFragment = new SearchSpotFragment();
 
@@ -451,13 +467,31 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_SEARCHSPOT);
+            if (fragment != null) // blocca bottone back
+            {
+                showSetSpotOrder();
+                return;
+            }
+            fragment = getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_ORDERSPOT);
+            if (fragment != null) // blocca bottone back
+            {
+                showFragment(R.id.nav_favorites,false);
+                getLastMeteoData();
+                return;
+            }
+
             super.onBackPressed();
         }
     }
+
+
 
     /**
      * Handling the touch event of app icon
@@ -477,12 +511,15 @@ public class MainActivity extends AppCompatActivity implements
 		 * unregisterUserData the device (you will also need to uncomment the equivalent
 		 * options on options_menu.xml).*/
 
-            case R.id.options_diagfile:
-                startSendLogActivity();
+            /*case R.id.action_favorite:
+                showSetSpotOrder();
+                return true;*/
+            case R.id.options_favorites:
+                showSetSpotOrder();
                 return true;
-            case R.id.options_searchspot:
+            /*case R.id.options_searchspot:
                 showSearchSpot();
-                return true;
+                return true;*/
             case R.id.options_searchmeteoforecast:
                 showSearchMeteoForecast();
                 return true;
@@ -491,11 +528,11 @@ public class MainActivity extends AppCompatActivity implements
             /*case R.id.action_settings:
                 openSettings();
                 return true;*/
-            case R.id.action_add:
+            /*case R.id.action_add:
 
-                //programListFragment.createProgram();
+                showSetSpotOrder2();
                 ;
-                return true;
+                return true;*/
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -511,6 +548,7 @@ public class MainActivity extends AppCompatActivity implements
         //searchMeteoForecastListener = new SearchMeteoForecastListener();
         searchMeteoForecastFragment.setListener(searchMeteoForecastListener);
 
+        currentFragment = searchMeteoForecastFragment;
         ft.replace(R.id.content_frame, searchMeteoForecastFragment);
         ft.addToBackStack(null);
         ft.commit();
@@ -525,12 +563,47 @@ public class MainActivity extends AppCompatActivity implements
         android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
 
         searchSpotFragment = new SearchSpotFragment();
-        searchSpotFragment.setListener(this);
+        searchSpotFragment.setListener(searchSpotListener);
 
-        ft.replace(R.id.content_frame, searchSpotFragment);
-        ft.addToBackStack(null);
+        currentFragment = searchSpotFragment;
+        ft.replace(R.id.content_frame, searchSpotFragment, TAG_FRAGMENT_SEARCHSPOT);
+        //ft.replace(R.id.content_frame, searchSpotFragment);
+        //ft.addToBackStack(null);
         ft.commit();
     }
+
+    private void showSetSpotOrder() {
+
+        getSpotListFromServer();
+
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
+
+
+        //getSupportFragmentManager().findFragmentById(R.id.spo);
+
+        spotOrderFragment = new RecyclerSpotListOrderFragment();
+        spotOrderFragment.setListener(recyclerSpotOrderListListener);
+
+        currentFragment = spotOrderFragment;
+        ft.replace(R.id.content_frame, spotOrderFragment, TAG_FRAGMENT_ORDERSPOT);
+        //ft.replace(R.id.content_frame, spotOrderFragment);
+        //ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    /*private void showSetSpotOrder2() {
+
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
+
+        spotListFragment = new SpotListFragment();
+        spotListFragment.setListener(this);
+
+        ft.replace(R.id.content_frame, spotListFragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -564,27 +637,33 @@ public class MainActivity extends AppCompatActivity implements
                 profileFragment.setProfile(mProfile);
             } else {
 
-                if (mPosition == R.id.nav_favorites && panelFragment != null) {
-                    ft.replace(R.id.content_frame, panelFragment);
+                if (mPosition == R.id.nav_favorites && recyclerMeteoCardListFragment != null) {
+                    ft.replace(R.id.content_frame, recyclerMeteoCardListFragment);
                     enableRefreshFavoritesMeteoDataButton();
+                    currentFragment = recyclerMeteoCardListFragment;
                 } else if (mPosition == R.id.nav_program) {
                     ft.replace(R.id.content_frame, programListFragment);
                     enableAddProgramButton();
-                } else if (mPosition == R.id.nav_meteostation) {
+                    currentFragment = programListFragment;
+                } /*else if (mPosition == R.id.nav_meteostation) {
                     disableAllButton();
-                    ft.replace(R.id.content_frame, spotMeteoListFragment);
-                } else if (mPosition == R.id.nav_settings) {
+                    ft.replace(R.id.content_frame, recyclerMeteoCardListFragment);
+                    currentFragment = recyclerMeteoCardListFragment;
+                } */else if (mPosition == R.id.nav_settings) {
                     disableAllButton();
                     ft.replace(R.id.content_frame, settingsFragment);
+                    currentFragment = settingsFragment;
                 } else if (mPosition == R.id.nav_profile) {
                     disableAllButton();
                     ft.replace(R.id.content_frame, profileFragment);
                     profileFragment.setProfile(mProfile);
+                    currentFragment = profileFragment;
                 }
             }
             if (addToBackStack)
                 ft.addToBackStack(null);
             ft.commit();
+
         } catch (IllegalStateException ignored) {
             // There's no way to avoid getting this if saveInstanceState has already been called.
         }
@@ -597,7 +676,7 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-    private void getSpotListFromServer() {
+    public void getSpotListFromServer() {
 
         new requestMeteoDataTask(this, new requestDataResponse(), requestMeteoDataTask.REQUEST_SPOTLIST).execute(mProfile.personId);
     }
@@ -662,6 +741,7 @@ public class MainActivity extends AppCompatActivity implements
             android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
             android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
 
+            currentFragment = spotDetailsFragment;
             ft.replace(R.id.content_frame, spotDetailsFragment);
             ft.addToBackStack(null);
             ft.commit();
@@ -676,18 +756,33 @@ public class MainActivity extends AppCompatActivity implements
         getHistoryMeteoData(spotId);
     }
 
-
-    public PanelFragment.OnListener getPanelListener() {
-        return panelListener;
+    public RecyclerMeteoCardListFragment.OnListener getRecyclerMeteoCardListListener() {
+        return recyclerMeteoCardListListener;
     }
 
-    private class PanelListener implements PanelFragment.OnListener {
-        /*public PanelListener() {
-            panelListener = this;
-        }*/
+    private class RecyclerSpotOrderListListener implements RecyclerSpotListOrderFragment.OnListener {
 
         @Override
-        public void onEnablePanelRefreshButtonRequest() {
+        public void onEnableAddFavoriteSpotButtonRequest() {
+            enableAddFavoriteSpotButton();
+        }
+
+        @Override
+        public void onAddSpot(long spotId) {
+
+        }
+
+        @Override
+        public void onRemoveSpot(long spotId) {
+            removeFromFavorites(spotId);
+            showSetSpotOrder();
+        }
+    }
+
+    private class RecyclerMeteoCardListListener implements RecyclerMeteoCardListFragment.OnListener {
+
+        @Override
+        public void onEnableMeteoCardListRefreshButtonRequest() {
             //getLastMeteoData();
             enableRefreshFavoritesMeteoDataButton();
         }
@@ -698,7 +793,6 @@ public class MainActivity extends AppCompatActivity implements
             showSpotDetailsFragment(spotId);
         }
     }
-
 
     public void getLastMeteoData() {
 
@@ -855,6 +949,17 @@ public class MainActivity extends AppCompatActivity implements
             public void onClick(View view) {
 
                 getLastMeteoData();
+            }
+        });
+    }
+
+    private void enableAddFavoriteSpotButton() {
+        fabButton.setImageResource(R.drawable.add);
+        fabButton.setVisibility(View.VISIBLE);
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showSearchSpot();
             }
         });
     }
@@ -1024,13 +1129,14 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSearchSpotClick(Spot spot) {
-        showSpotDetailsFragment(spot.id);
+        addToFavorites(spot.id);
+        showSetSpotOrder();
         //searchSpotFragment.
-        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        /*android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.remove(searchSpotFragment);
         ft.commit();
-        searchSpotFragment = null;
+        searchSpotFragment = null;*/
     }
 
     private void showLocationForecast(Forecast forecast) {
@@ -1045,6 +1151,7 @@ public class MainActivity extends AppCompatActivity implements
         forecastFragment.setListener(forecastListener);
         forecastFragment.setForecast(forecast);
 
+        currentFragment = forecastFragment;
         ft.replace(R.id.content_frame, forecastFragment);
         ft.addToBackStack(null);
         ft.commit();
@@ -1099,6 +1206,7 @@ public class MainActivity extends AppCompatActivity implements
                 return;
             }
 
+            mSpotList.spotList.clear();
             for (Spot spot : list) {
                 for (Long id : favorites) {
                     if (id == spot.id) {
@@ -1113,6 +1221,19 @@ public class MainActivity extends AppCompatActivity implements
                 searchSpotFragment.setSpotList(mSpotList);
             }
 
+            if (spotOrderFragment != null) {
+
+                List<Spot> orderedFavoritesSpotList = new ArrayList<>();
+                if (favorites != null && favorites.size() > 0) {
+                    for (Long id : favorites) {
+                        Spot spot = mSpotList.getSpotFromId(id);
+                        if (spot != null)
+                            orderedFavoritesSpotList.add(spot);
+                    }
+                }
+
+                spotOrderFragment.setSpotList(orderedFavoritesSpotList);
+            }
         }
 
         @Override
@@ -1156,10 +1277,16 @@ public class MainActivity extends AppCompatActivity implements
 
     private void updateFavoritesMeteoData(List<MeteoStationData> list) {
 
-        if (panelFragment == null || list == null || list.size() == 0) return;
+        if (recyclerMeteoCardListFragment == null || list == null || list.size() == 0) return;
+
         // aggiorna tutte le schede dei favorites
-        panelFragment.setMeteoDataList(list);
-        panelFragment.refreshMeteoData();
+        //panelFragment.setMeteoDataList(list);
+        //panelFragment.refreshMeteoData();
+
+        // aggiorna tutte le schede dei favorites
+        recyclerMeteoCardListFragment.setMeteoDataList(list);
+        recyclerMeteoCardListFragment.refreshMeteoData();
+
         // aggiorna i dati di spotDetailsFragment
         if (spotDetailsFragment != null) {
             MeteoStationData md = spotMeteoDataList.getLastMeteoData(spotId);

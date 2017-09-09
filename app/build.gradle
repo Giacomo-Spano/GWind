@@ -16,8 +16,8 @@ android {
         applicationId "gwind.windalarm"
         minSdkVersion 21
         targetSdkVersion 24
-        versionCode 53
-        versionName "0.91 Build 53"
+        versionCode 54
+        versionName "0.91 Build 54"
         multiDexEnabled true
     }
     buildTypes {
@@ -57,6 +57,10 @@ dependencies {
     compile 'com.firebaseui:firebase-ui-database:0.4.0'
     //compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
+
+    //compile 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.android.support:cardview-v7:24.1.0'
+    compile 'com.android.support:recyclerview-v7:24.1.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

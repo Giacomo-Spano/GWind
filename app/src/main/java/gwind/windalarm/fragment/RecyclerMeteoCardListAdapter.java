@@ -25,34 +25,33 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import gwind.windalarm.helper.ItemTouchHelperAdapter;
-import gwind.windalarm.helper.ItemTouchHelperViewHolder;
-import gwind.windalarm.helper.OnStartDragListener;
 
 import gwind.windalarm.R;
+import gwind.windalarm.controls.WindControl;
+import gwind.windalarm.controls.WindIndicator;
+import gwind.windalarm.data.MeteoStationData;
 
-/**
- * Simple RecyclerView.Adapter that implements {@link ItemTouchHelperAdapter} to respond to move and
- * dismiss events from a {@link android.support.v7.widget.helper.ItemTouchHelper}.
- *
- * @author Paul Burke (ipaulpro)
- */
-public class RecyclerMeteoCardListAdapter extends RecyclerView.Adapter<RecyclerMeteoCardListAdapter.ItemViewHolder>
-        implements ItemTouchHelperAdapter {
+public class RecyclerMeteoCardListAdapter extends RecyclerView.Adapter<RecyclerMeteoCardListAdapter.ItemViewHolder> {
 
-    private final List<String> mItems = new ArrayList<>();
+    private final List<MeteoStationData> mItems = new ArrayList<>();
 
-    private final OnStartDragListener mDragStartListener;
+    OnListener mCallback;
+    public interface OnListener {
+        void onSpotClick(long spotId);
+    }
+    public void setListener(OnListener listener) {
+        mCallback = listener;
+    }
 
-    public RecyclerMeteoCardListAdapter(Context context, OnStartDragListener dragStartListener) {
-        mDragStartListener = dragStartListener;
-        mItems.addAll(Arrays.asList(context.getResources().getStringArray(R.array.dummy_items)));
+
+    public RecyclerMeteoCardListAdapter(Context context) {
     }
 
     @Override
@@ -63,32 +62,48 @@ public class RecyclerMeteoCardListAdapter extends RecyclerView.Adapter<RecyclerM
     }
 
     @Override
-    public void onBindViewHolder(final ItemViewHolder holder, int position) {
-        //holder.linearLayout.setText(mItems.get(position));
+    public void onBindViewHolder(final ItemViewHolder holder, final int position) {
+        if (mItems == null ||position < 0 || position > mItems.size())
+            return;
+        if (mItems.get(position).spotName != null)
+            holder.spotNameTextView.setText(mItems.get(position).spotName);
+        if (mItems.get(position).direction != null) {
+            holder.directionTextView.setText(mItems.get(position).direction);
+            holder.windControl.setDirection(mItems.get(position).directionangle, mItems.get(position).direction);
+        }
+        if (mItems.get(position).speed != -1) {
+            holder.speedTextView.setText("" + mItems.get(position).speed);
+            holder.windIndicator.setWindSpeed(mItems.get(position).speed, "");
+        }
+        //if (mItems.get(position).spotName != null)
+            holder.speedUnitTextView.setText("km/h");
+        if (mItems.get(position).averagespeed != null)
+            holder.avspeedTextView.setText(""+mItems.get(position).averagespeed);
+        if (mItems.get(position).date != null) {
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            holder.dateTextView.setText(df.format(mItems.get(position).date));
+        }
+
+        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCallback.onSpotClick(mItems.get(position).spotID);
+            }
+        });
 
         // Start a drag whenever the handle view it touched
-        holder.linearLayout.setOnTouchListener(new View.OnTouchListener() {
+        /*holder.linearLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
                     //mDragStartListener.onStartDrag(holder);
+                    mCallback.onSpotClick(mItems.get(position).spotID);
                 }
+
+
                 return false;
             }
-        });
-    }
-
-    @Override
-    public void onItemDismiss(int position) {
-        mItems.remove(position);
-        notifyItemRemoved(position);
-    }
-
-    @Override
-    public boolean onItemMove(int fromPosition, int toPosition) {
-        Collections.swap(mItems, fromPosition, toPosition);
-        notifyItemMoved(fromPosition, toPosition);
-        return true;
+        });*/
     }
 
     @Override
@@ -96,20 +111,37 @@ public class RecyclerMeteoCardListAdapter extends RecyclerView.Adapter<RecyclerM
         return mItems.size();
     }
 
-    /**
-     * Simple example of a view holder that implements {@link ItemTouchHelperViewHolder} and has a
-     * "handle" view that initiates a drag event when touched.
-     */
+    public void setMeteoDataList(List<MeteoStationData> list) {
+        mItems.clear();
+        for (MeteoStationData data : list) {
+            mItems.add(data);
+        }
+        notifyDataSetChanged();
+    }
+
     public static class ItemViewHolder extends RecyclerView.ViewHolder implements
             ItemTouchHelperViewHolder {
-
         public final LinearLayout linearLayout;
-        //public final ImageView handleView;
+        public final TextView spotNameTextView;
+        public final TextView directionTextView;
+        public final TextView speedTextView;
+        public final TextView speedUnitTextView;
+        public final TextView avspeedTextView;
+        public final TextView dateTextView;
+        public final WindIndicator windIndicator;
+        public final WindControl windControl;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.meteocarditem);
-            //handleView = (ImageView) itemView.findViewById(R.id.handle);
+            spotNameTextView = (TextView) itemView.findViewById(R.id.spotNameTextView);
+            directionTextView = (TextView) itemView.findViewById(R.id.directionTextView);
+            speedTextView = (TextView) itemView.findViewById(R.id.speedTextView);
+            speedUnitTextView = (TextView) itemView.findViewById(R.id.speedUnitTextView);
+            avspeedTextView = (TextView) itemView.findViewById(R.id.avspeedTextView);
+            dateTextView = (TextView) itemView.findViewById(R.id.dateTextView);
+            windIndicator = (WindIndicator) itemView.findViewById(R.id.windindicator);
+            windControl = (WindControl) itemView.findViewById(R.id.windcontrol);
         }
 
         @Override

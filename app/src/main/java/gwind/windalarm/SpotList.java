@@ -14,10 +14,14 @@ import gwind.windalarm.request.requestMeteoDataTask;
  * Created by giacomo on 06/09/2015.
  */
 public class SpotList {
+
+    public static int spotlist_remove = 0;
+    public static int spotlist_add = 1;
+    public static int spotlist_reorder = 2;
+
     public List<Spot> spotList = new ArrayList<Spot>();
 
     public String getSpotName(long id) {
-
         if (spotList == null)
             return null;
 
@@ -76,11 +80,18 @@ public class SpotList {
         return false;
     }
 
-    public void updateFavorites(Activity activity, long spotId, String userId, boolean remove) {
+    public void updateFavorites(Activity activity, long spotId, String userId, int command, String spotlist) {
 
-        int requestType = requestMeteoDataTask.REQUEST_ADDFAVORITES;
-        if (remove)
+
+        int requestType;
+        if (command == spotlist_add)
+            requestType = requestMeteoDataTask.REQUEST_ADDFAVORITE;
+        else if (command == spotlist_remove)
             requestType = requestMeteoDataTask.REQUEST_REMOVEFAVORITE;
+        else if (command == spotlist_reorder)
+            requestType = requestMeteoDataTask.REQUEST_FAVORITESSORDER;
+        else
+            return;
 
         new requestMeteoDataTask(activity, new AsyncRequestMeteoDataResponse() {
             @Override
@@ -129,21 +140,18 @@ public class SpotList {
             public void processFinishForecastLocation(List<Location> locations, boolean error, String errorMessage) {
 
             }
-        }, requestType).execute(spotId,userId);
-
-
+        }, requestType).execute(spotId,userId, spotlist);
     }
 
     public void addToFavorites(Activity activity, long spotId, String userId) {
-        updateFavorites(activity,spotId,userId,false);
+        updateFavorites(activity,spotId,userId,spotlist_add,null);
     }
 
     public void removeFromFavorites(Activity activity, long spotId, String userId) {
-        updateFavorites(activity,spotId,userId,true);
+        updateFavorites(activity,spotId,userId,spotlist_remove,null);
     }
 
     public List<Spot> getSpotList() {
-
         return spotList;
     }
 }

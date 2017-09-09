@@ -1,26 +1,13 @@
 package gwind.windalarm.fragment;
 
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-
 import gwind.windalarm.MeteoItemListListener;
-import gwind.windalarm.R;
-import gwind.windalarm.Spot;
-import gwind.windalarm.cardui.InfoCard;
 import gwind.windalarm.data.MeteoStationData;
 
 public class MeteoItemListFragment extends ListFragment implements /*MeteoItemListListener,*/ SpotDetailsFragmentInterface {

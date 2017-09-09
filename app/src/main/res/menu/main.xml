@@ -13,25 +13,27 @@
         android:title="@string/options_refresh">
     </item>-->
     <!-- "Mark Favorite", should appear as action button if possible -->
-    <item
-        android:id="@+id/action_favorite"
-        android:icon="@drawable/add"
-        android:title=""
-        app:showAsAction="ifRoom"/>
 
-    <item
+    <!-- <item
+        android:id="@+id/action_favorite"
+        android:icon="@android:drawable/star_big_off"
+        android:title=""
+        app:showAsAction="ifRoom" /> -->
+
+    <!-- <item
         android:id="@+id/options_searchspot"
         android:icon="@android:drawable/ic_search_category_default"
         android:title="@string/options_searchspot">
-    </item>
+    </item> -->
     <item
         android:id="@+id/options_searchmeteoforecast"
         android:icon="@android:drawable/ic_search_category_default"
+        android:visible="false"
         android:title="@string/options_searchmeteoforecast">
     </item>
     <item
-        android:id="@+id/options_diagfile"
-        android:title="@string/options_diagfile">
+        android:id="@+id/options_favorites"
+        android:title="@string/options_spotorder">
     </item>
 
     <!--<item
@@ -42,7 +44,7 @@
         android:id="@+id/action_unregister"
         android:title="@string/options_unregister">
     </item>-->
-    <item
+    <!-- <item
         android:id="@+id/action_add"
         android:orderInCategory="100"
         android:showAsAction="ifRoom"
@@ -53,7 +55,7 @@
         android:orderInCategory="100"
         android:showAsAction="ifRoom"
         android:title="@string/action_remove">
-    </item>
+    </item> -->>
     <!--<item
         android:id="@+id/action_clear"
         android:orderInCategory="100"
